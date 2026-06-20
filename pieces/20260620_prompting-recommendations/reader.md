@@ -1,70 +1,74 @@
-# Reader reaction: 20260620_prompting-recommendations  (channel: blog)
+# Reader reaction: prompting-recommendations  (channel: blog)
+
+## The opening
+Reads like a real person, not a marketer — and that's a relief. The first paragraph
+opens on concrete annoyances ("правда ли «пещерный» промпт экономит 75%?", "китайский
+дешевле — миф?") and a believable motive ("работаю с большими промптами каждый день,
+гадать надоело — сел и перепроверил"). That "I got tired of guessing so I checked"
+energy is exactly what makes me want to read on. It promises *findings*, not a lecture.
+Good hook. I kept going.
+
+One small snag: "Вышло небольшое исследование, из которого и собралась эта статья" is
+the one phrase that drifts toward self-presentation. It's mild, but it's the first whiff
+of "look what I produced" rather than "here's what I found."
 
 ## First bounce point
-- I made it through, but the **first real wobble is the "Праймер" section** (line 22-30). Three
-  terms land almost at once: "Аллокация токенизатора", "BPE", "fertility". BPE is dropped with zero
-  gloss — I have no idea what it is, just that it "режет текст на токены". "Fertility" gets a
-  parenthetical ("среднее число токенов на слово") which saved me — good. But "BPE" is the cold spot:
-  a normal reader doesn't know it's "byte-pair encoding," and even spelled out it wouldn't mean much.
-- Second wobble: **"харнесс / harness"** (line 52, 67). The header "английский харнесс" hits before
-  the term is really anchored. It IS defined on line 52 ("Агентный harness — постоянный слой...
-  инструкции, скилы, тул-дефиниции, память"), but that definition is itself dense — "скилы",
-  "тул-дефиниции" are jargon-on-jargon. For a pure ChatGPT user this is the paragraph where I start
-  feeling "oh, this isn't really for me."
-- Acronyms that flash by without expansion in the body: **MoE** (line 211 — "MoE-роутингу", never
-  unpacked), **MECW** (only appears in the Sources list line 293 as a label, never in the body — so
-  if I went looking for what MECW means I'd find nothing). **RAG** (line 53) is also unglossed.
-- "Caveman / пещерный" — actually handled WELL. It's translated, quoted, and explained on first use
-  (line 10, then line 100). No bounce there.
+The summary itself is fine, but the very next block — "Праймер: почему язык, форма и
+место стоят денег" with BPE / fertility / "аллокация токенизатора" — is where a casual
+chatbot user (someone who just uses ChatGPT) would slow down hard. As a builder I'm fine;
+as a pure "I just type into ChatGPT" reader, paragraph 24–28 is the first place I'd think
+"this got technical fast, is the rest for me?" The intro promised practical, the primer
+delivers a tokenizer lecture. Not a hard bounce, but the first wobble.
 
-## Hook
-- The blockquote opener (lines 3-16) earns the click. Three concrete questions I've genuinely
-  wondered ("does the language matter," "do I need tags," "where do I put the question?") plus the
-  promise that "half the clever advice fails the test." That's a good hook — it's curiosity + a
-  debunking promise. The bulleted "Коротко — что выяснили" is almost TOO complete; it kind of
-  gives away the whole article up front, so my reason to read on becomes "show me the proof," not
-  "tell me the answer." That's fine for a reference piece, less gripping as a narrative.
-- The author's "Я пакую большие инструкции каждый день" (line 18) is a good credibility beat —
-  real products named — but w4check / mentor / "свой курс" mean nothing to me as a stranger; it
-  reads slightly like self-promo. Doesn't hurt much.
+## Does the 💬/⚙️/🤖 per-point tagging work?
+Mostly yes — and I prefer it to a separate "for you" box. The legend in line 5 ("💬 чат ·
+⚙️ системный промпт · 🤖 агент") is clear, and each bullet then tells me directly. As a
+casual user I can scan for 💬 and the italic asides actually speak to *me* in plain terms:
+"в чате просто пишите как удобно", "вопрос в конец, если выше длинный текст". That's the
+best part — the casual-user advice is spelled out, not just tagged.
+
+Where it half-works: the tags tell me a point is "for chat," but several of those same
+points then say "в чате это не критично" / "незачем" (Форма, Сжатие). So the honest signal
+is "skip most of this if you're casual" — which is useful, but it also quietly tells a
+casual reader that only ~2 of the 6 bullets really matter for them. That's fine if I'm
+honest with myself, but a casual reader might feel the article isn't really aimed at them
+after all. I didn't feel *lost* without a dedicated box — the per-point tags carried it.
+
+Tiny thing: the legend uses 💬⚙️🤖 but bullets also introduce 🌐📍🧱✂️🔣🪜 as topic icons.
+Two icon systems in one list. I worked it out, but for half a second I wondered if 🌐 was
+also an audience tag.
 
 ## Where it gripped / dragged
-- **Gripped:** the myth-busting beats. "Китайский на 40% дешевле — нет" (line 36), "−75% caveman
-  на самом деле ~15-20%" (line 104-111), "эмодзи занимают больше места, чем экономят" (line 11/176).
-  These are crisp, surprising, and satisfying — the payoff the hook promised.
-- **Gripped:** "Кстати, эта статья сама собрана по этому принципу" (line 44, repeated line 283).
-  The self-referential "the middle is skippable, and I built this article that way" is charming and
-  memorable — it made me trust the author and smile.
-- **Gripped:** the dedicated box "Для тех, кто просто пользуется чат-ботом" (lines 217-224). This is
-  the single best thing for a non-engineer like me — four plain rules, no jargon. Honestly I wish it
-  were near the TOP, because by the time I reached it (~85% through) I'd already half-checked out
-  during the engineering middle.
-- **Dragged / skimmed:** the citation density. Almost every sentence in the primer and in Приёмы 1-4
-  carries a bracketed arXiv link with a date and a stat. By the third "[Работа (2026)](...) показывает,
-  что..." I started skimming the citations and just reading the bolded takeaways. It reads more like
-  a literature review than a blog post in places.
-- **Dragged hard for me as a non-engineer:** Приём 3 (формат: YAML/JSON/XML/TOON, lines 123-143) and
-  "Как работают разные модели" (lines 200-213). TOON, MoE-routing, kv-cache "статику вверх", tool
-  definitions — I skimmed all of it. It's clearly competent, but it's a different reader's section.
-- The **mid-section "Сколько из этого — реальность"** (lines 192-196) is actually a highlight of
-  honesty, but it arrives late and is abstract ("log-likelihood", "LLM-судья") — I half-skimmed.
+- Gripped: the myth-busting framing throughout — "китайский дешевле — миф", "−75% это
+  лучший случай по выходу, реально ~15–20%", "русский в 2–2,5 раза дороже". Concrete,
+  surprising, debunk-y. The "Сработало / Отбросили" section near the end is the single
+  most shareable chunk — it's the whole article as a cheat sheet.
+- Gripped: the two "из практики" callouts (структура окупается дважды; пример бьёт запрет).
+  Those feel earned and human, not showy.
+- Dragged: the middle "Приём 1–5" sections are dense with bracketed citations — sometimes
+  3–5 arxiv links in one paragraph (line 40, line 32). As a casual reader I skimmed those
+  hard; they read like a literature review. A builder will mine them; a casual user glazes.
+- Dragged: "Как работают разные модели" — useful for builders, pure skim for everyone else.
+
+## Lecturing / showing off?
+- Line 32 and line 40 are the densest — back-to-back citations start to feel like
+  "look how much I read" rather than "here's the point." Not arrogant, just heavy.
+- The repeated meta-notes that the article *itself* follows its own rules (lines 42, 191,
+  280, "Середину можно пролистать") are charming the first time and slightly self-satisfied
+  by the third. One would land better than three.
+- Otherwise the tone stays collegial — lots of "честно", "не спешите", "не закладывайтесь",
+  hedging on single studies. That honesty is the opposite of showing off and it's the
+  article's biggest trust-builder.
 
 ## My one-sentence takeaway
-- "Write your prompt in whatever language you think in, put the actual question at the END (especially
-  after a long pasted text), don't bother with emoji/fancy formatting, and ask it to be brief —
-  everything fancier is for people building AI systems, not me."
-- (I CAN form it — but note: my one sentence is basically the "for casual users" box, not the article's
-  main body. The 80% of the article aimed at prompt engineers I could not compress, and wouldn't try.)
+Where you put the important stuff (edges, not middle) and how you format it matter more
+than what language you write in — and "tricks" like caveman/Chinese/emoji save far less
+than the hype, so optimize placement and format first and compression last.
 
-## Share / read-on? meh — 
-- As a casual chatbot user: I'd save it, maybe screenshot the casual-user box, but I wouldn't read it
-  end-to-end again, and I'm not sure I'd share it — too long and too engineer-heavy for most friends
-  who "just use ChatGPT." The dual-audience promise only half works: the casual reader is technically
-  served (one box + the summary bullets), but the body, the primer, and two whole sections are
-  unmistakably for engineers, and a normal user starts feeling like a tourist around the "harness /
-  tool-definitions / MoE" material. If I built with AI, this jumps to a clear "yes, bookmark and
-  share" — the master table, decision rules and pre-send checklist are genuinely useful reference.
-- Fix that would move me from meh to yes (as a casual reader): pull the "для тех, кто просто
-  пользуется" box up near the top and tell me explicitly "casual user? read this box and stop;
-  the rest is for builders." Right now I have to wade through engineer-land to discover the part
-  meant for me was at the back.
+## Share / read-on? yes — for the right person
+yes, but qualified: I'd share it with a colleague who builds prompts/agents in a heartbeat —
+it's a genuinely useful, sourced, myth-busting reference, and the final tables + decision
+rules are keeper material. For a purely casual ChatGPT user I'd send only the intro summary
+and the "Отбросили" list, because the body is heavier than they need. I'd follow the author
+for more. The honesty ("verify big reproduced effects, not viral percentages") is what would
+make me trust the next piece.
