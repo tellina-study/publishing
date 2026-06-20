@@ -29,6 +29,8 @@ CRITIQUE (`roast.md`) → SHIP. Persist each stage to `pieces/YYYYMMDD_<slug>/` 
 - Every task lives in `tasks/YYYYMMDD_<slug>/` (brief / plan / log / result + materials); publishable
   artifacts go to `pieces/<slug>/`. Agents: `researcher`, `fact-checker`, `editor`, `mirror-editor`
   (owner's taste), `reader-fan` (cold reader), `librarian`.
+- **Track every non-trivial task in a GitHub issue** (Goal / checklist / progress log / status) and
+  keep it current in the same turn work advances. Title `Piece:/Research:/Infra:`; commits ref `#N`.
 
 ## Git conventions
 

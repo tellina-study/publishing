@@ -13,7 +13,9 @@ New process rules: **clarity-first** (study KB → sequential clarifying questio
 **ШАГ 0** (task-specific plan before work), **`tasks/` workspace** (kitchen: brief/plan/log/result
 + materials, separate from `pieces/` deliverables), **one branch + worktree per task**, union-merge
 for append-only files, tooling-hygiene + living-body-artifact rules. My identity lives in
-`notes/coauthor-vision.md` + `coauthor-journal.md`.
+`notes/coauthor-vision.md` + `coauthor-journal.md`. Every non-trivial task is also mirrored by a
+**GitHub issue** (Goal / checklist / progress / status), kept current in the same turn — the issue
+is the shareable ledger, `tasks/` is the kitchen.
 
 ## 2026-06-20 — Repo created
 Set up the `publishing` harness (tellina-study/publishing, public). Lifecycle BRIEF → DRAFT →

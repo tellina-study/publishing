@@ -14,6 +14,9 @@ How this repo operates. The `CLAUDE.md` harness is the law; this file is the det
 - `tasks/` is the **kitchen**; publishable artifacts (article text, channel variants) go to
   `pieces/<slug>/` — the **product**. `materials/`, `data/`, `*.zip` are gitignored.
 - Start a task: `cp -r templates/task tasks/YYYYMMDD_<slug>`.
+- **Mirror every non-trivial task to a GitHub issue** (Goal / checklist / progress / status) and
+  keep progress current there in the same turn. Title `Piece:/Research:/Infra:`; labels
+  `piece/research/infra/kb`; branch + commits reference `#N`; the PR links it.
 
 ## Git workflow
 - Never push to `main`. Feature branch + PR, always.

@@ -80,6 +80,26 @@ tasks/YYYYMMDD_<slug>`. The piece lifecycle (above) governs the publishable arti
 
 ---
 
+## Work Tracking (GitHub Issues) — MANDATORY
+
+Every non-trivial task is mirrored by a **GitHub issue** on `tellina-study/publishing` — the single
+source of truth for what's in flight and how it's going. `tasks/<slug>/` is the kitchen (full
+detail); the **issue is the shareable ledger of plan + progress + status**. Starting non-trivial
+work without an issue is a process bug.
+
+Open the issue at the start, and **keep it current in the same turn the work advances**:
+- **Goal** + channels + ship-bar — mirrors `brief.md`.
+- **Work plan** as a checklist — tick items as they close (mirrors `plan.md`).
+- **Progress log** — running commentary, decisions, surprises (mirrors `log.md`); post as comments.
+- **Status** (OPEN / IN PROGRESS / BLOCKED / DONE) + closing verdict (SHIP / REVISE / HOLD + URLs).
+
+Conventions: title `Piece: …` / `Research: …` / `Infra: …`; labels `piece` / `research` / `infra` /
+`kb`. Branch and commits reference `#N`; the PR links the issue. Close-the-loop covers files, the
+issue covers plan/progress — update **both** before the turn ends. Don't copy deep materials into
+the issue; it holds the checklist, the progress highlights, and the verdict.
+
+---
+
 ## Before You Start: clarity-first + ШАГ 0 (RULE)
 
 **Do not take a task into work until it is fully understood and all ambiguities are removed.**
@@ -258,9 +278,8 @@ tables that rot within a week.
   `tasks/**/log.md` means *both sides appended* — keep both blocks, never pick a side.
 - **Workflow:** branch → worktree → commit → push branch → open PR → user reviews → user merges.
 
-GitHub Issues are the source of truth for what's in flight (local task lists are session-scoped).
-Non-trivial pieces get an issue mirroring the `brief.md`: angle, audience, channel, ship-bar,
-"do not" list.
+GitHub Issues are the source of truth for what's in flight — see **Work Tracking (GitHub Issues)**
+above. Every non-trivial task gets an issue; branch and commits reference it (`#N`); the PR links it.
 
 ---
 
