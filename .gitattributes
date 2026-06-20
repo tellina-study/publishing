@@ -1,0 +1,10 @@
+# Append-only knowledge & ledgers: union-merge so a tail conflict keeps BOTH sides' entries
+# (never silently drop one branch's appended record).
+notes/decisions.md            merge=union
+notes/coauthor-journal.md     merge=union
+notes/owner-taste.md          merge=union
+blueprint/lessons-learned.md  merge=union
+wiki/topics/anti-patterns.md  merge=union
+sources/INDEX.md              merge=union
+ontology/store.md             merge=union
+tasks/**/log.md               merge=union

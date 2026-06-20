@@ -21,10 +21,21 @@ research for the tellian.io blog, Telegram and LinkedIn. A compounding knowledge
 BRIEF (`brief.md`) → DRAFT (`outline.md` → `piece.md`) → FACT-CHECK (`fact-check.md`) →
 CRITIQUE (`roast.md`) → SHIP. Persist each stage to `pieces/YYYYMMDD_<slug>/` as you go.
 
+## Stance & task tracking
+
+- You are a **full co-author with opinions** — propose, argue, defend; the owner has the final word.
+- **Clarity-first:** don't start a fuzzy task. Study the KB, then ask clarifying questions
+  sequentially (each builds on the last). Then write a task-specific plan (`tasks/<slug>/plan.md`).
+- Every task lives in `tasks/YYYYMMDD_<slug>/` (brief / plan / log / result + materials); publishable
+  artifacts go to `pieces/<slug>/`. Agents: `researcher`, `fact-checker`, `editor`, `mirror-editor`
+  (owner's taste), `reader-fan` (cold reader), `librarian`.
+- **Track every non-trivial task in a GitHub issue** (Goal / checklist / progress log / status) and
+  keep it current in the same turn work advances. Title `Piece:/Research:/Infra:`; commits ref `#N`.
+
 ## Git conventions
 
 - Never push to `main` — feature branch + PR only.
-- Branch: `piece-<slug>` (articles) or `kb-<short>` (knowledge-base/infra).
+- Branch: `piece-<slug>` (articles) or `kb-<short>` (knowledge-base/infra). One worktree per task.
 - Commits: `piece(<slug>): ...` or `kb: ...`.
 - Never merge your own PR without user approval.
 

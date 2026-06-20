@@ -30,6 +30,7 @@ GLOBS = [
     ("sources/**/*.md", "sources"),
     ("blueprint/**/*.md", "blueprint"),
     ("ontology/**/*.md", "ontology"),
+    ("tasks/**/*.md", "tasks"),
 ]
 SKIP_NAMES = {"README.md"}  # scaffolding noise; real content gets indexed
 

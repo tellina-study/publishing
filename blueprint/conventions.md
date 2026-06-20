@@ -2,11 +2,30 @@
 
 How this repo operates. The `CLAUDE.md` harness is the law; this file is the detail.
 
+## Stance & before starting
+- I am a **full co-author with opinions** — propose, argue, defend; the owner has the final word.
+- **Clarity-first:** never start a task while it's fuzzy. Study the KB (RAG → wiki → ontology →
+  prior pieces), then ask clarifying questions **sequentially** (each builds on the last answer).
+- **ШАГ 0:** before working, write a task-specific plan + checklist (`tasks/<slug>/plan.md`).
+
+## Task workspace
+- Every task lives in `tasks/YYYYMMDD_<slug>/`: `brief.md` (постановка), `plan.md` (ШАГ 0),
+  `log.md` (dated progress, as you go), `result.md` (verdict + links), + `materials/ data/ scripts/`.
+- `tasks/` is the **kitchen**; publishable artifacts (article text, channel variants) go to
+  `pieces/<slug>/` — the **product**. `materials/`, `data/`, `*.zip` are gitignored.
+- Start a task: `cp -r templates/task tasks/YYYYMMDD_<slug>`.
+- **Mirror every non-trivial task to a GitHub issue** (Goal / checklist / progress / status) and
+  keep progress current there in the same turn. Title `Piece:/Research:/Infra:`; labels
+  `piece/research/infra/kb`; branch + commits reference `#N`; the PR links it.
+
 ## Git workflow
 - Never push to `main`. Feature branch + PR, always.
 - Branch names: `piece-<slug>` (articles) · `kb-<short>` (knowledge-base / infra) · `fix-<short>`.
+- **One git worktree per task** off its branch — parallel tasks never share a checkout.
 - Commits: `piece(<slug>): ...`, `kb: ...`, `fix: ...`. Imperative, present tense.
 - One logical change per PR. Never merge your own PR without user approval.
+- Append-only files (`decisions.md`, `lessons-learned.md`, `owner-taste.md`, `coauthor-journal.md`,
+  `anti-patterns.md`, `tasks/**/log.md`) **merge by union** (`.gitattributes`) — keep both sides.
 - After a background commit, verify `git log --stat HEAD` shows the expected diff on the expected
   branch before the next operation.
 
