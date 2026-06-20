@@ -20,6 +20,13 @@ Re-run `rag_ingest.py` after anything ships or the wiki/notes change (the `libra
 part of Close-the-Loop). The index lives at `$PUBLISHING_RAG_DB` (default
 `~/.cache/publishing-rag_db`) and is gitignored — it's regenerable.
 
+A tracked git **`post-merge` hook** (`.githooks/post-merge`) rebuilds the index automatically on
+every merge — that's the only automated Close-the-Loop trigger. `core.hooksPath` is local config,
+so activate it once per clone:
+```bash
+git config core.hooksPath .githooks
+```
+
 ## What's indexed
 The `GLOBS` list in `rag_ingest.py` is the contract: `pieces/`, `wiki/`, `notes/`, `sources/`,
 `blueprint/`, `ontology/`. Add a directory there when you add a new content area.
