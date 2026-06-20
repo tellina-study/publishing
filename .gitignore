@@ -23,6 +23,11 @@ token.json
 sources/files/**/*.pdf
 sources/files/**/*.epub
 
+# Task workspaces — track the record (brief/plan/log/result/scripts), not the bulky kitchen
+tasks/**/materials/
+tasks/**/data/
+tasks/**/*.zip
+
 # OS / editor
 .DS_Store
 Thumbs.db
