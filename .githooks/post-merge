@@ -1,0 +1,14 @@
+#!/bin/sh
+# Close-the-Loop (CLAUDE.md): re-index the RAG corpus after every merge.
+# Fires on `git merge` and the merge step of `git pull` (incl. fast-forward).
+# Indexing must never block or fail a merge — we always exit 0.
+repo="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+[ -f "$repo/scripts/rag_ingest.py" ] || exit 0
+
+echo "[post-merge] Close-the-Loop: re-indexing RAG…"
+if python3 "$repo/scripts/rag_ingest.py"; then
+  echo "[post-merge] RAG index rebuilt."
+else
+  echo "[post-merge] rag_ingest failed — rebuild manually: python3 scripts/rag_ingest.py" >&2
+fi
+exit 0
