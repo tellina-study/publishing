@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# RAG index & embedding models (regeneratable — rebuild with scripts/rag_ingest.py)
+.cache/
+*.lance/
+.rag_db/
+models/
+
+# Secrets & local config
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+token.json
+.claude/settings.local.json
+
+# Source binaries — track manifests in sources/INDEX.md, not the files
+sources/files/**/*.pdf
+sources/files/**/*.epub
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+/tmp/

@@ -1,0 +1,4 @@
+# Local RAG (semantic search). Install: pip install -r scripts/requirements.txt
+# Local-only — no API keys. First run downloads the ~90MB MiniLM model.
+lancedb>=0.6
+sentence-transformers>=2.6
