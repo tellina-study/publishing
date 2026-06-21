@@ -12,4 +12,4 @@ See `README.md` for the model. One row per link.
 | language-format-placement | cites | sources/INDEX.md#lost-in-the-middle | Lost in the Middle (Liu et al.) — position effect |
 | language-format-placement | cites | sources/INDEX.md#tokenizer-tax | Tokenizer Tax (Petrov et al.) — 25 European languages |
 | language-format-placement | cites | sources/INDEX.md#toon-benchmark | TOON format vs JSON token/accuracy benchmark |
-| language-format-placement | hasStatus | in-review | merged to main (PR #7, issue #3); WP draft #260, not public; no SHIP verdict / live URL |
+| language-format-placement | hasStatus | published | SHIP; live 2026-06-21 (issue #3). Blog https://tellian.io/2026/06/21/language-format-placement/ (RU+EN); LinkedIn https://www.linkedin.com/posts/maximlevko_activity-7474523958642479106-gp3l; Telegram posted (URL n/a) |
