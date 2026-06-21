@@ -7,8 +7,12 @@ Read before starting; append on discovery. Each lesson: what happened, the rule 
 
 ---
 
-_(No lessons yet. The first ones will likely come from the first few pieces — e.g. which channel
-framings land, which sources are reliable, where fact-checking caught a near-miss.)_
+L01 — To publish on tellian.io, run the built pipeline; don't re-derive access.
+  Why: the blog is WordPress.com **Atomic** (Business), which supports **Application Passwords**
+  directly on `tellian.io/wp-json` (HTTP Basic) — no OAuth. The app-password UI is hidden by the
+  WordPress.com profile screen (find it at `wp-admin/profile.php`). Pipeline: `scripts/wp_publish.py`
+  + `templates/piece-bilingual/`; how-to in `wiki/topics/publishing-to-tellian.md`.
+  Anchor: tasks/20260621_wp-publish/
 
 <!--
 L01 — <rule>.

@@ -212,6 +212,25 @@ Multi-stage pieces follow the lifecycle in order. Per stage:
 Never publish externally without an explicit user gate. Publishing is outward-facing and hard to
 reverse — confirm first.
 
+### Publishing to tellian.io (SHIP mechanics)
+
+The blog is **WordPress.com Atomic** (Business plan). Do **not** re-derive this — the pipeline is built:
+
+```bash
+cp -r templates/piece-bilingual pieces/<slug>     # en.md + ru.md (YAML frontmatter)
+python3 scripts/wp_publish.py pieces/<slug>                 # → draft (safe default)
+python3 scripts/wp_publish.py pieces/<slug> --dry-run       # print HTML, no API calls
+python3 scripts/wp_publish.py pieces/<slug> --status publish  # go live (needs the user gate)
+```
+
+`scripts/wp_publish.py` merges `en.md` + `ru.md` into **one** post with the CSS `:target`
+language switcher (`#en`/`#ru`), exactly like existing posts. Idempotent via `wp_post_id`
+(re-run updates, never duplicates); categories/tags resolved/created by name. Auth = Application
+Password (HTTP Basic) from `.env` at repo root — **not** OAuth; the app-password UI lives at
+`tellian.io/wp-admin/profile.php` (WordPress.com hides it). Full how-to:
+[`templates/piece-bilingual/README.md`](templates/piece-bilingual/README.md) and
+[`wiki/topics/publishing-to-tellian.md`](wiki/topics/publishing-to-tellian.md).
+
 ---
 
 ## Knowledge Infrastructure
