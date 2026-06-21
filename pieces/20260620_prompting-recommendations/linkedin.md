@@ -1,20 +1,19 @@
-<!-- Channel: LinkedIn (EN). Shape: 150–500 words, takeaway-led, light formatting.
-     Derivative of en.md. Drop the blog URL in at ship ({{BLOG_URL}}). -->
+<!-- Channel: LinkedIn (EN). Style: insight-as-hook → article, short, non-categorical,
+     casual-user caveat at the end, engaging close. See memory: linkedin-style / owner-taste. -->
 
-**Most prompt advice is folklore. I checked the popular tricks against the research and my own daily use — here's what actually moves the needle.**
+**I dug into a question that sounds trivial: when you write a prompt, how much does the *packaging* — the language, the format, where you put things — actually change the answer? I went through the research and my own daily use, and a few results genuinely surprised me.**
 
-Two things every prompt spends: a **token budget** (money + context window) and an **attention budget** (the model reads the edges of the window well and the middle poorly). Almost every good practice just spends those two wisely.
+Three that stuck with me:
 
-What holds up:
+🌐 Language looks more like a cost lever than a compression one. Instructions in English tend to be a bit cheaper and more accurate — a non-English prompt can run ~2× the tokens (Russian does). And "write in Chinese to save tokens" mostly doesn't hold on the popular models.
 
-🌐 **Write instructions in English.** Another language doesn't compress your prompt — it inflates it. A non-English language runs multiples more tokens (Russian ≈ ×2). And "write in Chinese to save tokens" is a myth on the popular models: the tokenizer fragments the ideographs and any density gain disappears.
+📍 Placement seems to matter more than trimming words. Attention leans toward the start and end of the context window, so your key facts — and the actual question — tend to land better at the edges than buried in the middle.
 
-📍 **Placement beats compression.** Attention is U-shaped — put the key facts and the real question at the edges, not the middle. And the *reliable* context length is far shorter than the spec sheet claims.
+🧱 Simple Markdown usually does better than heavier formats (JSON/XML) for the instruction itself — those are worth keeping for data.
 
-🧱 **Simple Markdown wins.** It's what models saw most in training; keep heavy formats (JSON/XML) for data, not for the instructions. Forcing rigid JSON output can even choke the model's reasoning.
+I wrote up the full picture — worked examples, a per-task breakdown, and the sources — here:
+https://tellian.io/2026/06/21/language-format-placement/
 
-✂️ **Brevity helps less than the hype.** Cutting filler saves a real ~15–20% on instructions, not the viral "−75%" — and it pays off in agents, not in one-off chats. Never squeeze a reasoning model's chain of thought.
+And honestly — if you just chat with an assistant now and then, the first two are about all you need. The rest is really for people wiring prompts into a product.
 
-The order that matters: **sort out placement and format first, then language, and compress last** — compression saves the least and breaks meaning the easiest.
-
-Full write-up — worked examples, a per-task stack (chat / production prompt / agent / data), and 40+ sources — here: {{BLOG_URL}}
+Curious how this lands for others: does format and placement move the needle in your experience?
