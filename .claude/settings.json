@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s\\n' 'Retrieval Protocol (CLAUDE.md, MANDATORY): before taking any non-trivial task, consult the knowledge base first — RAG (python3 scripts/rag_search.py \"<query>\") -> wiki/index.md -> ontology/ -> prior pieces. Reflexive grep on a concept is a process bug. Close-the-Loop (RAG re-index) runs automatically on git merge via the post-merge hook.'"
+          }
+        ]
+      }
+    ]
+  }
+}
