@@ -12,6 +12,7 @@ Evergreen takes, one page per subject. Create a page when a topic recurs across 
 | Topic | Currency | Updated when |
 |-------|----------|--------------|
 | [Anti-patterns / debunked claims](topics/anti-patterns.md) | ✅ current | Close-the-Loop (a claim is debunked / a cliché named) |
+| [Publishing to tellian.io](topics/publishing-to-tellian.md) | ✅ current | The publish pipeline / site setup changes |
 | _(add topic pages here as they emerge)_ | | |
 
 ## How to query the knowledge base
