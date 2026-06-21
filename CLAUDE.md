@@ -337,7 +337,9 @@ decisions into `notes/decisions.md`. If in doubt, reflect.
 **Agents** (`.claude/agents/`): `researcher` (sources & prior art), `fact-checker` (verify claims),
 `editor` (adversarial critique / roast), `mirror-editor` (the owner's-taste lens — judges as the
 owner would), `reader-fan` (the cold target reader — onboarding & grip), `librarian` (close-the-loop
-KB sync).
+KB sync), `stylist-ru` (Russian line-level prose polish — Нора Галь/Чуковский, idiom & tics),
+`stylist-en` (English line-level polish — Williams & Bizup «Clarity and Grace»). The stylists run
+**last**, after content/fact-check/roast settle — they touch wording, never facts or structure.
 
 **Skills** (`.claude/skills/`): `/reflect`, `/compile-wiki`, `/catalog-piece`.
 
