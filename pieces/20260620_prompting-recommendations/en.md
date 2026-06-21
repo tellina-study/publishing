@@ -9,18 +9,18 @@ tags: [LLM, Prompts, Tokenization, Context Engineering]
 
 **I spend my days wrangling big prompts to language models — and the same question keeps coming up: what actually works better?** Is it true that if you write tersely, telegraph-style, with no filler, the model both understands more precisely and costs you less? People say Chinese prompts come out cheaper — does that hold up? And more broadly: does the language you write in matter, do you really need headings and lists, and where do you put the main question so it doesn't get lost?
 
-These questions come up on their own; now and then you stumble onto something worth passing along. I dug through the research, checked it against my own experience — here's what came out. Sharing it.
+These questions keep nagging, and every so often you stumble onto something worth passing along. I dug through the research, checked it against my own experience, and here's what came out.
 
 **TL;DR.** The short version — here's what works:
 
 - 🌐 **Language.** It pays to write your instructions in English: in another language the prompt doesn't shrink, it bloats — a non-English language costs the model roughly twice as much (for Russian, about ×2). And "write in Chinese, you'll save tokens" is, for the popular models, just a myth.
-- 📍 **Placement.** A model notices the beginning and the end best, and loses the middle easily. So put the most important things — and the question itself — at the edges; don't bury them in the middle.
+- 📍 **Placement.** A model notices the beginning and the end best, and loses the middle easily. So put the most important things — and the question itself — at the edges, not buried in between.
 - 🧱 **Form.** Simple markup with headings and lists is the clearest of all; save heavy technical formats for data, not for the request itself.
 - ✂️ **Brevity.** Cutting filler words really does help — but it saves a real ~15–20%, not the promised "minus 75."
 - 🔣 **Glyphs.** Emoji and box-drawing characters used to "save space" only get in the way.
 - 🪜 **Order.** First sort out what goes where and how it's formatted, then language, and squeezing the length is the very last thing to do.
 
-If you're just chatting with a bot, the first two — language and placement — are what truly help you; the rest matters more for people tuning a model to their task or wiring it into a product. From here, each point in turn, with examples and numbers.
+If you're just chatting with a bot, the first two — language and placement — are what truly help you; the rest matters more for people tuning a model to their task or wiring it into a product. Now each point in turn, with examples and numbers.
 
 ---
 
@@ -28,15 +28,15 @@ If you're just chatting with a bot, the first two — language and placement —
 
 Whatever you're writing to the model, it all comes down to two limited resources — and almost every technique below is about spending them wisely.
 
-### 💰 The token budget — that's money and space
+### 💰 The token budget — money and space
 
-The model doesn't see letters: text is cut into tokens (chunks of words), you pay per token, and tokens are also what fills up the context window. You don't do the cutting — the tokenizer does, and unevenly: the same meaning takes a different number of tokens across languages and formats. An English phrase packs noticeably tighter than a Russian one; clean Markdown packs tighter than the same meaning in JSON. By exactly how much — we'll count in the techniques; the gap between languages isn't a matter of percent, it's a multiple.
+The model doesn't see letters: text is cut into tokens (chunks of words), you pay per token, and tokens are also what fills up the context window. You don't do the cutting — the tokenizer does, and unevenly: the same meaning takes a different number of tokens across languages and formats. An English phrase packs noticeably tighter than a Russian one; clean Markdown packs tighter than the same meaning in JSON. Exactly how much, we'll count up in the techniques; the gap between languages isn't a matter of percent — it's a multiple.
 
-### 🎯 The attention budget — that's quality
+### 🎯 The attention budget — quality
 
-Even when everything fits in the window, the model reads it unevenly: attention is a finite resource, and it goes mostly to the edges, while the middle sags. The longer the prompt, the stronger the effect. So where you put the important stuff directly decides whether the model notices it.
+Even when everything fits in the window, the model reads it unevenly: attention is a finite resource, and it goes mostly to the edges, while the middle sags. The longer the prompt, the stronger the effect. So where you put the important stuff decides whether the model even notices it.
 
-Next we'll go through five key techniques for working with prompts and optimizing these budgets. But the same technique costs differently in a live chat and in a prompt "baked into" a product: in one place a miss is pennies, in another it multiplies across millions of calls. So keep four task types in mind — each with its own cost of error and its own budget headroom:
+Next we'll go through five key techniques for working with prompts and optimizing these budgets. But the same technique costs differently in a live chat than in a prompt "baked into" a product: in one place a miss costs pennies, in another it multiplies across millions of calls. So keep four task types in mind — each with its own cost of error and its own budget headroom:
 
 ### Four task types
 
@@ -63,17 +63,17 @@ Rough guides for Western tokenizers:
 
 > 💡 **What this means in practice.** The same prompt in a non-English language is multiples more tokens; for Russian it's about ×2: twice as expensive, and you hit the window twice as fast. Not by percentages — by multiples.
 
-This is also where the advice "write in Chinese, you'll save tokens" falls apart. The ideograph is dense, but the tokenizer fragments it into several tokens, and the gain gets eaten. A direct test came from [Mythbuster (2026)](https://arxiv.org/abs/2604.14210) (preprint): the saving isn't confirmed, it depends on the model, and quality in Chinese is on average lower. For the popular models, Chinese isn't cheaper — and not rarely it's more expensive and worse. So language by itself doesn't shrink the prompt: all of English's advantage is in the price of tokens and in quality, not in size.
+This is also where the advice "write in Chinese, you'll save tokens" falls apart. The ideograph is dense, but the tokenizer fragments it into several tokens, and the gain gets eaten. A direct test came from [Mythbuster (2026)](https://arxiv.org/abs/2604.14210) (preprint): the saving isn't confirmed, it depends on the model, and quality in Chinese is on average lower. For the popular models, Chinese isn't cheaper — and often enough it's more expensive and worse. So language by itself doesn't shrink the prompt: all of English's advantage is in the price of tokens and in quality, not in size.
 
 ### A common case: English instructions — answer in the user's language
 
-English lives better in instructions — but it's often more convenient and more effective for the user to write in their own language, and that works. The typical setup: system prompt and instructions in English, while the user writes in their own language and wants the answer in it too. The setup works; let's look at its strengths and the places where it stumbles.
+English lives better in instructions — but it's often more convenient and more effective for the user to write in their own language, and that works. The typical setup: system prompt and instructions in English, while the user writes in their own language and wants the answer in it too. Let's look at where it's strong and where it stumbles.
 
 **Why an English core pays off.** The English-centricity of models is a measured fact. [Cross-lingual studies (2025)](https://arxiv.org/abs/2504.10906) consistently give English instructions first place on quality — *with an important caveat*: for small post-trained models (7–9B) the picture flips in places, and the native language works no worse. That is, "English is better" is about large frontier models, not a law of nature. Plus an English core is cheaper in tokens.
 
 **How to keep a non-English output from "drifting."** There are proven techniques:
 
-- **Give the output-language command on a separate line and at a pole** (at the start or the end), don't weave it into the middle. [Language Confusion (EMNLP 2024)](https://arxiv.org/abs/2406.20052) shows it directly: an isolated language instruction confuses the model noticeably less than an integrated one, and **a single example** lifts the share of correct-language output to about 80% even where the model was floundering.
+- **Give the output-language command on a separate line and at a pole** (at the start or the end), don't weave it into the middle. [Language Confusion (EMNLP 2024)](https://arxiv.org/abs/2406.20052) shows it directly: an isolated language instruction confuses the model noticeably less than an integrated one, and **a single example** pushes correct-language output to about 80% even where the model was floundering.
 - **Align the language of input, reasoning, and output.** [When Language Shapes Thought (2025)](https://arxiv.org/abs/2505.24409): a forced mismatch ("think in one, answer in another") worsens knowledge retrieval. If you need nuance in the user's language — let it reason in that language too; if factual accuracy matters more — English reasoning plus a translation into the user's language at the end.
 
 **Where it stumbles:**
@@ -86,7 +86,7 @@ English lives better in instructions — but it's often more convenient and more
 
 ### On tone: politeness and language
 
-An unexpected but tested nuance. [Mind Your Tone (2025)](https://arxiv.org/abs/2510.04950), on a small sample, found that a slightly rude prompt gave higher accuracy than a polite one. It's tempting to conclude "be rude to the model" — **but don't rush**: [a cross-lingual study (2024)](https://arxiv.org/abs/2402.14531) shows that the politeness optimum *depends on the language*, and the balance point is different for each. For most non-English languages there's no separate measurement, so the takeaway is modest: excess politeness ("please, would you be so kind, if it's not too much trouble") is just tokens, you can cut it; deliberately being rude isn't worth it.
+An unexpected but tested nuance. [Mind Your Tone (2025)](https://arxiv.org/abs/2510.04950), on a small sample, found that a slightly rude prompt gave higher accuracy than a polite one. It's tempting to conclude "be rude to the model" — **but don't rush**: [a cross-lingual study (2024)](https://arxiv.org/abs/2402.14531) shows that the politeness optimum *depends on the language*, and the balance point is different for each. Most non-English languages haven't been measured separately, so the takeaway is modest: excess politeness ("please, would you be so kind, if it's not too much trouble") is just tokens — cut it; deliberately being rude isn't worth it.
 
 | ✅ Pattern | ⛔ Antipattern |
 | --- | --- |
@@ -110,7 +110,7 @@ Where the numbers come from. "−75%" is a best case and only for *output* token
 - On instructions — **~15–20%** (14–21% across different measurements) while preserving meaning. In one reproducible micro-test by the author, [an 85-token distillate beat a 552-token prompt while keeping 100% of the facts](https://github.com/kuba-guzik/caveman-micro) — it's not a big benchmark, but it's telling.
 - In multi-turn sessions with caching it adds up to [~39%](https://betterstack.com/community/guides/ai/caveman-llm/).
 - Agentic patterns cut more radically: [CaveAgent (2026)](https://arxiv.org/abs/2601.01569) — −28% total tokens with a rising success rate by collapsing steps.
-- The bonus isn't only about money: [Hakim, "Brevity Constraints" (2026)](https://arxiv.org/abs/2604.00025), on 31 models and 1485 tasks — a brevity constraint raised large-model accuracy by +26 pp where verbosity was confusing things (the model talks itself into the wrong answer). This is one study so far, but the effect is striking.
+- The bonus isn't only about money: [Hakim, "Brevity Constraints" (2026)](https://arxiv.org/abs/2604.00025), on 31 models and 1485 tasks: a brevity constraint raised large-model accuracy by +26 pp where verbosity was muddling the answer (the model talks itself into the wrong one). This is one study so far, but the effect is striking.
 
 A counterweight from practitioners cools expectations: the saving across a whole session more often comes out at ~4–10%, and [part of what's claimed doesn't survive to the token bill](https://medium.com/hecatus-research/less-is-more-for-llms-a-critique-of-prompt-based-compression-910978d8bad4).
 
@@ -128,7 +128,7 @@ A counterweight from practitioners cools expectations: the saving across a whole
 
 Models understand Markdown best: training text is saturated with it, and the tokenizer encodes it economically, whereas JSON with its brackets and quotes gets fragmented. And keep in mind that **the markup itself is also tokens**: every tag, bracket, and quote is paid for, so heavy markup (XML, JSON) on the same content comes out more expensive than light markup (Markdown).
 
-And a model best understands the formats it has seen a lot of in training, *regardless* of their theoretical elegance. The fate of the TOON format is telling: it saves tokens but loses on comprehension, because there are few examples of it. All of this applies first of all to the body of the instruction (the system prompt) and to the form in which you feed in data.
+A model also understands best the formats it has seen a lot of in training, *regardless* of how elegant they are in theory. The fate of the TOON format is telling: it saves tokens but loses on comprehension, because there are few examples of it. All of this applies first of all to the body of the instruction (the system prompt) and to the form in which you feed in data.
 
 > 🛠️ **From my practice: structure pays off twice.** While you're breaking the instruction into sections and bullets, you're clarifying it for yourself — half of a prompt's bugs get fixed simply because you write *structurally* rather than as a wall of text. And only then the second payoff: the model reads such an instruction more precisely. So structure works for you even before it reaches the model.
 
@@ -166,7 +166,7 @@ Behind this are several converging results. [Lost in the Middle (2023)](https://
 
 - **Chat:** if a long document is pasted above, put the question itself at the very end.
 - **Production prompt:** the format spec and the variable part — at the tail.
-- **Harness:** critical rules — at the poles: the context is huge (200k+), and the middle sags the most. The stakes here are many times higher than in chat.
+- **Harness:** critical rules — at the poles: the context is huge (200k+), and the middle sags the most. The stakes here are far higher than in chat.
 - **Data:** relevant chunks — at the poles, ranked by relevance; don't dump everything "just in case": the extra only throws it off.
 
 This also applies to **examples (few-shot)**: [a study on the positional bias of few-shot (2025)](https://arxiv.org/abs/2507.22887) shows that the *same* block of examples, shifted by position, moves accuracy by up to 50 pp. Examples are not only "which" but "where."
@@ -199,7 +199,7 @@ You can also **direct attention explicitly**, but with a caveat: [Attention Inst
 
 ## Technique 5 · 🔣 Special characters, emoji, separators
 
-The intuition that "compact glyphs save space" breaks against the tokenizer. A simple emoji weighs about a token, while composite ones — flags, modifiers — unfold into several byte tokens, sometimes up to a dozen, whereas the word "the" costs one. Box-drawing and ASCII tables are also expensive: a heap of tokens goes on the borders. Program symbols (`===`, operators), on the other hand, are cheap.
+The intuition that "compact glyphs save space" breaks against the tokenizer. A simple emoji costs about a token, while composite ones — flags, modifiers — blow up into several byte tokens, sometimes a dozen, whereas the word "the" costs one. Box-drawing and ASCII tables are expensive too: the borders alone eat a pile of tokens. Program symbols (`===`, operators), on the other hand, are cheap.
 
 **Separators, though, are an underrated lever.** A separator is what you use to set off one chunk of the prompt from another: `###` in a heading, a `---` line, `<context>…</context>` tags, triple quotes around text, a vertical bar in a table. Seems like a trifle — but ["A Single Character can Make or Break Your LLM Evals" (2025)](https://arxiv.org/abs/2510.05152) shows that the choice of separator alone shifts the result by tens of percent, and — most unpleasant — **the fragility grows with model scale**: by picking a separator you can even tweak which model "wins" in a comparison.
 
@@ -209,7 +209,7 @@ A simple failure: in one section you set off blocks with hashes `###`, in anothe
 
 So for saving space, glyphs are useless — emoji and box-drawing are only a minus. But for reliability, the choice of separator matters more than it seems. Build structure with headings and tags, not with glyphs.
 
-*(And yes — this post has emoji, but they're for you, the humans, to grab the key points on the run. Inside a prompt for the model there's no point putting them.)*
+*(And yes — this post has emoji, but those are for you humans, to grab the key points on the run. Inside a prompt for the model, there's no point.)*
 
 | ✅ Pattern | ⛔ Antipattern |
 | --- | --- |
