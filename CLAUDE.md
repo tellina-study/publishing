@@ -263,24 +263,29 @@ string, stop and switch to RAG.
 
 ## Close-the-Loop Protocol (MANDATORY)
 
-After any of these events, sync the knowledge base **before the turn ends** — delegate to the
-`librarian` agent. Do not batch across sessions.
+The knowledge base **tracks `main`, not the ship.** `main` is the source of truth; the moment a
+merge lands on `main`, **every** KB layer must reflect it **before the turn ends** — keyed to
+*status* (draft / in-review / published), not presence-vs-absence. A piece that is on `main` but
+missing from the indexes is an inconsistency, not a "wait for ship" state. RAG re-indexes
+automatically (post-merge hook); the doc-layer is on you — delegate it to the `librarian`. Do not
+batch across sessions.
 
 | Trigger | Files that MUST be updated |
 |---|---|
-| Piece shipped (SHIP verdict) | `wiki/pieces/INDEX.md`, `notes/decisions.md`, ontology, re-run `scripts/rag_ingest.py` |
+| **Piece merged to `main`** (new piece, or a stage/status change) | `wiki/pieces/INDEX.md` (correct bucket — Drafts / In review / Published), `ontology` (Piece node + Status + Source/Topic links), RAG (auto via post-merge hook) |
+| **Piece published** (live URL) | move the INDEX row to **Published** + add the URL; `wiki/topics/<topic>.md` (the evergreen take); run `/catalog-piece`; `notes/decisions.md` if a call was made |
 | New evergreen take / topic established | `wiki/topics/<topic>.md` |
 | A claim proven false / cliché identified | `wiki/topics/anti-patterns.md` (with the piece/source that settled it) |
 | New reusable source found | `sources/INDEX.md` |
 | New lesson about *how we work* | `blueprint/lessons-learned.md` |
 | Strategic decision made | `notes/decisions.md` |
 
-**Self-check before ending a turn:** did anything ship? did a new take or anti-pattern emerge?
-did a decision get made? did a lesson appear? If yes to any — run the `librarian`.
+**Self-check before ending a turn:** did a merge land on `main`? did anything ship or get a live
+URL? did a new take or anti-pattern emerge? a decision? a lesson? If yes to any — run the `librarian`.
 
-**Zero stale indexes:** any index whose rows lag the actual state by more than one commit is a
-process bug. Fix on discovery. The wiki `index.md` is **navigation-only** — pointers, not metric
-tables that rot within a week.
+**Zero stale indexes:** any index whose rows lag `main` by more than one commit is a process bug —
+*including* a piece present on `main` but missing from `wiki/pieces/INDEX.md`. Fix on discovery. The
+wiki `index.md` is **navigation-only** — pointers, not metric tables that rot within a week.
 
 ---
 

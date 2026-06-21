@@ -11,4 +11,11 @@ if python3 "$repo/scripts/rag_ingest.py"; then
 else
   echo "[post-merge] rag_ingest failed — rebuild manually: python3 scripts/rag_ingest.py" >&2
 fi
+
+# RAG auto-syncs above, but the doc-layer KB does not. If this merge touched any piece files,
+# the indexes must follow `main` this turn (CLAUDE.md Close-the-Loop: KB tracks `main`).
+if git diff --name-only ORIG_HEAD HEAD 2>/dev/null | grep -q '^pieces/'; then
+  echo "[post-merge] Close-the-Loop: pieces/ changed on main → the librarian must sync"
+  echo "             wiki/pieces/INDEX.md (status bucket) + ontology this turn, not at ship."
+fi
 exit 0
