@@ -42,7 +42,18 @@ python3 scripts/wp_publish.py pieces/<slug> --status publish  # → live (user g
 - **Default status = `draft`** (the ship gate). Going live requires explicit `--status publish` +
   the user's approval. `--dry-run` prints the assembled HTML without any API call.
 
+## Markdown engine
+
+Conversion uses **markdown-it-py** (CommonMark + GFM tables/strikethrough), not
+python-markdown. Reason: python-markdown does **not** render a fenced code block nested
+inside a blockquote (`> ` + ```` ``` ````) — it leaks the code as text and lets raw `<tag>`
+escape into the HTML. markdown-it-py renders it as a proper `<pre><code>` with the contents
+escaped. `html=False`, so any stray `<tag>` in prose is escaped; typography (curly quotes,
+dashes) is left to WordPress's `wptexturize` on display.
+
 ## Gotchas
 
 - A draft is created on the live site but isn't public — safe to preview, then delete if junk.
 - If credentials rotate, just update `.env`.
+- Fenced code **inside a blockquote** renders fine (engine handles it) — but it must be a real
+  fenced block (```` ``` ````), not indented.

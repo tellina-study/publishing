@@ -36,13 +36,17 @@ import argparse
 import sys
 from pathlib import Path
 
-import markdown
 import requests
 import yaml
+from markdown_it import MarkdownIt
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SEPARATOR = '<hr class="wp-block-separator" />'
-MD_EXTENSIONS = ["extra", "sane_lists", "smarty"]
+
+# CommonMark engine + GFM tables/strikethrough. CommonMark-compliant, so it renders
+# fenced code blocks nested inside blockquotes correctly (python-markdown does not).
+# html=False escapes any stray `<tag>` in prose; typography is left to WP's wptexturize.
+MD = MarkdownIt("commonmark", {"html": False}).enable(["table", "strikethrough"])
 
 
 def load_env() -> dict[str, str]:
@@ -76,7 +80,7 @@ def parse_frontmatter(path: Path) -> tuple[dict, str]:
 
 
 def md_to_html(body: str) -> str:
-    return markdown.markdown(body, extensions=MD_EXTENSIONS, output_format="html5")
+    return MD.render(body)
 
 
 def build_content(en_title: str, en_html: str, ru_title: str, ru_html: str) -> str:
