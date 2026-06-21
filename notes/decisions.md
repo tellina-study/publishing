@@ -5,6 +5,13 @@ newest at top. One line each, dated. Strategy and "why", not mechanics (mechanic
 
 ---
 
+## 2026-06-21 — Close-the-Loop tracks `main`, not the ship
+The KB must mirror `main` (the source of truth), not wait for a SHIP verdict. Heavy doc-layer sync
+is rekeyed: **merge to `main`** → `wiki/pieces/INDEX.md` (status bucket) + ontology + RAG (auto);
+**publish (live URL)** → row to Published + URL, topic note, `/catalog-piece`. Drove a CLAUDE.md
+rule change (PR #12) + a post-merge hook reminder. Why: merging a piece to preview/publish left the
+indexes lagging `main` — a real inconsistency the owner flagged.
+
 ## 2026-06-21 — Bilingual blog longread stays one full reference; short version ships as derivatives
 For the prompting piece (RU v13 + EN), editor + reader-fan flagged "two articles in one coat" —
 a casual reader and a builder served by the same text. Owner's call: **do NOT split the blog
