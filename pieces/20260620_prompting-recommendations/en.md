@@ -1,10 +1,15 @@
 ---
-title: "Language, format, placement: how to write prompts an LLM understands better"
+title: 'Language, format, placement: how to write prompts an LLM understands better'
 slug: language-format-placement
 status: draft
-categories: [Prompt Engineering]
-tags: [LLM, Prompts, Tokenization, Context Engineering]
-# wp_post_id:   — auto-filled after first publish; do not set by hand
+categories:
+- Prompt Engineering
+tags:
+- LLM
+- Prompts
+- Tokenization
+- Context Engineering
+wp_post_id: 260
 ---
 
 **I spend my days wrangling big prompts to language models — and the same question keeps coming up: what actually works better?** Is it true that if you write tersely, telegraph-style, with no filler, the model both understands more precisely and costs you less? People say Chinese prompts come out cheaper — does that hold up? And more broadly: does the language you write in matter, do you really need headings and lists, and where do you put the main question so it doesn't get lost?
