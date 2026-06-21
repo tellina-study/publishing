@@ -13,6 +13,7 @@ Evergreen takes, one page per subject. Create a page when a topic recurs across 
 |-------|----------|--------------|
 | [Anti-patterns / debunked claims](topics/anti-patterns.md) | ✅ current | Close-the-Loop (a claim is debunked / a cliché named) |
 | [Publishing to tellian.io](topics/publishing-to-tellian.md) | ✅ current | The publish pipeline / site setup changes |
+| [Prompt packaging: language, format, placement](topics/prompt-packaging.md) | ✅ current | A new piece touches prompt language / format / placement |
 | _(add topic pages here as they emerge)_ | | |
 
 ## How to query the knowledge base
