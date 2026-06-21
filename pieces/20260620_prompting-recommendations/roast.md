@@ -1,114 +1,135 @@
 # Roast: prompting-recommendations
 
-Scope: RU canonical longread, ~4040 words. Dual audience (agent-builders + ordinary chatbot users).
-Checked against brief and fact-check (the ~20 must-fixes). Verdict at bottom.
+Scope: RU canonical longread, ~4188 words. Dual audience (agent-builders + ordinary chatbot users).
+Checked against brief and fact-check. v1 roast (REVISE) is preserved below the v10 section.
 
-## Critical (must fix before ship)
+---
 
-1. **Chroma link almost certainly 404 — must-fix #6 NOT applied.** — line 42 and refs (line 293).
-   Fact-check #6 says cite Chroma at `trychroma.com/research/context-rot`. The body uses
-   `https://research.trychroma.com/context-rot` (different host + path). This is one of the
-   load-bearing "context rot / distractors" claims. Resolve the actual URL and paste the one
-   that returns 200. A dead link on a flagship claim in a piece *about* sourcing rigor is the
-   worst possible miss. (Verified this run: the URL in the body does not match the URL the
-   fact-check verified.)
+## Roast v10
 
-2. **"85-токенный дистиллят бил 552-токенный, 100% фактов" rests on an anonymous personal GitHub
-   repo, presented as "бенчмарк".** — line 106. Must-fix #4 correctly moved the link to
-   `kuba-guzik/caveman-micro`, but the *framing* is still "в бенчмарке на coding-задачах". A
-   one-person repo is an anecdote, not a benchmark. Either downgrade the language ("в одном
-   воспроизводимом микро-тесте автора X") or drop the exact 100%/85-vs-552 numbers. As written it
-   over-claims rigor the source doesn't have.
+Reviewing the owner's scannability pass: blockquote cards (💡/📌/🛠️/🎯), emoji budget
+subheadings, TL;DR label, softened opener, the "Пример бьёт запрет" card moved 3→4, finale
+reordered (Общие решения before Стек под каждый тип), RU→«язык пользователя».
 
-3. **"вплоть до 99%" + "спотыкается порой уже на сотне токенов" is a single preprint stated as
-   near-fact.** — line 42 (Paulsen / MECW). This is the single scariest number in the piece and it
-   comes from one un-replicated 2025 paper. The hedge "порой" is doing a lot of work for a 99%
-   claim. Add an explicit "одна работа, ещё не воспроизведена" tag the way you (correctly) did for
-   Hakim's +26 п.п. and CaveAgent. Right now the calibration is inconsistent: some single-paper
-   results are flagged as preliminary, this one (the most alarming) is not.
+The big v1 criticals are GONE: the 99% MECW figure is now "эффективный контекст в разы ниже"
+(line 160), the caveman "бенчмарк" is now "воспроизводимом микро-тесте автора" (line 103),
+the Chroma claim is hedged. Good. New issues are mostly the seams left by the v10 reshuffle.
 
-## Should fix
+### Critical (must fix before ship)
 
-- **Thesis is split across two competing one-liners.** The H1 promises "язык, форма и место" /
-  "чтобы нейросеть понимала лучше" (a *quality* claim). The TL;DR's dominant beats are about
-  *cost/tokens* (2–2,5×, −75% vs −15–20%, эмодзи дороже). A 20-second reader can't tell if this is
-  "write so the model understands better" or "write so you spend fewer tokens." Pick the primary
-  axis in the first sentence; the cost material is the supporting act, not a co-headline.
+1. **The moved card orphaned its antipattern row in Приём 3.** — line 151 vs lines 169–182.
+   The "Пример бьёт запрет" explanation now lives in Приём 4 (line 171), but Приём 3's
+   antipattern table still carries `Голый запрет «не делай так» без «делай вот так»` (line 151)
+   and `Один образец ответа для структурированного вывода`. A reader scanning Приём 3's table
+   hits the JSON-output / образец advice with zero supporting text — the support was carried two
+   приёма away. The split also means the *same* idea (образец > запрет; JSON only on output)
+   is now spread across Приём 3 (table) and Приём 4 (card + code block), so neither place owns
+   it. Direction: either pull the example-vs-prohibition card back to Приём 3 where structured
+   output is discussed, or move that table row out of Приём 3 into Приём 4's table (line 190)
+   so the rule and its evidence sit together. Right now the move created a dangling reference.
 
-- **TL;DR is six bullets + two extra paragraphs (lines 5–16). That is not a TL;DR, it's a
-  pre-summary.** For the mass reader the brief wants to onboard, this is already a wall. Cut the
-  "честная рамка" paragraph (line 14) and the "дальше — приём за приёмом" paragraph (line 16) out
-  of the TL;DR block — they are meta-navigation, not the takeaway.
+2. **TL;DR order contradicts the body order, and the card promise mis-sets expectations.**
+   — lines 9–14 vs Приём headings. TL;DR lists Язык → Место → Форма → Краткость → Значки →
+   Порядок. The body runs Язык(1) → Caveman(2) → Форматы(3) → Место(4) → Значки(5). So the
+   reader who internalises the TL;DR sequence meets the приёмы in a different order, and
+   "Краткость" (TL;DR #4) is actually Приём 2. For a piece whose own thesis is "order and
+   placement matter," a summary that re-orders its own body is a self-inflicted wound. Either
+   renumber the приёмы to match the TL;DR's logical grouping (язык/место/форма/краткость), or
+   reorder the TL;DR bullets to body order. The "Порядок" bullet (line 14) already states the
+   *recommended* sequence (place+format → language → length last) — which is a THIRD ordering.
+   Three orderings of the same five levers in the first screen is genuinely confusing; pick the
+   priority ordering (the one in "Порядок" / the finale) and make TL;DR + приёмы echo it.
 
-- **The "English-harness + Russian I/O" section (lines 67–84) is the densest in the piece and lands
-  well structurally, but it buries its own load-bearing caveat.** The "7–9B post-trained models
-  flip the result" hedge (line 71, must-fix #14) is parenthetical inside a "почему английский
-  выгоден" paragraph. Good that it's there; bad that the section's bolded conclusion (line 84)
-  doesn't carry it. A sharp reader will quote line 84 back at you as over-claim.
+### Should fix
 
-- **"Mind Your Tone" rudeness result (line 88) — keep the steelman but the number invites misuse
-  even with the hedge.** "84,8% против 80,8%" on "небольшой выборке" with one cross-lingual
-  counterweight is exactly the kind of viral-thread stat the brief's DO-NOT list warns against
-  ("не превращать в вирусный листикл"). It's well-hedged, but ask: does it earn its place, or is it
-  a spicy aside that dilutes the spine? Consider compressing to one sentence.
+- **Orphan reference: MCP tool descriptions (2602.14878).** — refs line 287. Listed in
+  Источники but never cited in the body. The "описания инструментов заслуживают столько же
+  внимания" line (225) attributes to Anthropic "Building Effective Agents," not to the MCP
+  paper. Either cite it where harness tool-descriptions are discussed (lines 38, 225, 260) or
+  drop it from refs. A ref that appears nowhere in the body is exactly the "source that probably
+  exists" smell this piece is otherwise careful to avoid.
 
-- **"Markdown — самый родной регистр" is now hedged as "рабочая гипотеза" (line 125) — good — but
-  the TL;DR (line 8) states "Markdown модели понимают лучше всего" flatly, no hedge.** Must-fix #13
-  said this is an authorial frame, not a sourced fact. The hedge exists in the body but not in the
-  summary the mass reader actually reads. Align them.
+- **The two 🛠️ practice cards (lines 126, 128) sit back-to-back and partly overlap.** Both are
+  "из практики," both argue human-readable structure pays off, both land in Приём 3 before the
+  "Как применять" list. Two adjacent first-person blockquotes of the same flavour read as
+  padding and dilute the "structure pays twice" punch of the first. Direction: merge into one
+  card, or move the second (read-it-with-your-eyes) point down into the YAML/Markdown-KV bullet
+  where it's directly actionable. The v10 card pass added scannability but here it doubled a beat.
 
-- **Two contested-number bases are clean in body but the closing "Что отбросили" list re-states them
-  bare.** Line 264 "Русский… в 2–2,5 раза дороже" (fine, matches must-fix #7) and line 267 caveman
-  "реально ~15–20%". These are consistent — good — but line 10 TL;DR says "~15–20%" while body line
-  106 says "~14–21%". Pick one range and use it everywhere; the drift looks careless in a
-  precision piece.
+- **Card density is high enough to fragment, not aid.** 8 emoji blockquote cards
+  (lines 57, 78, 126, 128, 158, 171, 202) plus 5 pattern/antipattern tables plus the TL;DR
+  bullets. In Приём 4 the section opens with a 💡 card (158) that restates what the budget
+  subheading "🎯 Бюджет внимания" (28) already said and what the TL;DR "Место" bullet (10) said —
+  the same "edges good, middle drops" claim now appears ~4 times before the evidence. Cards work
+  when they're the one thing to remember per section; when every section both opens with a card
+  AND closes with a table, the prose between them reads as connective tissue nobody anchors on.
+  Direction: cap it at one card per приём (the payoff), and let the opening 💡 in Приём 4 be the
+  *only* statement of the placement rule rather than the fourth.
 
-- **Length: ~4040 words against a blog shape of 800–2500 (CLAUDE.md).** This is ~1.6× the top of
-  the stated range. It's a canonical reference and the master table justifies some of it, but the
-  "Как работают разные модели" section (lines 200–213) substantially overlaps the master table's
-  "Поправка по модели" column and the decision rules. One of the two model-specific treatments is
-  redundant. Cutting ~400–600 words there costs nothing.
+- **Length: ~4188 words vs blog shape 800–2500 (CLAUDE.md).** Still ~1.7× the top of range, and
+  v10 added words (cards, TL;DR expansion). "Как работают разные модели" (lines 218–229) still
+  substantially overlaps the per-type finale and the in-приём model notes (e.g. Claude-in-tail
+  appears at 186, 225, and 229). The DeepSeek MoE-routing aside (227) is still ~3 lines on a
+  thing the text tells you not to rely on. Cutting 300–500 words from the model section costs
+  nothing — the finale's "GPT вперёд / Claude+DeepSeek в хвост" (229) is the only load-bearing
+  model fact and it's already stated.
 
-## Minor / polish
+### Minor / polish
 
-- "Четыре класса задач" (line 48) says "три класса плюс один сквозной слой" — the heading says
-  "четыре", the text says "три плюс один". Pick one framing; the off-by-one reads as an error.
-- Line 42: "на 32K половина моделей уже валится" — attribute which benchmark (NoLiMa or RULER) gives
-  the 32K/half figure; right now it's appended after both and reads as either.
-- Line 133: "YAML обходит XML, который раздувает токены на +80% к Markdown (на большинстве моделей;
-  на Llama картина инвертировалась)" — single-model-ish source (improvingagents, GPT-4.1-nano); the
-  "+80%" needs the "single-vendor bench" tag the fact-check (line 80) asked for. It's in the body
-  prose but easy to read as general.
-- Line 162: SEAL described as "обучаемый метод усиления внимания, не просто трюк в промпте" — good,
-  must-fix #20 applied. But it sits in a how-to section about prompting; a *trainable* method is
-  out of reach for the mass reader and most prod-prompt authors. Consider footnoting rather than
-  inlining.
-- Line 211: DeepSeek MoE-routing speculation is correctly tagged "догадка одного блога" (must-fix
-  #16 applied) — good. But it's still ~3 lines on a thing you tell the reader not to rely on. Trim.
-- Sources block: "Found in the Middle" (line 293) is cited in refs but never referenced in the body.
-  Either use it or drop it from refs.
-- ты/вы consistency: brief flagged this as an open item (brief line 54). Body is mostly "вы" but
-  spot-check the imperatives — do a final pass.
+- Line 32–34: "держим в уме четыре типа задач" then a "### Четыре типа задач" subheading
+  immediately under "🎯 Бюджет внимания." The four-types block is structurally a *third* thing
+  under the "два бюджета" H2 — so the section titled "два бюджета" actually delivers two budgets
+  AND four task-types. Reads slightly mislabeled; consider promoting "Четыре типа задач" to its
+  own H2 or folding the budgets+types under a "Прежде чем начать" umbrella that names both.
 
-## What works (briefly)
-- The "Flaw or Artifact?" steelman section (lines 192–196) lands. It's the right move for a piece
-  full of scary percentages and it's placed well (near the end, before the synthesis). Keep it.
-- The self-referential "this article is built by its own rules" callbacks (lines 44, 283) are
-  earned, not cute — they demonstrate the thesis.
-- Must-fixes #1, #2 (ID split), #3, #16, #19, #20, #9 (25 langs), #7 (2–2,5×) appear applied in the
-  body. The fact-check largely landed.
-- Pattern/Antipattern tables + master table + decision rules + checklist genuinely serve the
-  agent-builder half of the dual audience. The "для тех, кто просто пользуется" box (lines 217–224)
-  is the right onboarding ramp for the other half.
+- Line 160: "на 32K половина моделей валится" — appended after both NoLiMa and RULER; still
+  reads as "either/both." Attribute the 32K/half figure to the specific benchmark.
 
-## Verdict: REVISE
+- Line 158 (💡 card in Приём 4) has no bold lead-in label while the other cards do
+  (💡 **Что это значит**, 📌 **Короткий рецепт**). Inconsistent card formatting after the pass.
 
-Not SHIP: at least 3 real Critical issues are open — a likely-dead flagship link (must-fix #6 not
-applied), an anecdote dressed as a "benchmark", and an un-flagged single-paper 99% claim that
-breaks the piece's own calibration discipline. None are fatal to the argument; all are quick fixes.
-Not HOLD: the spine is sound, sourcing core holds, structure works.
+- Line 134: improvingagents "+80%" and Markdown-KV "~60,7%" are single-vendor bench
+  (GPT-4.1-nano) — the body says "на большинстве моделей" but the single-bench caveat the
+  fact-check asked for (line 80) is softer here than for other single-source numbers. Tag it.
 
-substance_fraction: ~0.85 (most findings are sourcing/calibration/thesis, not style nits)
+- Line 202 (📌 card in Приём 5) and line 206 ("Структуру стройте заголовками и тегами, а не
+  значками") say the same thing 4 lines apart — close the section on one or the other.
 
-one-line: Fix the Chroma link, downgrade the "benchmark" anecdote and the 99% claim to single-source
-hedges, and reconcile the quality-vs-cost thesis so the first screen says one thing — then ship.
+- ты/вы: brief flagged this (brief line 54). Cards lean "вы," some practice cards lean "ты"
+  (126: "ты сам её проясняешь"). Intentional voice shift for first-person cards is fine, but
+  spot-check it's consistent within each register.
+
+### What works (briefly)
+
+- Reordered finale (Общие решения → Стек под каждый тип, lines 235–267) is the right call:
+  cross-cutting questions first, then per-class stacks. Reads logically; the general/specific
+  gradient is correct.
+- The moved card's *bridge* is clean — line 169 "И раз уж речь о примерах" hands off from the
+  few-shot positional-bias point (167) into the example-vs-prohibition card naturally. The
+  transition works; it's only the left-behind table row (Critical #1) that's the problem.
+- "Flaw or Artifact?" steelman in the finale (line 271) still lands — right hedge for a piece
+  full of percentages, well placed before sign-off.
+- Generalising RU→«язык пользователя» (lines 65, 70, 78) widened the audience without losing the
+  concrete RU ×2 example where it earns specificity (57). Good balance.
+- Calibration is now consistent: single-paper results (Hakim, CaveAgent, Mythbuster "предв.",
+  Mind Your Tone "небольшой выборке") are flagged as such. The v1 inconsistency is fixed.
+- The 🌐/💰/🎯 emoji subheadings genuinely help the dual audience navigate to their half.
+
+### Verdict: REVISE
+
+Not SHIP: Critical #1 (the moved card left a dangling antipattern row in Приём 3) and #2 (three
+different orderings of the five levers in the first screen) are real reader-facing defects
+introduced or exposed by the v10 reshuffle — both quick fixes, neither fatal. Not HOLD: spine is
+sound, sourcing core holds, finale reorder is an improvement, calibration is clean.
+
+substance_fraction: ~0.8 (findings are structure/orphan-source/calibration, not style nits)
+
+one-line: Reunite the example-vs-prohibition rule with its Приём-3 table row, and collapse the
+three competing orderings of the five levers into one — then ship.
+
+---
+
+## Roast v1 (archived)
+
+(Superseded by v10 above; kept for trace. The three v1 Criticals — Chroma link, "benchmark"
+anecdote, un-flagged 99% claim — are addressed in v10.)
