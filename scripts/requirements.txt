@@ -2,3 +2,8 @@
 # Local-only — no API keys. First run downloads the ~90MB MiniLM model.
 lancedb>=0.6
 sentence-transformers>=2.6
+
+# WordPress publisher (scripts/wp_publish.py)
+requests>=2.31
+PyYAML>=6.0
+markdown-it-py>=3.0   # CommonMark engine: renders fenced code inside blockquotes (python-markdown does not)
