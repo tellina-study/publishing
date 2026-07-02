@@ -13,25 +13,27 @@
 
 If you've gone looking for ready-made "skills" for your Claude agent, you've seen the pattern: a
 dozen repositories called some variation of *awesome-claude-skills*, the biggest with more stars than
-most programming languages, each promising hundreds of ready-to-install capabilities. Which one do
-you actually pull from? And once you do, can you trust what you just dropped into a tool that runs
+most programming languages, each promising hundreds of drop-in capabilities. Which one do
+you pull from? And once you do, can you trust what you just dropped into a tool that runs
 with your permissions?
 
 I went through the seven biggest so you don't have to start from a star count. This is the field
-guide I wish I'd had: what a skill is and whether skills even work, what's actually inside each
+guide I wish I'd had: what a skill is and whether skills even work, what's inside each
 collection and who it's for, which ones survive a real security check, and how to use them so they
-help instead of just filling up your context window.
+help instead of just filling up your context window. Every repo name below links straight to its
+GitHub page, so any number I quote — starting with those eye-widening star counts — is one click to
+check.
 
 First, one line of vocabulary, because the rest leans on it. A **skill** is a small folder — a
 Markdown file, sometimes a script or two — that you drop in to change how your agent behaves on a
 task ("when the user asks for a spreadsheet, do it *this* way"). An **MCP config** is its sibling: a
 little JSON file that tells the agent which external tools to install and run, usually with a line
 like `npx -y some-package`. Both install in seconds. That convenience is the whole reason to be a
-little careful, and we'll get to it.
+little careful.
 
 ## Do skills actually work?
 
-Short answer: yes, with a catch worth understanding before you install twenty of them.
+Yes — with a catch worth understanding before you install twenty of them.
 
 The strongest evidence isn't a benchmark — it's production. Anthropic's own document skills (the ones
 that build xlsx, docx, pptx, and pdf files) are, by their own README, the skills that power Claude's
@@ -40,8 +42,8 @@ of people already use, implemented as exactly the kind of skill file you can ins
 
 For an independent number, one study put the format to the test — [*How Well Do Agentic Skills Work
 in the Wild*](https://arxiv.org/abs/2604.04323) — and found a genuine lift: on the Terminal-Bench 2.0
-benchmark, adding skill retrieval moved pass rate from 57.7% to 65.5%. But the same paper is honest
-about the ceiling: as the test conditions got more realistic, the gains shrank back toward the
+benchmark, adding skill retrieval moved pass rate from 57.7% to 65.5%. But the same paper is just as
+clear about the ceiling: as the test conditions got more realistic, the gains shrank back toward the
 no-skill baseline. Skills help most when the *right* skill reliably fires for the task in front of
 the agent.
 
@@ -102,9 +104,9 @@ One habit these last two teach: count the folder, not the banner. [`rohitg00`](h
 skills, 135 agents, 176+ plugins; its own `marketplace.json` says 120 plugins; the actual files say
 40 skills and 16 MCP configs — three numbers for one repo, none matching.
 
-## How to actually install one
+## How to install one
 
-There are two paths, and neither takes more than a minute — which is exactly why the vetting below matters.
+There are two paths, and neither takes more than a minute — which is why the vetting below matters.
 
 **A single skill, by hand.** A skill is just a folder with a `SKILL.md` inside. Drop it in
 `~/.claude/skills/<name>/` and it's available in every project; drop it in `.claude/skills/<name>/`
@@ -138,8 +140,8 @@ every package a config lists *before* you let it install anything.
 Stars measure how far a project spread, not whether anyone vetted what it ships. So for the three
 collections that contain runnable code — [`anthropics/skills`](https://github.com/anthropics/skills), [`superpowers`](https://github.com/obra/superpowers), and the [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit)
 toolkit — I ran an actual security pass, not a glance. (The rest are link lists; nothing to run,
-nothing to check.) The good news first: two of the three came back clean, and even the alarming-
-looking one is mostly a false alarm.
+nothing to check.) Two of the three came back clean, and even the alarming-looking one is mostly a
+false alarm.
 
 Take [`superpowers`](https://github.com/obra/superpowers), the assertive one. It installs a hook that fires before you type anything,
 injecting a block marked `<EXTREMELY_IMPORTANT>` that reads, verbatim, *"IF A SKILL APPLIES TO YOUR
