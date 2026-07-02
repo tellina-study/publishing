@@ -5,6 +5,15 @@ newest at top. One line each, dated. Strategy and "why", not mechanics (mechanic
 
 ---
 
+## 2026-07-02 — An article is a service to the reader, not a report on our work
+For the Claude-skills piece, v1 was framed inward ("here's the audit we ran"). Owner override:
+**reframe as a field guide that serves the skill-seeker** — our security audit is a *trust signal*
+inside the piece, not its subject. Concretely: title states the reader's benefit (not our effort);
+lead with a TL;DR that pays off without reading on; per-repo pick bullets, freshness signals, repo
+links, and copy-paste install steps. General rule: when a piece grows out of work *we* did, publish
+the reader's takeaway, keep our process as evidence. Drove the v2 full rewrite before ship
+(issue #15, live https://tellian.io/2026/07/02/claude-skills-collections/).
+
 ## 2026-06-21 — Close-the-Loop tracks `main`, not the ship
 The KB must mirror `main` (the source of truth), not wait for a SHIP verdict. Heavy doc-layer sync
 is rekeyed: **merge to `main`** → `wiki/pieces/INDEX.md` (status bucket) + ontology + RAG (auto);
