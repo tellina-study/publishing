@@ -86,7 +86,7 @@ touched in months.
 | [jqueryscript/awesome-claude-code](https://github.com/jqueryscript/awesome-claude-code) | 453 | Jun 29 · active | The broadest map of the whole ecosystem |
 | [glebis/claude-skills](https://github.com/glebis/claude-skills) | 301 | Jul 2 · active | A tidy personal collection of ~90 skills |
 
-<small>*last commit May 12, but 183 issues sit open and nothing's been merged in ~7 weeks — the pushes stopped, the queue didn't.</small>
+\* *last commit May 12, but 183 issues sit open and nothing's been merged in ~7 weeks — the pushes stopped, the queue didn't.*
 
 Here's the one reason to reach for each — and the maintenance reality that should temper it:
 
