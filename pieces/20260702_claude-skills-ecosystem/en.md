@@ -55,47 +55,52 @@ question isn't "which repo has the most skills." It's "which few match what I ac
 
 ## The map: seven collections, and who each one is for
 
-Every star count below is a live GitHub reading from July 2, 2026, not a number from a README — a
-distinction that turns out to matter, as the next section shows.
+The star counts *and* the last-updated dates below are live GitHub readings from July 2, 2026, not
+numbers from a README. Both matter — a collection is only as good as the last time someone tended it,
+and here the freshness split is sharp: three are updated almost daily, one hasn't been meaningfully
+touched in months.
 
-| Collection | Stars | What it really is | Reach for it if… |
+| Collection | Stars | Last update | What it really is |
 |---|---|---|---|
-| `anthropics/skills` | 157,558 | Anthropic's own first-party skills, auto-synced from internal | You want a small, production-grade, vetted set |
-| `obra/superpowers` | 243,958 | Skills *plus* an enforced end-to-end workflow | You want a whole disciplined process, not a grab-bag |
-| `glebis/claude-skills` | 301 | A tidy personal collection of ~90 skills | You want a curated, human-sized set to browse |
-| `ComposioHQ/awesome-claude-skills` | 66,589 | Mostly a link index + one company's platform skills | You're surveying what's out there |
-| `travisvn/awesome-claude-skills` | 13,870 | A clean, maintained list of links | Same — a discovery hub |
-| `jqueryscript/awesome-claude-code` | 453 | The broadest map of the whole ecosystem | You want the widest census, not just skills |
-| `rohitg00/awesome-claude-code-toolkit` | 2,233 | A real toolkit bolted to an abandoned link dump | With care — see the caution below |
+| `obra/superpowers` | 243,958 | Jul 1 · very active | Skills *plus* an enforced end-to-end workflow |
+| `anthropics/skills` | 157,558 | Jul 1 · near-daily | Anthropic's own first-party skills, auto-synced from internal |
+| `ComposioHQ/awesome-claude-skills` | 66,589 | May 22 · stale | Mostly a link index + one company's platform skills |
+| `travisvn/awesome-claude-skills` | 13,870 | Apr 28 · slowing | A clean list of links |
+| `rohitg00/awesome-claude-code-toolkit` | 2,233 | May 12 · abandoned* | A real toolkit bolted to a dead link dump |
+| `jqueryscript/awesome-claude-code` | 453 | Jun 29 · active | The broadest map of the whole ecosystem |
+| `glebis/claude-skills` | 301 | Jul 2 · active | A tidy personal collection of ~90 skills |
 
-A few of these deserve more than a table row.
+<small>*last commit May 12, but 183 issues sit open and nothing's been merged in ~7 weeks — the pushes stopped, the queue didn't.</small>
 
-**`anthropics/skills` — the vetted starting point.** Seventeen skills, all first-party, and the best
-place to begin if you want things that are known to work. Beyond the document skills, it ships
-`skill-creator` (a skill for *building* skills, with its own testing harness), `mcp-builder`,
-`frontend-design`, `webapp-testing`, `canvas-design`. Small on purpose. If you install nothing else,
-install from here.
+Here's the one reason to reach for each — and the maintenance reality that should temper it:
 
-**`obra/superpowers` — a process, not a pantry.** This is the quarter-million-star one, and it's a
-different kind of thing: less a bag of skills, more an opinionated workflow that sequences them —
-brainstorm, write a plan, get human sign-off, build test-first, review with a fresh agent, finish
-the branch. Reach for it if you want to adopt a whole way of working. Just know going in that it's
-assertive about it (more on that in a second).
+- **`anthropics/skills` — pick it for trust.** Anthropic's own skills, mirrored from an internal
+  source almost daily. The vetted place to start: the document skills that run in production, plus
+  `skill-creator` (a skill that builds and tests skills), `mcp-builder`, `webapp-testing`,
+  `frontend-design`. Small on purpose. If you install from nowhere else, install from here.
+- **`obra/superpowers` — pick it for a whole workflow, not a pantry.** The quarter-million-star one,
+  and a different animal: an opinionated process that sequences skills — brainstorm, plan, human
+  sign-off, build test-first, review with a fresh agent, finish the branch. Very actively developed,
+  though by essentially one maintainer with no CI, so the quality gate is a single person.
+- **`glebis/claude-skills` — pick it for a curated, human-sized set.** Pushed the very day I looked.
+  About 90 tidy personal skills — test-driven development, release automation, a small LLM
+  command-line tool. If the big two feel like too much, this is the browsable middle.
+- **`jqueryscript/awesome-claude-code` — pick it to see the whole territory.** Recently updated, and
+  the broadest census of the ecosystem — apps, tools, and skills, not just a skill list. A map, not a
+  toolbox.
+- **`travisvn/awesome-claude-skills` — pick it as a clean discovery list.** A well-kept index of
+  links, though the updates have slowed since late April. Good for *finding*, not a vetted install.
+- **`ComposioHQ/awesome-claude-skills` — pick it only to browse.** A link index padded with one
+  company's own platform skills, last touched in May. Its "1000+ production-ready" headline is really
+  thirty to forty real skills; the rest is a platform integration count folded in.
+- **`rohitg00/awesome-claude-code-toolkit` — mostly skip, mine for parts.** The competent first-party
+  bits are worth a look, but the repo is effectively abandoned (183 open issues, no merges in weeks)
+  and its MCP configs are broken in a way that matters — see the caution below. Don't install it
+  wholesale.
 
-**`glebis/claude-skills` — the human-sized set.** Only 301 stars, but a tidy, well-built personal
-collection of about 90 skills spanning test-driven development, release automation, and a small
-LLM-command-line tool. If the big two feel like too much, this is the browsable middle.
-
-**The link indexes — `ComposioHQ`, `travisvn`, `jqueryscript`.** These aren't collections you install
-so much as maps you read. `jqueryscript` is the broadest census of the whole ecosystem; `travisvn` is
-a clean, actively maintained list; `ComposioHQ` mixes a link index with its own platform's skills.
-Useful for *finding* things — just don't mistake a link table for a vetted recommendation.
-
-One caution about headline numbers before you trust any of them: `ComposioHQ` advertises "1000+
-production-ready" skills, but the repo itself holds thirty to forty — the rest is a platform
-integration count folded into the headline. `rohitg00`'s README claims 35 skills, 135 agents, 176+
-plugins; its own `marketplace.json` says 120 plugins; the actual files say 40 skills and 16 MCP
-configs. Three numbers for one repo, none matching. Count the folder, not the banner.
+One habit these last two teach: count the folder, not the banner. `rohitg00`'s README claims 35
+skills, 135 agents, 176+ plugins; its own `marketplace.json` says 120 plugins; the actual files say
+40 skills and 16 MCP configs — three numbers for one repo, none matching.
 
 ## Which ones to trust: what a real check turns up
 
