@@ -89,6 +89,43 @@ to apply:
 None of the other six repos had anything like this. The problem isn't "this repo has a bug." It's a
 check none of us were running, and now I am.
 
+## What a real security pass actually looks like
+
+The `npm info` check wasn't the only thing I ran. For the three repos that ship real code —
+`anthropics/skills`, `obra/superpowers`, and the rohitg00 toolkit — I did a proper pass, not a
+glance. (The other three are link lists; there's nothing to run, so there's nothing to check.) It's
+worth writing down exactly what I looked for, because none of it is hard, and it's the same list I'd
+hand anyone about to install one of these.
+
+- **Can it run arbitrary code?** `grep -rn` for `eval`, `exec`, `child_process`, `subprocess`,
+  `shell=True`, `os.system`. A hit isn't automatically bad — `superpowers` has one `child_process`
+  call, but it's gated behind an opt-in environment variable, and Anthropic's one `shell=True` is in
+  a browser-testing script the agent already had shell access to run. What you're hunting is the
+  *ungated* one nobody flagged.
+- **Does it pipe the internet into a shell?** `grep` for `curl … | bash` and `wget … | sh`. Zero in
+  the first-party code of all three. A couple show up in READMEs — as install instructions for *other
+  people's* linked projects. Copy-paste those at your own risk; they're outside the repo's own review.
+- **Are there real secrets baked in?** `grep` for token-shaped strings. All hits were placeholders
+  (`your-api-key`, `sk-ant-...` examples) and env-var references. Nobody committed a live key.
+- **Do the hooks phone home?** The dangerous part of a skills repo is its hooks — scripts that run
+  automatically on every session. `grep` for network calls inside them. None of the three reach out
+  uninvited; the one outbound call I found (a brand image in `superpowers`) is disclosed and can be
+  turned off.
+- **Is there a hidden instruction to the agent?** A skills file is text the model obeys, so a
+  malicious one can just *tell* the agent to leak your keys. `grep` the Markdown for hijack phrasing.
+  The only hits pointed the other way — Anthropic's `skill-creator` explicitly instructs the agent to
+  refuse building exfiltration skills.
+
+All three came back clean on every one of these — the MCP config is the single real problem in the
+set. That's the honest result, and it's more reassuring than a star count, because I can show you the
+commands instead of asking you to trust me.
+
+> 🛠️ **The whole checklist, for any skills repo:** read the actual files, not the README ·
+> `npm info` every package a config names · grep for ungated `eval`/`exec`/`subprocess` ·
+> grep for `curl | bash` · grep for real secrets · grep for network calls inside hooks ·
+> grep the skill text for instructions aimed at the agent · skim the git log for whether anyone
+> still maintains it. Fifteen minutes, and you know more than the star count will ever tell you.
+
 ## The biggest repo was the most reassuring, not the least
 
 Remember the quarter-million-star repo. `superpowers` installs a hook that runs before you type a
@@ -116,11 +153,10 @@ Nothing, is the honest answer. The cleanest repo in the set had 244,000 stars; t
 namespace hole had 2,233; a tidy, careful personal collection had 301. Popularity tracked how far a
 project had spread, not whether anyone had checked what it shipped.
 
-So here's what I'd do before installing any of these, and it's short: read the actual files, not the
-README; run `npm info` on every package a config names; and treat a big number as a reason to look
-closer, not a reason to skip looking. All of that took me an afternoon. The specific commit I pulled
-apart is `ebdf1d5` in `rohitg00/awesome-claude-code-toolkit`, if you want to check the five packages
-yourself — they're still 404 as I write this.
+The checklist above took me an afternoon to run across all seven — and it turns a big number from a
+reason to skip looking into a reason to look closer. If you want to start with the one concrete
+finding, the commit I pulled apart is `ebdf1d5` in `rohitg00/awesome-claude-code-toolkit`; the five
+packages are still 404 as I write this.
 
 The thing you starred is not the thing you read. It's worth a few minutes to find out how far apart
 they are.
