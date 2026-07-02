@@ -1,4 +1,18 @@
-# The Seven Biggest Claude Skills Collections: What's Inside, Which to Trust, and How to Use Them
+---
+title: 'The Seven Biggest Claude Skills Collections: What''s Inside, Which to Trust,
+  and How to Use Them'
+slug: claude-skills-collections
+status: draft
+categories:
+- AI Agents
+tags:
+- claude-code
+- skills
+- MCP
+- security
+- llm
+wp_post_id: 271
+---
 
 > **TL;DR — if you only read this box:**
 > - **Start here:** [`anthropics/skills`](https://github.com/anthropics/skills) for a small, production-grade, vetted set. Add [`glebis/claude-skills`](https://github.com/glebis/claude-skills)

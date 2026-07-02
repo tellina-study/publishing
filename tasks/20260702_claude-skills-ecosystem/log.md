@@ -11,3 +11,10 @@
 - 2026-07-02 — Revised EN → `pieces/20260702_claude-skills-ecosystem/en.md`. Reframed to latent namespace risk,
   fixed scope, killed понты + scold, compressed Pattern 3 to the convergence observation, anchored numbers with
   live-API date, added commit SHA anchor, three 404s, 183 issues. Awaiting owner gate on revised EN.
+
+- 2026-07-02 — Full reframe on owner override (v1 inward-facing → v2 reader-service field guide).
+  Added: effectiveness section (arXiv 2604.04323), map w/ freshness, pick bullets, repo links,
+  install section (verified vs Claude Code docs), TL;DR box.
+- 2026-07-02 — Polish: stylist-en applied; stylist-ru API-failed x2 → self RU line-polish; 2 cold
+  readers (EN+RU) both "install+share". Star-count doubt addressed via clickable repo links.
+- 2026-07-02 — SHIPPED live on owner gate. wp_post_id 271. https://tellian.io/2026/07/02/claude-skills-collections/
