@@ -3,13 +3,13 @@ title: "Топ-7 коллекций скиллов для Claude: что вну�
 ---
 
 > **Коротко — если дальше не читать:**
-> - **С чего начать:** [`anthropics/skills`](https://github.com/anthropics/skills) — небольшой проверенный набор от самой Anthropic. Мало —
->   добавьте [`glebis/claude-skills`](https://github.com/glebis/claude-skills) (аккуратные ~90 личных скиллов); хотите не набор, а целый рабочий
->   процесс — [`obra/superpowers`](https://github.com/obra/superpowers). Каталоги [`travisvn`](https://github.com/travisvn/awesome-claude-skills) и [`jqueryscript`](https://github.com/jqueryscript/awesome-claude-code) — чтобы осмотреться, что вообще есть.
+> - **С чего начать:** [anthropics/skills](https://github.com/anthropics/skills) — небольшой проверенный набор от самой Anthropic. Мало —
+>   добавьте [glebis/claude-skills](https://github.com/glebis/claude-skills) (аккуратные ~90 личных скиллов); хотите не набор, а целый рабочий
+>   процесс — [obra/superpowers](https://github.com/obra/superpowers). Каталоги [travisvn](https://github.com/travisvn/awesome-claude-skills) и [jqueryscript](https://github.com/jqueryscript/awesome-claude-code) — чтобы осмотреться, что вообще есть.
 > - **Скиллы вообще работают?** Да, но с оговоркой: польза доказана в проде и реальна, только
 >   **не безусловна** — пара скиллов, которые точно подходят под вашу задачу, полезнее сотни,
 >   поставленных «на всякий случай».
-> - **Чего не делать:** не копируйте MCP-конфиги из [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit) вслепую — они шлют вашего агента
+> - **Чего не делать:** не копируйте MCP-конфиги из [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit) вслепую — они шлют вашего агента
 >   ставить npm-пакеты, которых не существует, под похожим на официальный scope `@anthropic/`,
 >   который Anthropic не принадлежит.
 > - **Привычка, которая выручает:** прежде чем довериться репозиторию, потратьте на него 15 минут —
@@ -66,46 +66,46 @@ Markdown, иногда пара скриптов), которую подклад
 
 | Коллекция | Звёзды | Обновлено | Что это на самом деле |
 |---|---|---|---|
-| [`obra/superpowers`](https://github.com/obra/superpowers) | 243 958 | 1 июл · живой | Скиллы *плюс* навязанный сквозной рабочий процесс |
-| [`anthropics/skills`](https://github.com/anthropics/skills) | 157 558 | 1 июл · почти ежедневно | Собственные скиллы Anthropic, зеркалятся из внутреннего репозитория |
-| [`ComposioHQ/awesome-claude-skills`](https://github.com/ComposioHQ/awesome-claude-skills) | 66 589 | 22 мая · застой | В основном каталог ссылок + скиллы одной платформы |
-| [`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills) | 13 870 | 28 апр · замедляется | Аккуратный список ссылок |
-| [`rohitg00/awesome-claude-code-toolkit`](https://github.com/rohitg00/awesome-claude-code-toolkit) | 2 233 | 12 мая · заброшен* | Реальный тулкит, приклеенный к мёртвой свалке ссылок |
-| [`jqueryscript/awesome-claude-code`](https://github.com/jqueryscript/awesome-claude-code) | 453 | 29 июн · живой | Самая широкая карта всей экосистемы |
-| [`glebis/claude-skills`](https://github.com/glebis/claude-skills) | 301 | 2 июл · живой | Аккуратная личная коллекция из ~90 скиллов |
+| [obra/superpowers](https://github.com/obra/superpowers) | 243 958 | 1 июл · живой | Скиллы *плюс* навязанный сквозной рабочий процесс |
+| [anthropics/skills](https://github.com/anthropics/skills) | 157 558 | 1 июл · почти ежедневно | Собственные скиллы Anthropic, зеркалятся из внутреннего репозитория |
+| [ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills) | 66 589 | 22 мая · застой | В основном каталог ссылок + скиллы одной платформы |
+| [travisvn/awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills) | 13 870 | 28 апр · замедляется | Аккуратный список ссылок |
+| [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | 2 233 | 12 мая · заброшен* | Реальный тулкит, приклеенный к мёртвой свалке ссылок |
+| [jqueryscript/awesome-claude-code](https://github.com/jqueryscript/awesome-claude-code) | 453 | 29 июн · живой | Самая широкая карта всей экосистемы |
+| [glebis/claude-skills](https://github.com/glebis/claude-skills) | 301 | 2 июл · живой | Аккуратная личная коллекция из ~90 скиллов |
 
 <small>*последний коммит 12 мая, но 183 issue висят открытыми и за ~7 недель ничего не влито — коммиты
 прекратились, а очередь нет.</small>
 
 Вот одна причина взять каждую — и та правда о поддержке, которая эту причину остужает:
 
-- **[`anthropics/skills`](https://github.com/anthropics/skills) — берут за доверие.** Собственные скиллы Anthropic, почти ежедневно зеркалятся
+- **[anthropics/skills](https://github.com/anthropics/skills) — берут за доверие.** Собственные скиллы Anthropic, почти ежедневно зеркалятся
   из внутреннего источника. Проверенная точка старта: те самые документные скиллы, что крутятся в
   проде, плюс `skill-creator` (скилл, который собирает и тестирует скиллы), `mcp-builder`,
   `webapp-testing`, `frontend-design`. Небольшая намеренно. Если ставить только откуда-то одного —
   отсюда.
-- **[`obra/superpowers`](https://github.com/obra/superpowers) — берут не за набор, а за целый процесс.** Тот самый на четверть миллиона
+- **[obra/superpowers](https://github.com/obra/superpowers) — берут не за набор, а за целый процесс.** Тот самый на четверть миллиона
   звёзд, и это другой зверь: не мешок скиллов, а продуманный порядок работы — обдумать, составить
   план, взять подпись человека, писать через тесты, ревью свежим агентом, закрыть ветку. Развивается
   очень активно, но по сути одним автором и без CI — то есть весь контроль качества держится на одном
   человеке.
-- **[`glebis/claude-skills`](https://github.com/glebis/claude-skills) — берут за курированный человеческий набор.** Обновлён в тот самый день,
+- **[glebis/claude-skills](https://github.com/glebis/claude-skills) — берут за курированный человеческий набор.** Обновлён в тот самый день,
   когда я смотрел. Около 90 аккуратных личных скиллов — разработка через тесты, автоматизация
   релизов, маленькая консольная утилита для LLM. Если два гиганта — перебор, вот золотая середина.
-- **[`jqueryscript/awesome-claude-code`](https://github.com/jqueryscript/awesome-claude-code) — берут, чтобы увидеть всю территорию.** Недавно обновлён и даёт
+- **[jqueryscript/awesome-claude-code](https://github.com/jqueryscript/awesome-claude-code) — берут, чтобы увидеть всю территорию.** Недавно обновлён и даёт
   самую широкую перепись экосистемы — приложения, инструменты и скиллы, не только скиллы. Карта, а не
   ящик с инструментами.
-- **[`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills) — берут как чистый список для поиска.** Опрятный указатель
+- **[travisvn/awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills) — берут как чистый список для поиска.** Опрятный указатель
   ссылок, хотя с конца апреля обновления замедлились. Хорош, чтобы *находить*, но это не проверенная
   установка.
-- **[`ComposioHQ/awesome-claude-skills`](https://github.com/ComposioHQ/awesome-claude-skills) — берут только чтобы полистать.** Каталог ссылок, разбавленный
+- **[ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills) — берут только чтобы полистать.** Каталог ссылок, разбавленный
   скиллами собственной платформы, последний раз тронут в мае. Заголовок «1000+ готовых к проду» на
   деле — тридцать-сорок реальных скиллов; остальное — число интеграций платформы, подмешанное в цифру.
-- **[`rohitg00/awesome-claude-code-toolkit`](https://github.com/rohitg00/awesome-claude-code-toolkit) — скорее пропустить, разобрать на детали.** Толковые
+- **[rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) — скорее пропустить, разобрать на детали.** Толковые
   собственные куски глянуть стоит, но репозиторий фактически заброшен (183 открытых issue, недели без
   вливаний), а его MCP-конфиги сломаны так, что это важно, — см. предупреждение ниже. Целиком не ставьте.
 
-Эти двое учат одному наверняка: считать папку, а не баннер. README у [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit) заявляет 35 скиллов,
+Эти двое учат одному наверняка: считать папку, а не баннер. README у [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit) заявляет 35 скиллов,
 135 агентов, 176+ плагинов; его же `marketplace.json` — 120 плагинов; а сами файлы — 40 скиллов и 16
 MCP-конфигов. Три числа на один репозиторий, и ни одно не сходится.
 
@@ -132,36 +132,36 @@ cp -r claude-skills/skills/tdd ~/.claude/skills/tdd    # теперь досту
 /plugin                                      # смотреть и ставить из неё
 ```
 
-[`obra/superpowers`](https://github.com/obra/superpowers) лежит в собственном официальном маркетплейсе Anthropic, так что ставится так же:
+[obra/superpowers](https://github.com/obra/superpowers) лежит в собственном официальном маркетплейсе Anthropic, так что ставится так же:
 открываете `/plugin`, находите, ставите. Через `/plugin` в любой момент видно, что установлено, и что
 можно отключить.
 
 **MCP-конфиг** (те самые связки инструментов) — отдельная история: либо `claude mcp add --transport
 http <имя> <url>`, либо файл `.mcp.json` в корне проекта. Вот тут стоит притормозить — это как раз
-случай [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit), где конфиг называл несуществующие пакеты. Прогоните `npm info` по каждому пакету из
+случай [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit), где конфиг называл несуществующие пакеты. Прогоните `npm info` по каждому пакету из
 конфига *до* того, как дадите ему что-то ставить.
 
 ## Каким доверять: что показывает настоящая проверка
 
 Звёзды меряют, как далеко разошёлся проект, а не проверял ли кто-нибудь, что он несёт. Поэтому три
-коллекции, где есть исполняемый код, — [`anthropics/skills`](https://github.com/anthropics/skills), [`superpowers`](https://github.com/obra/superpowers) и тулкит [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit) — я
+коллекции, где есть исполняемый код, — [anthropics/skills](https://github.com/anthropics/skills), [superpowers](https://github.com/obra/superpowers) и тулкит [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit) — я
 прогнал через настоящую проверку на безопасность, не бегло. (Остальные — списки ссылок: запускать
 нечего, значит и проверять нечего.) Сначала хорошее: две из трёх чисты, и даже пугающая на вид —
 по большей части ложная тревога.
 
-Возьмём [`superpowers`](https://github.com/obra/superpowers), самый напористый. Он ставит хук, который срабатывает раньше, чем вы что-либо
+Возьмём [superpowers](https://github.com/obra/superpowers), самый напористый. Он ставит хук, который срабатывает раньше, чем вы что-либо
 наберёте, и вставляет блок с пометкой `<EXTREMELY_IMPORTANT>`, где дословно сказано: *«ЕСЛИ СКИЛЛ
 ПОДХОДИТ К ТВОЕЙ ЗАДАЧЕ, У ТЕБЯ НЕТ ВЫБОРА»*. Выглядит как красный флаг. Но нет: это раскрытый,
 версионируемый текст под лицензией MIT, который проект открыто применяет к собственному агенту, — и
 каждую строчку можно прочитать до запуска. А под ней — по-настоящему аккуратная схема: подпись
 человека до того, как написан код, свежий подагент на каждую задачу, независимый ревьюер, которому
-велено не верить словам первого агента. [`anthropics/skills`](https://github.com/anthropics/skills) тоже чист — вплоть до единственного вызова
+велено не верить словам первого агента. [anthropics/skills](https://github.com/anthropics/skills) тоже чист — вплоть до единственного вызова
 `shell=True`, и тот сидит в скрипте тестирования веб-приложений, куда агент и так имел доступ.
 
 Единственное предостережение на весь набор стоит сказать прямо — как раз о том, о чём число звёзд
 никогда не предупредит.
 
-> 📌 **Не копируйте MCP-конфиги из [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit) вслепую.** Они велят агенту поставить npm-пакеты под
+> 📌 **Не копируйте MCP-конфиги из [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit) вслепую.** Они велят агенту поставить npm-пакеты под
 > scope `@anthropic/` — `mcp-ghidra`, `mcp-figma`, `mcp-server-figma`, — которых **не существует**
 > (все 404), плюс `kubectl-mcp-app` и `mcp-terraform`. Настоящий scope у Anthropic — `@anthropic-ai`,
 > не `@anthropic`. Похожий на официальный, но **никем не занятый** scope, указывающий на
@@ -188,7 +188,7 @@ http <имя> <url>`, либо файл `.mcp.json` в корне проекта
   коде самого репозитория.
 - **`grep`-ните хуки на сетевые вызовы.** Хуки запускаются сами каждую сессию — там и спрятался бы
   «звонок домой».
-- **Пробегите историю коммитов.** Два коммита в первый день и тишина потом (история [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit))
+- **Пробегите историю коммитов.** Два коммита в первый день и тишина потом (история [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit))
   говорят, что за репозиторием никто не следит.
 
 **А дальше ставьте меньше скиллов, чем тянет.** Раз узкое место — срабатывание, а не возможности,
@@ -202,7 +202,7 @@ http <имя> <url>`, либо файл `.mcp.json` в корне проекта
   тяжёлые справочники — по запросу. Раздутый скилл занимает контекст впустую.
 - **Не ставьте всё подряд.** Сотня спящих скиллов — это сотня описаний, которые борются за внимание
   агента и ваш бюджет токенов. Оставьте горстку, которую и правда будете задевать.
-- **Предпочитайте раскрытое и поддерживаемое.** [`superpowers`](https://github.com/obra/superpowers) громкий, но прозрачный; молчаливый
+- **Предпочитайте раскрытое и поддерживаемое.** [superpowers](https://github.com/obra/superpowers) громкий, но прозрачный; молчаливый
   заброшенный репозиторий с большим числом — ставка хуже.
 
 ## Одна мысль на вынос
@@ -211,8 +211,8 @@ http <имя> <url>`, либо файл `.mcp.json` в корне проекта
 что с дырой в пакетах, — 2233, у аккуратного личного набора — 301. Популярность мерила охват, а не
 то, заглянул ли кто внутрь.
 
-Так что если подбираете себе скиллы: начните с [`anthropics/skills`](https://github.com/anthropics/skills) ради того, что точно работает,
-добавьте [`glebis`](https://github.com/glebis/claude-skills) или [`superpowers`](https://github.com/obra/superpowers), если хочется больше или нужен целый процесс, а каталогами
+Так что если подбираете себе скиллы: начните с [anthropics/skills](https://github.com/anthropics/skills) ради того, что точно работает,
+добавьте [glebis](https://github.com/glebis/claude-skills) или [superpowers](https://github.com/obra/superpowers), если хочется больше или нужен целый процесс, а каталогами
 пользуйтесь, чтобы найти остальное, — и дайте любому репозиторию пятнадцать минут чтения, прежде чем
 довериться. Это меньше времени, чем вы потратите на выбор скиллов, — и это разница между инструментом,
 который вы понимаете, и числом, на которое понадеялись.

@@ -15,12 +15,12 @@ wp_post_id: 271
 ---
 
 > **TL;DR — if you only read this box:**
-> - **Start here:** [`anthropics/skills`](https://github.com/anthropics/skills) for a small, production-grade, vetted set. Add [`glebis/claude-skills`](https://github.com/glebis/claude-skills)
->   (~90 tidy personal skills) if you want more, or [`obra/superpowers`](https://github.com/obra/superpowers) if you want a whole workflow, not
->   a grab-bag. Use [`travisvn`](https://github.com/travisvn/awesome-claude-skills) / [`jqueryscript`](https://github.com/jqueryscript/awesome-claude-code) as link indexes to discover the rest.
+> - **Start here:** [anthropics/skills](https://github.com/anthropics/skills) for a small, production-grade, vetted set. Add [glebis/claude-skills](https://github.com/glebis/claude-skills)
+>   (~90 tidy personal skills) if you want more, or [obra/superpowers](https://github.com/obra/superpowers) if you want a whole workflow, not
+>   a grab-bag. Use [travisvn](https://github.com/travisvn/awesome-claude-skills) / [jqueryscript](https://github.com/jqueryscript/awesome-claude-code) as link indexes to discover the rest.
 > - **Do skills work?** Yes, with a catch: they're proven in production and show a real but *conditional*
 >   lift — a few skills that reliably match your task beat a hundred installed "just in case."
-> - **The one thing to avoid:** don't copy [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit)'s MCP configs blind — they point your agent at npm
+> - **The one thing to avoid:** don't copy [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit)'s MCP configs blind — they point your agent at npm
 >   packages that don't exist, under an official-looking `@anthropic/` scope that isn't Anthropic's.
 > - **The habit that saves you:** give any repo a 15-minute read before you trust it — `npm info` every
 >   package it names, `grep` for what runs automatically. A big star count is not a safety check.
@@ -78,43 +78,43 @@ touched in months.
 
 | Collection | Stars | Last update | What it really is |
 |---|---|---|---|
-| [`obra/superpowers`](https://github.com/obra/superpowers) | 243,958 | Jul 1 · very active | Skills *plus* an enforced end-to-end workflow |
-| [`anthropics/skills`](https://github.com/anthropics/skills) | 157,558 | Jul 1 · near-daily | Anthropic's own first-party skills, auto-synced from internal |
-| [`ComposioHQ/awesome-claude-skills`](https://github.com/ComposioHQ/awesome-claude-skills) | 66,589 | May 22 · stale | Mostly a link index + one company's platform skills |
-| [`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills) | 13,870 | Apr 28 · slowing | A clean list of links |
-| [`rohitg00/awesome-claude-code-toolkit`](https://github.com/rohitg00/awesome-claude-code-toolkit) | 2,233 | May 12 · abandoned* | A real toolkit bolted to a dead link dump |
-| [`jqueryscript/awesome-claude-code`](https://github.com/jqueryscript/awesome-claude-code) | 453 | Jun 29 · active | The broadest map of the whole ecosystem |
-| [`glebis/claude-skills`](https://github.com/glebis/claude-skills) | 301 | Jul 2 · active | A tidy personal collection of ~90 skills |
+| [obra/superpowers](https://github.com/obra/superpowers) | 243,958 | Jul 1 · very active | Skills *plus* an enforced end-to-end workflow |
+| [anthropics/skills](https://github.com/anthropics/skills) | 157,558 | Jul 1 · near-daily | Anthropic's own first-party skills, auto-synced from internal |
+| [ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills) | 66,589 | May 22 · stale | Mostly a link index + one company's platform skills |
+| [travisvn/awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills) | 13,870 | Apr 28 · slowing | A clean list of links |
+| [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | 2,233 | May 12 · abandoned* | A real toolkit bolted to a dead link dump |
+| [jqueryscript/awesome-claude-code](https://github.com/jqueryscript/awesome-claude-code) | 453 | Jun 29 · active | The broadest map of the whole ecosystem |
+| [glebis/claude-skills](https://github.com/glebis/claude-skills) | 301 | Jul 2 · active | A tidy personal collection of ~90 skills |
 
 <small>*last commit May 12, but 183 issues sit open and nothing's been merged in ~7 weeks — the pushes stopped, the queue didn't.</small>
 
 Here's the one reason to reach for each — and the maintenance reality that should temper it:
 
-- **[`anthropics/skills`](https://github.com/anthropics/skills) — pick it for trust.** Anthropic's own skills, mirrored from an internal
+- **[anthropics/skills](https://github.com/anthropics/skills) — pick it for trust.** Anthropic's own skills, mirrored from an internal
   source almost daily. The vetted place to start: the document skills that run in production, plus
   `skill-creator` (a skill that builds and tests skills), `mcp-builder`, `webapp-testing`,
   `frontend-design`. Small on purpose. If you install from nowhere else, install from here.
-- **[`obra/superpowers`](https://github.com/obra/superpowers) — pick it for a whole workflow, not a pantry.** The quarter-million-star one,
+- **[obra/superpowers](https://github.com/obra/superpowers) — pick it for a whole workflow, not a pantry.** The quarter-million-star one,
   and a different animal: an opinionated process that sequences skills — brainstorm, plan, human
   sign-off, build test-first, review with a fresh agent, finish the branch. Very actively developed,
   though by essentially one maintainer with no CI, so the quality gate is a single person.
-- **[`glebis/claude-skills`](https://github.com/glebis/claude-skills) — pick it for a curated, human-sized set.** Pushed the very day I looked.
+- **[glebis/claude-skills](https://github.com/glebis/claude-skills) — pick it for a curated, human-sized set.** Pushed the very day I looked.
   About 90 tidy personal skills — test-driven development, release automation, a small LLM
   command-line tool. If the big two feel like too much, this is the browsable middle.
-- **[`jqueryscript/awesome-claude-code`](https://github.com/jqueryscript/awesome-claude-code) — pick it to see the whole territory.** Recently updated, and
+- **[jqueryscript/awesome-claude-code](https://github.com/jqueryscript/awesome-claude-code) — pick it to see the whole territory.** Recently updated, and
   the broadest census of the ecosystem — apps, tools, and skills, not just a skill list. A map, not a
   toolbox.
-- **[`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills) — pick it as a clean discovery list.** A well-kept index of
+- **[travisvn/awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills) — pick it as a clean discovery list.** A well-kept index of
   links, though the updates have slowed since late April. Good for *finding*, not a vetted install.
-- **[`ComposioHQ/awesome-claude-skills`](https://github.com/ComposioHQ/awesome-claude-skills) — pick it only to browse.** A link index padded with one
+- **[ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills) — pick it only to browse.** A link index padded with one
   company's own platform skills, last touched in May. Its "1000+ production-ready" headline is really
   thirty to forty real skills; the rest is a platform integration count folded in.
-- **[`rohitg00/awesome-claude-code-toolkit`](https://github.com/rohitg00/awesome-claude-code-toolkit) — mostly skip, mine for parts.** The competent first-party
+- **[rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) — mostly skip, mine for parts.** The competent first-party
   bits are worth a look, but the repo is effectively abandoned (183 open issues, no merges in weeks)
   and its MCP configs are broken in a way that matters — see the caution below. Don't install it
   wholesale.
 
-One habit these last two teach: count the folder, not the banner. [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit)'s README claims 35
+One habit these last two teach: count the folder, not the banner. [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit)'s README claims 35
 skills, 135 agents, 176+ plugins; its own `marketplace.json` says 120 plugins; the actual files say
 40 skills and 16 MCP configs — three numbers for one repo, none matching.
 
@@ -141,35 +141,35 @@ Add the repo as a marketplace, then install what you want from it — all inside
 /plugin                                      # browse and install from it
 ```
 
-[`obra/superpowers`](https://github.com/obra/superpowers) is on Anthropic's own official marketplace, so it installs the same way — open
+[obra/superpowers](https://github.com/obra/superpowers) is on Anthropic's own official marketplace, so it installs the same way — open
 `/plugin`, find it, install. Use `/plugin` any time to see what's installed or turn things off.
 
 **An MCP config** (the tool bundles) is separate: you either run `claude mcp add --transport http
 <name> <url>` or drop a `.mcp.json` at your project root. This is the one to slow down on — it's the
-[`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit) case from earlier, where the config named packages that don't exist. Run `npm info` on
+[rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit) case from earlier, where the config named packages that don't exist. Run `npm info` on
 every package a config lists *before* you let it install anything.
 
 ## Which ones to trust: what a real check turns up
 
 Stars measure how far a project spread, not whether anyone vetted what it ships. So for the three
-collections that contain runnable code — [`anthropics/skills`](https://github.com/anthropics/skills), [`superpowers`](https://github.com/obra/superpowers), and the [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit)
+collections that contain runnable code — [anthropics/skills](https://github.com/anthropics/skills), [superpowers](https://github.com/obra/superpowers), and the [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit)
 toolkit — I ran an actual security pass, not a glance. (The rest are link lists; nothing to run,
 nothing to check.) Two of the three came back clean, and even the alarming-looking one is mostly a
 false alarm.
 
-Take [`superpowers`](https://github.com/obra/superpowers), the assertive one. It installs a hook that fires before you type anything,
+Take [superpowers](https://github.com/obra/superpowers), the assertive one. It installs a hook that fires before you type anything,
 injecting a block marked `<EXTREMELY_IMPORTANT>` that reads, verbatim, *"IF A SKILL APPLIES TO YOUR
 TASK, YOU DO NOT HAVE A CHOICE."* That looks like a red flag. It isn't: it's disclosed, versioned,
 MIT-licensed text the project applies to its own agent in the open, and you can read every line
 before it runs. Underneath is a genuinely careful design — human approval before code gets written, a
 fresh sub-agent per task, an independent reviewer told not to trust the first agent's word.
-[`anthropics/skills`](https://github.com/anthropics/skills) was clean too, down to its one `shell=True` call sitting in a browser-testing
+[anthropics/skills](https://github.com/anthropics/skills) was clean too, down to its one `shell=True` call sitting in a browser-testing
 script the agent already had the keys to run.
 
 The one caution in the whole set is worth stating plainly, because it's the kind of thing a star
 count will never warn you about.
 
-> 📌 **Don't copy [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit)'s MCP configs blind.** They tell your agent to install npm packages
+> 📌 **Don't copy [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit)'s MCP configs blind.** They tell your agent to install npm packages
 > under the `@anthropic/` scope — `mcp-ghidra`, `mcp-figma`, `mcp-server-figma` — that **do not
 > exist** (all 404), along with `kubectl-mcp-app` and `mcp-terraform`. Anthropic's real scope is
 > `@anthropic-ai`, not `@anthropic`. An official-looking, *unclaimed* namespace pointing at missing
@@ -191,7 +191,7 @@ regardless of the repo:
 - **`grep` for ungated `eval`, `exec`, `child_process`, `subprocess`, `shell=True`.** A hit isn't automatically bad — it's a thing to understand before you run it.
 - **`grep` for `curl … | bash` and `wget … | sh`.** Piping the internet straight into a shell is the classic install-script trap; it usually shows up for *linked third-party* projects, not the repo's own code.
 - **`grep` the hooks for network calls.** Hooks run automatically every session — that's where a phone-home would hide.
-- **Skim the git log.** Two commits on day one and nothing since (the [`rohitg00`](https://github.com/rohitg00/awesome-claude-code-toolkit) story) tells you no one's minding it.
+- **Skim the git log.** Two commits on day one and nothing since (the [rohitg00](https://github.com/rohitg00/awesome-claude-code-toolkit) story) tells you no one's minding it.
 
 **Then use fewer skills than you want to.** Because triggering is the bottleneck, not capability, the
 winning move is a small set matched to your real work:
@@ -204,7 +204,7 @@ winning move is a small set matched to your real work:
   Bloated skills cost context for nothing.
 - **Don't install everything.** A hundred dormant skills is a hundred descriptions competing for the
   agent's attention and your token budget. Curate to the handful you'll actually hit.
-- **Prefer disclosed and maintained.** [`superpowers`](https://github.com/obra/superpowers) is loud but transparent; a silent, unmaintained
+- **Prefer disclosed and maintained.** [superpowers](https://github.com/obra/superpowers) is loud but transparent; a silent, unmaintained
   repo with a big number is the worse bet.
 
 ## The one-line takeaway
@@ -213,8 +213,8 @@ The star count told me almost nothing. The cleanest collection in the set had 24
 with the namespace hole had 2,233; the tidy, careful personal set had 301. Popularity tracked reach,
 not whether anyone had looked inside.
 
-So if you're shopping for skills: start with [`anthropics/skills`](https://github.com/anthropics/skills) for things known to work, add
-[`glebis`](https://github.com/glebis/claude-skills) or [`superpowers`](https://github.com/obra/superpowers) if you want more or want a whole workflow, use the link indexes to discover
+So if you're shopping for skills: start with [anthropics/skills](https://github.com/anthropics/skills) for things known to work, add
+[glebis](https://github.com/glebis/claude-skills) or [superpowers](https://github.com/obra/superpowers) if you want more or want a whole workflow, use the link indexes to discover
 the rest — and give anything a fifteen-minute read before you trust it. That's less time than you'll
 spend picking which skills to install, and it's the difference between a tool you understand and a
 number you hoped was fine.

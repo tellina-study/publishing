@@ -33,6 +33,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -79,8 +80,34 @@ def parse_frontmatter(path: Path) -> tuple[dict, str]:
     return meta, parts[2].lstrip("\n")
 
 
+def _collapse_soft_newlines(html: str) -> str:
+    """Join hard-wrapped source lines back into single lines *inside* block elements.
+
+    Our markdown sources are hard-wrapped for readability; markdown-it keeps those
+    newlines as soft breaks inside <p>/<li>, and WordPress's wpautop then turns each
+    into a spurious <br>. Collapse any newline into a space UNLESS it sits exactly
+    between two tags (`>\\n<`, the structural whitespace between blocks). <pre> blocks
+    are protected so code keeps its real line breaks.
+    """
+    blocks: list[str] = []
+
+    def _stash(m: "re.Match") -> str:
+        blocks.append(m.group(0))
+        return f"\x00{len(blocks) - 1}\x00"
+
+    html = re.sub(r"<pre\b.*?</pre>", _stash, html, flags=re.S)
+    html = re.sub(
+        r"(.)\n(.)",
+        lambda m: m.group(0) if m.group(1) == ">" and m.group(2) == "<" else f"{m.group(1)} {m.group(2)}",
+        html,
+    )
+    for i, block in enumerate(blocks):
+        html = html.replace(f"\x00{i}\x00", block)
+    return html
+
+
 def md_to_html(body: str) -> str:
-    return MD.render(body)
+    return _collapse_soft_newlines(MD.render(body))
 
 
 def build_content(en_title: str, en_html: str, ru_title: str, ru_html: str) -> str:
