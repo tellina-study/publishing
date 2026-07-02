@@ -1,162 +1,157 @@
-# I Read Past the README on the Seven Biggest "Claude Skills" Repos. One Points Your Agent at npm Packages That Don't Exist.
+# The Seven Biggest Claude Skills Collections: What's Inside, Which to Trust, and How to Use Them
 
-A "skill" is a little folder you drop into a coding agent — a Markdown file plus maybe a script or
-two — that quietly changes how the agent behaves on every task. An "MCP config" is the sibling of
-that: a small JSON file that tells the agent which external tools to install and run, usually with a
-line like `npx -y some-package`. Both install in seconds. Both run with your permissions. And both
-are being collected, right now, into giant "awesome-Claude-skills" repositories that thousands of
-people install on the strength of a star count and a nice README.
+If you've gone looking for ready-made "skills" for your Claude agent, you've seen the pattern: a
+dozen repositories called some variation of *awesome-claude-skills*, the biggest with more stars than
+most programming languages, each promising hundreds of ready-to-install capabilities. Which one do
+you actually pull from? And once you do, can you trust what you just dropped into a tool that runs
+with your permissions?
 
-I wanted to know what was actually inside them. So I cloned the seven biggest, read the code and the
-agent instructions, and — where there was anything runnable — tried to make each one do something it
-shouldn't. Not because I assumed malice. Because "it has a lot of stars, it's probably fine" is the
-exact reasoning that gets people hurt, and I'm about to build a collection like this myself.
+I went through the seven biggest so you don't have to start from a star count. This is the field
+guide I wish I'd had: what a skill is and whether skills even work, what's actually inside each
+collection and who it's for, which ones survive a real security check, and how to use them so they
+help instead of just filling up your context window.
 
-One of the seven has a real problem. It's not the one I expected.
+First, one line of vocabulary, because the rest leans on it. A **skill** is a small folder — a
+Markdown file, sometimes a script or two — that you drop in to change how your agent behaves on a
+task ("when the user asks for a spreadsheet, do it *this* way"). An **MCP config** is its sibling: a
+little JSON file that tells the agent which external tools to install and run, usually with a line
+like `npx -y some-package`. Both install in seconds. That convenience is the whole reason to be a
+little careful, and we'll get to it.
 
-## The field, and where the numbers come from
+## Do skills actually work?
 
-Every count below is a live GitHub API call I made on July 2, 2026 — not a number copied from
-anyone's README. That distinction turns out to matter more than I thought.
+Short answer: yes, with a catch worth understanding before you install twenty of them.
 
-| Repo | Stars (live) | What it actually is |
-|---|---|---|
-| `obra/superpowers` | 243,958 | Skills plus an *enforced* workflow |
-| `anthropics/skills` | 157,558 | Anthropic's own first-party skills |
-| `ComposioHQ/awesome-claude-skills` | 66,589 | Mostly a link index + one company's own skills |
-| `travisvn/awesome-claude-skills` | 13,870 | A curated list of links |
-| `rohitg00/awesome-claude-code-toolkit` | 2,233 | A real toolkit stapled to an abandoned link dump |
-| `jqueryscript/awesome-claude-code` | 453 | The broadest map of the ecosystem |
-| `glebis/claude-skills` | 301 | A tidy personal 90-skill collection |
+The strongest evidence isn't a benchmark — it's production. Anthropic's own document skills (the ones
+that build xlsx, docx, pptx, and pdf files) are, by their own README, the skills that power Claude's
+document-creation feature in the actual product. That's not a lab result; it's a capability millions
+of people already use, implemented as exactly the kind of skill file you can install yourself.
 
-Yes, the top line really is a quarter of a million stars — I re-ran the call twice because I didn't
-believe it either. A repo that installs itself into your agent and tells it what to do has more stars
-than most programming languages. Hold that thought; it comes back.
+For an independent number, one study put the format to the test — [*How Well Do Agentic Skills Work
+in the Wild*](https://arxiv.org/abs/2604.04323) — and found a genuine lift: on the Terminal-Bench 2.0
+benchmark, adding skill retrieval moved pass rate from 57.7% to 65.5%. But the same paper is honest
+about the ceiling: as the test conditions got more realistic, the gains shrank back toward the
+no-skill baseline. Skills help most when the *right* skill reliably fires for the task in front of
+the agent.
 
-## The headline number is almost never the real number
+> 💡 **The catch is triggering, not capability.** A skill only helps if the agent actually loads it
+> at the right moment — and "skills that won't trigger" is Anthropic's own top troubleshooting note.
+> Each skill also costs context to keep around. So a curated handful you know will fire beats a
+> hundred you installed "just in case."
 
-`ComposioHQ/awesome-claude-skills` advertises "1000+ production-ready" skills. I counted what's in
-the repo: thirty, maybe forty. The other ~960 is the company's platform-integration count, a
-different kind of number entirely, folded quietly into the headline.
+That single idea — *targeted beats maximal* — is the lens for reading the rest of this guide. The
+question isn't "which repo has the most skills." It's "which few match what I actually do."
 
-`rohitg00/awesome-claude-code-toolkit` is the sharper example, because it disagrees with *itself*.
-The README says 35 skills, 135 agents, 176+ plugins. Its own `marketplace.json` — a file the
-maintainer wrote — says 120 plugins and 6 MCP configs. The filesystem says 40 skills, 136 agents, 16
-MCP configs. Three sources inside one repo, none of them matching.
+## The map: seven collections, and who each one is for
 
-The git history explains why. The whole first-party toolkit was generated in two commits on day one,
-back in February. `commands/` hasn't been touched since. `plugins/` got exactly one commit
-afterward — a bulk fix for missing YAML frontmatter across 82 files, which tells you the first pass
-wasn't reviewed closely. Almost every commit since is a merged pull request bolting *someone else's*
-project onto a link table. Then, seven weeks before I looked, the maintainer stopped merging even
-those. 183 open issues sit untouched.
+Every star count below is a live GitHub reading from July 2, 2026, not a number from a README — a
+distinction that turns out to matter, as the next section shows.
 
-The first-party toolkit isn't worthless — the agents and hooks that are actually there are put
-together competently. It's that the number on the box was never the number in the box, and nobody
-had looked in months.
+| Collection | Stars | What it really is | Reach for it if… |
+|---|---|---|---|
+| `anthropics/skills` | 157,558 | Anthropic's own first-party skills, auto-synced from internal | You want a small, production-grade, vetted set |
+| `obra/superpowers` | 243,958 | Skills *plus* an enforced end-to-end workflow | You want a whole disciplined process, not a grab-bag |
+| `glebis/claude-skills` | 301 | A tidy personal collection of ~90 skills | You want a curated, human-sized set to browse |
+| `ComposioHQ/awesome-claude-skills` | 66,589 | Mostly a link index + one company's platform skills | You're surveying what's out there |
+| `travisvn/awesome-claude-skills` | 13,870 | A clean, maintained list of links | Same — a discovery hub |
+| `jqueryscript/awesome-claude-code` | 453 | The broadest map of the whole ecosystem | You want the widest census, not just skills |
+| `rohitg00/awesome-claude-code-toolkit` | 2,233 | A real toolkit bolted to an abandoned link dump | With care — see the caution below |
 
-## The one that made me stop: a config full of packages that don't exist
+A few of these deserve more than a table row.
 
-Here's the finding I'd lead with if you were about to install that toolkit.
+**`anthropics/skills` — the vetted starting point.** Seventeen skills, all first-party, and the best
+place to begin if you want things that are known to work. Beyond the document skills, it ships
+`skill-creator` (a skill for *building* skills, with its own testing harness), `mcp-builder`,
+`frontend-design`, `webapp-testing`, `canvas-design`. Small on purpose. If you install nothing else,
+install from here.
 
-Its `mcp-configs/` folder ships ready-made tool configurations, one per task type — security, design,
-DevOps, and so on. Each one tells your agent to go fetch and run some npm packages. Three of those
-packages are named under the `@anthropic/` scope: `mcp-ghidra`, `mcp-figma`, `mcp-server-figma`.
+**`obra/superpowers` — a process, not a pantry.** This is the quarter-million-star one, and it's a
+different kind of thing: less a bag of skills, more an opinionated workflow that sequences them —
+brainstorm, write a plan, get human sign-off, build test-first, review with a fresh agent, finish
+the branch. Reach for it if you want to adopt a whole way of working. Just know going in that it's
+assertive about it (more on that in a second).
 
-I checked all three against the npm registry. **None of them exist — 404, every one.** So do two
-more the configs name: `kubectl-mcp-app` and `mcp-terraform`. That's five package references, in a
-2,233-star toolkit, pointing at nothing.
+**`glebis/claude-skills` — the human-sized set.** Only 301 stars, but a tidy, well-built personal
+collection of about 90 skills spanning test-driven development, release automation, and a small
+LLM-command-line tool. If the big two feel like too much, this is the browsable middle.
 
-The nonexistence isn't even the scary part. Look at the scope. `@anthropic/` *reads* like Anthropic's
-own namespace — which is exactly why it's worth checking that it isn't. Anthropic actually publishes
-under `@anthropic-ai` (`@anthropic-ai/sdk`, `@anthropic-ai/claude-code` — both live). `@anthropic`,
-the one in these configs, belongs to no one I could find. And that's the whole problem: an unclaimed
-scope that looks official is a slot waiting to be filled. If anyone registers `@anthropic` and
-publishes something under `mcp-ghidra`, the first people to run it are the ones who copied this
-config and trust the name — following the toolkit's own instructions, believing they're installing
-official Anthropic tooling. (A sixth reference, `defi-mcp`, *does* exist: one version, one
-maintainer, published once in January, wired into a crypto-wallet config. Not proof of anything —
-just the exact shape a real supply-chain attack likes to wear.)
+**The link indexes — `ComposioHQ`, `travisvn`, `jqueryscript`.** These aren't collections you install
+so much as maps you read. `jqueryscript` is the broadest census of the whole ecosystem; `travisvn` is
+a clean, actively maintained list; `ComposioHQ` mixes a link index with its own platform's skills.
+Useful for *finding* things — just don't mistake a link table for a vetted recommendation.
 
-I don't think anyone did this on purpose. These read like names a language model invented when asked
-to write a config, that nobody ran `npm info` against — not the author, not the 2,233 people who
-starred it, not anyone in those 183 open issues. Which is the actual lesson, and it costs one command
-to apply:
+One caution about headline numbers before you trust any of them: `ComposioHQ` advertises "1000+
+production-ready" skills, but the repo itself holds thirty to forty — the rest is a platform
+integration count folded into the headline. `rohitg00`'s README claims 35 skills, 135 agents, 176+
+plugins; its own `marketplace.json` says 120 plugins; the actual files say 40 skills and 16 MCP
+configs. Three numbers for one repo, none matching. Count the folder, not the banner.
 
-> 📌 **Before you let an agent install anything, check that every package it names is real.**
-> One `npm info <package>` per line. A name that doesn't resolve is a blank the next person can fill.
+## Which ones to trust: what a real check turns up
 
-None of the other six repos had anything like this. The problem isn't "this repo has a bug." It's a
-check none of us were running, and now I am.
+Stars measure how far a project spread, not whether anyone vetted what it ships. So for the three
+collections that contain runnable code — `anthropics/skills`, `superpowers`, and the `rohitg00`
+toolkit — I ran an actual security pass, not a glance. (The rest are link lists; nothing to run,
+nothing to check.) The good news first: two of the three came back clean, and even the alarming-
+looking one is mostly a false alarm.
 
-## What a real security pass actually looks like
+Take `superpowers`, the assertive one. It installs a hook that fires before you type anything,
+injecting a block marked `<EXTREMELY_IMPORTANT>` that reads, verbatim, *"IF A SKILL APPLIES TO YOUR
+TASK, YOU DO NOT HAVE A CHOICE."* That looks like a red flag. It isn't: it's disclosed, versioned,
+MIT-licensed text the project applies to its own agent in the open, and you can read every line
+before it runs. Underneath is a genuinely careful design — human approval before code gets written, a
+fresh sub-agent per task, an independent reviewer told not to trust the first agent's word.
+`anthropics/skills` was clean too, down to its one `shell=True` call sitting in a browser-testing
+script the agent already had the keys to run.
 
-The `npm info` check wasn't the only thing I ran. For the three repos that ship real code —
-`anthropics/skills`, `obra/superpowers`, and the rohitg00 toolkit — I did a proper pass, not a
-glance. (The other three are link lists; there's nothing to run, so there's nothing to check.) It's
-worth writing down exactly what I looked for, because none of it is hard, and it's the same list I'd
-hand anyone about to install one of these.
+The one caution in the whole set is worth stating plainly, because it's the kind of thing a star
+count will never warn you about.
 
-- **Can it run arbitrary code?** `grep -rn` for `eval`, `exec`, `child_process`, `subprocess`,
-  `shell=True`, `os.system`. A hit isn't automatically bad — `superpowers` has one `child_process`
-  call, but it's gated behind an opt-in environment variable, and Anthropic's one `shell=True` is in
-  a browser-testing script the agent already had shell access to run. What you're hunting is the
-  *ungated* one nobody flagged.
-- **Does it pipe the internet into a shell?** `grep` for `curl … | bash` and `wget … | sh`. Zero in
-  the first-party code of all three. A couple show up in READMEs — as install instructions for *other
-  people's* linked projects. Copy-paste those at your own risk; they're outside the repo's own review.
-- **Are there real secrets baked in?** `grep` for token-shaped strings. All hits were placeholders
-  (`your-api-key`, `sk-ant-...` examples) and env-var references. Nobody committed a live key.
-- **Do the hooks phone home?** The dangerous part of a skills repo is its hooks — scripts that run
-  automatically on every session. `grep` for network calls inside them. None of the three reach out
-  uninvited; the one outbound call I found (a brand image in `superpowers`) is disclosed and can be
-  turned off.
-- **Is there a hidden instruction to the agent?** A skills file is text the model obeys, so a
-  malicious one can just *tell* the agent to leak your keys. `grep` the Markdown for hijack phrasing.
-  The only hits pointed the other way — Anthropic's `skill-creator` explicitly instructs the agent to
-  refuse building exfiltration skills.
+> 📌 **Don't copy `rohitg00`'s MCP configs blind.** They tell your agent to install npm packages
+> under the `@anthropic/` scope — `mcp-ghidra`, `mcp-figma`, `mcp-server-figma` — that **do not
+> exist** (all 404), along with `kubectl-mcp-app` and `mcp-terraform`. Anthropic's real scope is
+> `@anthropic-ai`, not `@anthropic`. An official-looking, *unclaimed* namespace pointing at missing
+> packages is a slot waiting to be filled: if someone registers it and publishes malware, the people
+> who run it first are the ones who copied this config trusting the name.
 
-All three came back clean on every one of these — the MCP config is the single real problem in the
-set. That's the honest result, and it's more reassuring than a star count, because I can show you the
-commands instead of asking you to trust me.
+Nobody there did this on purpose — these read like package names a model invented and no one ran
+`npm info` against. Which is exactly the habit worth borrowing, and it costs one command.
 
-> 🛠️ **The whole checklist, for any skills repo:** read the actual files, not the README ·
-> `npm info` every package a config names · grep for ungated `eval`/`exec`/`subprocess` ·
-> grep for `curl | bash` · grep for real secrets · grep for network calls inside hooks ·
-> grep the skill text for instructions aimed at the agent · skim the git log for whether anyone
-> still maintains it. Fifteen minutes, and you know more than the star count will ever tell you.
+## How to actually use skills well
 
-## The biggest repo was the most reassuring, not the least
+Two halves: check what you install, then use less of it than you think.
 
-Remember the quarter-million-star repo. `superpowers` installs a hook that runs before you type a
-word, injecting a block marked `<EXTREMELY_IMPORTANT>` that says, verbatim, "IF A SKILL APPLIES TO
-YOUR TASK, YOU DO NOT HAVE A CHOICE." On first read that's alarming — it's not language you expect
-from open-source tooling, and I spent real time looking for the manipulation under it.
+**Before you install anything — a fifteen-minute vet.** None of this is hard, and it's the same list
+regardless of the repo:
 
-There isn't any. It's disclosed, versioned, MIT-licensed text the project applies to its own agent,
-in the open, and you can read every line before it runs. What's underneath is a genuinely careful
-workflow: a hard stop for human approval before any code is written, a fresh sub-agent per task, and
-an independent reviewer whose instructions explicitly forbid trusting the first agent's self-report.
-Anthropic's own `skill-creator` does a quieter version of the same thing — it runs an actual
-evaluation harness and has its grader critique its own conclusions before trusting them.
+- **Read the actual files, not the README.** The gap between the two is the whole point of this piece.
+- **`npm info` every package a config names.** A name that doesn't resolve is a blank someone else can fill.
+- **`grep` for ungated `eval`, `exec`, `child_process`, `subprocess`, `shell=True`.** A hit isn't automatically bad — it's a thing to understand before you run it.
+- **`grep` for `curl … | bash` and `wget … | sh`.** Piping the internet straight into a shell is the classic install-script trap; it usually shows up for *linked third-party* projects, not the repo's own code.
+- **`grep` the hooks for network calls.** Hooks run automatically every session — that's where a phone-home would hide.
+- **Skim the git log.** Two commits on day one and nothing since (the `rohitg00` story) tells you no one's minding it.
 
-That's the part worth sitting with. Two teams that have never coordinated — plus, for what it's
-worth, the way I'd already been building my own setup — landed on the same rule: never trust what a
-process says about itself; verify with fresh eyes. When unrelated people keep re-deriving the same
-discipline, that's a stronger signal than any of them inventing it alone. Neither repo is spotless
-underneath — `superpowers` runs on a single maintainer with no CI, and Anthropic's repo takes almost
-no outside contributions — but the star count, for once, was pointing at something real.
+**Then use fewer skills than you want to.** Because triggering is the bottleneck, not capability, the
+winning move is a small set matched to your real work:
 
-## What the star count actually told me
+- **The description is the skill's on-switch.** Skills undertrigger; a vague description means it never
+  loads and never helps. Prefer skills whose descriptions clearly name when they apply — and sharpen
+  your own.
+- **Keep each skill small.** The best ones use "progressive disclosure" — a one-line summary always
+  loaded, the full instructions pulled in only when triggered, heavy references fetched on demand.
+  Bloated skills cost context for nothing.
+- **Don't install everything.** A hundred dormant skills is a hundred descriptions competing for the
+  agent's attention and your token budget. Curate to the handful you'll actually hit.
+- **Prefer disclosed and maintained.** `superpowers` is loud but transparent; a silent, unmaintained
+  repo with a big number is the worse bet.
 
-Nothing, is the honest answer. The cleanest repo in the set had 244,000 stars; the one with the
-namespace hole had 2,233; a tidy, careful personal collection had 301. Popularity tracked how far a
-project had spread, not whether anyone had checked what it shipped.
+## The one-line takeaway
 
-The checklist above took me an afternoon to run across all seven — and it turns a big number from a
-reason to skip looking into a reason to look closer. If you want to start with the one concrete
-finding, the commit I pulled apart is `ebdf1d5` in `rohitg00/awesome-claude-code-toolkit`; the five
-packages are still 404 as I write this.
+The star count told me almost nothing. The cleanest collection in the set had 244,000 stars; the one
+with the namespace hole had 2,233; the tidy, careful personal set had 301. Popularity tracked reach,
+not whether anyone had looked inside.
 
-The thing you starred is not the thing you read. It's worth a few minutes to find out how far apart
-they are.
+So if you're shopping for skills: start with `anthropics/skills` for things known to work, add
+`glebis` or `superpowers` if you want more or want a whole workflow, use the link indexes to discover
+the rest — and give anything a fifteen-minute read before you trust it. That's less time than you'll
+spend picking which skills to install, and it's the difference between a tool you understand and a
+number you hoped was fine.
