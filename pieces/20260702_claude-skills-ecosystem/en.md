@@ -1,5 +1,16 @@
 # The Seven Biggest Claude Skills Collections: What's Inside, Which to Trust, and How to Use Them
 
+> **TL;DR — if you only read this box:**
+> - **Start here:** `anthropics/skills` for a small, production-grade, vetted set. Add `glebis/claude-skills`
+>   (~90 tidy personal skills) if you want more, or `obra/superpowers` if you want a whole workflow, not
+>   a grab-bag. Use `travisvn` / `jqueryscript` as link indexes to discover the rest.
+> - **Do skills work?** Yes, with a catch: they're proven in production and show a real but *conditional*
+>   lift — a few skills that reliably match your task beat a hundred installed "just in case."
+> - **The one thing to avoid:** don't copy `rohitg00`'s MCP configs blind — they point your agent at npm
+>   packages that don't exist, under an official-looking `@anthropic/` scope that isn't Anthropic's.
+> - **The habit that saves you:** give any repo a 15-minute read before you trust it — `npm info` every
+>   package it names, `grep` for what runs automatically. A big star count is not a safety check.
+
 If you've gone looking for ready-made "skills" for your Claude agent, you've seen the pattern: a
 dozen repositories called some variation of *awesome-claude-skills*, the biggest with more stars than
 most programming languages, each promising hundreds of ready-to-install capabilities. Which one do
