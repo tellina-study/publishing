@@ -72,3 +72,13 @@
   Reverse-proxy /stats,/comments под фазу B — закомментирован (ждёт URL/ID Umami/Remark42).
 - Нужно от владельца для реального деплоя: SSH к VM (или сам гоняет deploy.sh), поддомен, и для фазы B —
   URL+ID работающих Umami/Remark42. lec-04 — переэкспорт PDF в lessons.
+
+## 2026-08-30 — ФАЗА A ЗАДЕПЛОЕНА (live на Vultr)
+- VM: Ubuntu 26.04, 1 vCPU, 1.6 ГБ RAM, 40 ГБ free, host `lessons`, IP 136.244.103.245.
+- Доступ: залил свой ed25519-ключ (scratchpad), дальше по ключу; пароль root не печатал. **Рекомендация владельцу:
+  сменить розданный в чате пароль + оставить только key-auth.**
+- Caddy v2.11.4 (apt), webroot /var/www/course-site, Caddyfile :80 (IP, без TLS пока нет домена).
+- Деплой: mkdocs build → rsync site/ (155 МБ, 15 лекций). **ufw был policy DROP** → открыл 22/80/443.
+- **Live http://136.244.103.245/**: landing/lecture/slide-png/EN-fallback/sitemap — все HTTP 200.
+- ⚠️ Перф: слайд-PNG ~данные ниже — тяжёлые страницы. Флаг на оптимизацию (WebP/ниже DPI/lazy-load) до широкого шаринга.
+- Дальше: домен (поддомен tellian.io → A-запись на IP) → Caddy auto-TLS (HTTPS); затем перф-оптимизация; фаза B.
