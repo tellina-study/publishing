@@ -4,8 +4,9 @@ site/
 __pycache__/
 *.pyc
 
-# Сгенерированный вывод (воспроизводится scripts/sync_lectures.py из репо lessons).
-# Решение git-vs-LFS для PNG отложено до гейта — пока не коммитим ~190 МБ.
+# Генерируемый вывод (воспроизводится scripts/sync_lectures.py из репо lessons).
+# Хранить ли PNG в git — зависит от выбора хостинга (self-host Vultr → rsync, PNG не нужны
+# в git; GH Pages → возможно нужны/или рендер в CI). Решаем вместе с хостингом.
 docs/assets/
-docs/lectures/lec-*.ru.md
-docs/lectures/lec-*.en.md
+docs/lectures/lec-*.md
+docs/index.ru.md

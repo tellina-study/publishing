@@ -38,10 +38,15 @@ DEFAULT_LESSONS = Path(os.environ.get(
     "/home/harness/harness-projects/256/lessons-3bb49d40/library/lectures",
 ))
 PROOF_LECTURES = ["lec-01", "lec-08", "lec-10", "lec-13"]  # по одному на диалект
+ALL_LECTURES = [f"lec-{n:02d}" for n in range(1, 18) if n != 16]  # lec-01…17, нет lec-16
 DPI = 132
 
 
 # ─────────────────────────── speech.md парсинг ───────────────────────────
+
+class GuardMismatch(Exception):
+    """Число слайд-секций speech != числу страниц PDF — не мапим вслепую."""
+
 
 HEADING = re.compile(r'^(#{1,6})\s+(.*\S)\s*$')
 
@@ -146,16 +151,21 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
     assets = DOCS / "assets" / lang / lec
     n_pages = render_pdf(pdf, assets)
 
-    # GUARD: индекс истины — speech; должен совпасть со страницами PDF
+    # GUARD: индекс истины — speech; должен совпасть со страницами PDF.
+    # Если нет — НЕ гадаем (иначе комментарии съедут на чужие слайды): пропускаем лекцию.
     if len(slides) != n_pages:
-        raise SystemExit(
-            f"[GUARD] {lec}: слайд-секций speech={len(slides)} != страниц PDF={n_pages}. "
-            f"Разметка speech.md не покрывает все страницы — проверь диалект/пропуски."
+        raise GuardMismatch(
+            f"{lec}: слайд-секций speech={len(slides)} != страниц PDF={n_pages} "
+            f"(Δ={n_pages - len(slides)}) — дефект исходника в lessons (build-шаги/пропуски). "
+            f"Нужна сверка страница↔секция или переэкспорт PDF."
         )
 
-    title = fm.get("title", f"Лекция {lec}")
-    num = fm.get("lecture", "")
-    dur = fm.get("length_min", "")
+    # frontmatter-схемы разнятся по лекциям: title|lecture_title, lecture|lecture_number
+    num = fm.get("lecture") or fm.get("lecture_number") or ""
+    title = fm.get("title") or fm.get("lecture_title") or f"Лекция {lec}"
+    if fm.get("lecture_title") and num and not str(title).lower().startswith("лекц"):
+        title = f"Лекция {num}. {title}"
+    dur = fm.get("length_min") or fm.get("duration_min") or ""
     lang = fm.get("language", lang)
 
     out = [f"---", f"title: {title}", "---", "", f"# {title}", ""]
@@ -185,12 +195,61 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
     dest = lectures_dir / f"{lec}.{lang}.md"
     dest.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
     print(f"  ✓ {lec}: {n_pages} слайдов → {dest.relative_to(SITE)}")
+    return {"id": lec, "title": str(title), "num": num, "slides": n_pages, "lang": lang}
+
+
+HERO = """---
+title: AI-usage-lessons — открытый курс
+---
+
+# AI-usage-lessons
+
+Открытый курс про то, как **пользоваться AI на практике** — без хайпа и без магии.
+Каждая лекция здесь — это слайды и разбор к ним: смотришь слайд, читаешь, что за ним стоит.
+
+## Лекции
+
+<div class="grid cards" markdown>
+"""
+
+def write_landing(manifest: list[dict], lang: str = "ru") -> None:
+    """Генерит лендинг-витрину из манифеста лекций."""
+    cards = []
+    for m in sorted(manifest, key=lambda x: x["id"]):
+        t = str(m["title"])
+        # «Лекция N. Заголовок» → показать красиво
+        body = re.sub(r'^Лекци[яю]\s*\d+[.\s—-]*', '', t).strip() or t
+        cards.append(
+            f"-   **{html_num(m['num'])}{esc(body)}**\n\n"
+            f"    ---\n\n"
+            f"    {m['slides']} слайдов.\n\n"
+            f"    [:octicons-arrow-right-24: Открыть](lectures/{m['id']}.md)\n"
+        )
+    text = HERO + "\n".join(cards) + "\n</div>\n"
+    (DOCS / f"index.{lang}.md").write_text(text, encoding="utf-8")
+    print(f"  ✓ лендинг: {len(manifest)} карточек → docs/index.{lang}.md")
+
+def html_num(num) -> str:
+    return f"Лекция {num}. " if num else ""
+
+def esc(s: str) -> str:
+    return s.replace("[", "").replace("]", "")
+
+def print_nav(manifest: list[dict]) -> None:
+    print("\n# nav-сниппет для mkdocs.yml:")
+    print("  - Лекции:")
+    for m in sorted(manifest, key=lambda x: x["id"]):
+        print(f"      - lectures/{m['id']}.md")
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Собрать страницы курса из lessons.")
     ap.add_argument("lectures", nargs="*", default=None,
-                    help="lec-01 lec-08 … (по умолчанию — 4 proof-лекции)")
+                    help="lec-01 lec-08 … (по умолчанию — все 16 лекций)")
+    ap.add_argument("--proof", action="store_true",
+                    help="только 4 proof-лекции (по одному диалекту)")
+    ap.add_argument("--no-landing", action="store_true",
+                    help="не перегенерировать лендинг")
     ap.add_argument("--lessons", default=str(DEFAULT_LESSONS),
                     help="путь к library/lectures в репо lessons")
     args = ap.parse_args()
@@ -198,12 +257,27 @@ def main() -> None:
     lessons_dir = Path(args.lessons)
     if not lessons_dir.exists():
         raise SystemExit(f"Нет каталога lessons: {lessons_dir}")
-    lectures = args.lectures or PROOF_LECTURES
+    if args.lectures:
+        lectures = args.lectures
+    elif args.proof:
+        lectures = PROOF_LECTURES
+    else:
+        lectures = ALL_LECTURES
 
     print(f"lessons: {lessons_dir}")
+    manifest, skipped = [], []
     for lec in lectures:
-        build_lecture(lec, lessons_dir)
-    print(f"Готово: {len(lectures)} лекц.")
+        try:
+            manifest.append(build_lecture(lec, lessons_dir))
+        except GuardMismatch as e:
+            print(f"  ✗ ПРОПУСК {e}")
+            skipped.append(str(e))
+    if not args.no_landing:
+        write_landing(manifest)
+    print(f"\nГотово: {len(manifest)} лекц. собрано, {len(skipped)} пропущено.")
+    for s in skipped:
+        print(f"  ✗ {s}")
+    print_nav(manifest)
 
 
 if __name__ == "__main__":
