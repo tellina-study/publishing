@@ -1,0 +1,35 @@
+# Caddyfile — self-host курса-сайта на Vultr VM (авто-TLS Let's Encrypt).
+# Замени COURSE_DOMAIN на реальный поддомен (напр. course.tellian.io) и укажи путь к site/.
+#
+# Запуск на VM:
+#   caddy run --config /etc/caddy/Caddyfile
+# (или через systemd / docker). DNS: A/AAAA COURSE_DOMAIN → IP этого VM.
+
+COURSE_DOMAIN {
+    root * /var/www/course-site
+    file_server
+    encode gzip zstd
+
+    # SPA-подобных роутов нет: MkDocs даёт статические index.html в подкаталогах.
+    try_files {path} {path}/ {path}/index.html
+
+    # SEO/кэш: картинки слайдов — иммутабельны, кэшируем надолго.
+    @assets path /assets/*
+    header @assets Cache-Control "public, max-age=31536000, immutable"
+
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        -Server
+    }
+
+    # ── Фаза B (same-origin, раскомментировать когда Umami/Remark42 подняты на этом же VM) ──
+    # Держим метрику и комментарии под тем же доменом → нет CORS, cookie-домен общий.
+    #
+    # handle_path /stats/* {
+    #     reverse_proxy 127.0.0.1:3000        # Umami (docker)
+    # }
+    # handle_path /comments/* {
+    #     reverse_proxy 127.0.0.1:8080        # Remark42 (docker)
+    # }
+}

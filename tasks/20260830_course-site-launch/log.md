@@ -63,3 +63,12 @@
 - Связка «PNG в git»↔хостинг: при self-host PNG в git не нужны (rsync) → решение отложено к хостингу,
   вывод в .gitignore. Закоммичен только код (генератор/конфиг/nav).
 - Дальше: выбор хостинга владельцем → фаза A деплой; lec-04 к владельцу (фикс в lessons).
+
+## 2026-08-30 — хостинг: self-host Vultr (выбор владельца)
+- Владелец выбрал **self-host на Vultr**. Следствия: PNG в git НЕ нужны (rsync собранного site/),
+  same-origin с Umami/Remark42. Вопрос «PNG в git» закрыт (moot при self-host) — вывод в .gitignore.
+- Подготовлен деплой-скаффолдинг (фаза A, без доступа к VM): course-site/deploy/{Caddyfile,deploy.sh,README.md}.
+  Caddy авто-TLS + file_server + кэш ассетов; deploy.sh: sync_lectures → mkdocs build → rsync.
+  Reverse-proxy /stats,/comments под фазу B — закомментирован (ждёт URL/ID Umami/Remark42).
+- Нужно от владельца для реального деплоя: SSH к VM (или сам гоняет deploy.sh), поддомен, и для фазы B —
+  URL+ID работающих Umami/Remark42. lec-04 — переэкспорт PDF в lessons.
