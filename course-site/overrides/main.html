@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{#- Фаза B: аналитика (Umami) + комментарии (Remark42), same-origin через Caddy. -#}
+
+{% block extrahead %}
+  {{ super() }}
+  <!-- Umami: просмотры (self-host на этом же VM, отдаётся через /stats) -->
+  <script defer src="/stats/script.js"
+          data-website-id="35d3e86c-2507-45ec-ac7f-72ea825df3db"
+          data-host-url="https://lessons.tellian.io/stats"></script>
+  <!-- Глубина чтения: события scroll-25/50/75/100 в Umami -->
+  <script>
+    (function () {
+      var fired = {}, marks = [25, 50, 75, 100];
+      function onScroll() {
+        if (!window.umami) return;
+        var el = document.documentElement;
+        var max = el.scrollHeight - el.clientHeight;
+        var pct = max > 0 ? Math.round((el.scrollTop || document.body.scrollTop) / max * 100) : 100;
+        marks.forEach(function (m) {
+          if (pct >= m && !fired[m]) {
+            fired[m] = true;
+            umami.track('scroll-' + m, { path: location.pathname });
+          }
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('load', onScroll);
+    })();
+  </script>
+{% endblock %}
+
+{% block content %}
+  {{ super() }}
+  {% if page and page.url and 'lectures/lec' in page.url %}
+  <!-- Remark42: комментарии/реакции (аноним + соц-логин), отдаётся через /comments -->
+  <hr>
+  <h2 id="comments">Комментарии</h2>
+  <div id="remark42"></div>
+  <script>
+    var remark_config = {
+      host: "https://lessons.tellian.io/comments",
+      site_id: "course",
+      components: ["embed"],
+      locale: "ru",
+      theme: (document.body.getAttribute('data-md-color-scheme') === 'slate') ? 'dark' : 'light'
+    };
+    (function () {
+      var s = document.createElement('script');
+      s.src = remark_config.host + '/web/embed.js';
+      s.defer = true;
+      (document.head || document.body).appendChild(s);
+    })();
+  </script>
+  {% endif %}
+{% endblock %}

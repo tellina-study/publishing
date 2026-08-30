@@ -7,6 +7,7 @@ docs_dir: docs
 theme:
   name: material
   language: ru
+  custom_dir: overrides
   features:
     - navigation.sections
     - navigation.top
@@ -45,9 +46,15 @@ plugins:
           default: true
           name: Русский
           build: true
+        # EN выключен до появления перевода (upstream в lessons): иначе переключатель
+        # ведёт на /en/, где из-за fallback тот же русский текст — выглядит «не работает».
+        # Вернуть build: true, когда появятся docs/**/*.en.md.
         - locale: en
           name: English
-          build: true
+          build: false
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - attr_list        # {#s-01} — якоря слайдов

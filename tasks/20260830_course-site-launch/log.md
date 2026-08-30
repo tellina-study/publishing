@@ -82,3 +82,24 @@
 - **Live http://136.244.103.245/**: landing/lecture/slide-png/EN-fallback/sitemap — все HTTP 200.
 - ⚠️ Перф: слайд-PNG ~данные ниже — тяжёлые страницы. Флаг на оптимизацию (WebP/ниже DPI/lazy-load) до широкого шаринга.
 - Дальше: домен (поддомен tellian.io → A-запись на IP) → Caddy auto-TLS (HTTPS); затем перф-оптимизация; фаза B.
+
+## 2026-08-30 — домен+HTTPS, оптимизация, фаза B (всё live)
+- **Домен lessons.tellian.io** (владелец дал; A-запись уже указывала на IP). Caddy → auto-TLS Let's Encrypt,
+  HTTP→HTTPS 308. **https://lessons.tellian.io/** живой.
+- **Оптимизация:** слайды PNG→**WebP** (q80, DPI 120) + **lazy-load** (raw `<img loading=lazy>`).
+  Страница лекции **~2.8 МБ вместо 12.8 МБ (−78%)**, ~75 КБ/слайд.
+- **Баг заголовков (lec-3 «Lec 03»):** мой генератор писал YAML `title:` без кавычек — двоеточие в
+  заголовке ломало frontmatter. Фикс: `yaml_q()` + нормализация заголовков (снятие «речь лектора»,
+  единый «Лекция N. …»). Правок в исходниках не нужно.
+- **Переключатель языков:** был мёртвый EN (fallback показывал русский) → EN `build:false` до появления
+  перевода upstream. Свитчер убран (не вводит в заблуждение). Вернётся при появлении `*.en.md`.
+- **Фаза B (Umami + Remark42) на том же VM, same-origin через Caddy:**
+  - Docker + compose (deploy/phase-b/): Umami+Postgres+Remark42, слушают 127.0.0.1, проксируются
+    Caddy `/stats` и `/comments`. Swap 5.4 ГБ уже был; RAM used ~560/1637 МБ.
+  - Umami website-id `35d3e86c-…`; трекер + **scroll-глубина (25/50/75/100%)** и Remark42-embed вшиты
+    в `overrides/main.html` (комментарии — только на страницах лекций).
+  - **Сменил дефолтный admin/umami** (pgcrypto bcrypt): новый пароль в `/opt/course-phase-b/CREDENTIALS.txt`
+    (root-600 на VM). Проверено: new login 200, old 401. Дашборд https://lessons.tellian.io/stats/ = 200.
+  - End-to-end: pageview event 200, embed.js 200.
+- Осталось: сменить root-пароль VM (владелец); дизайн/брендинг (#20); lec-04 фикс в lessons; соц-логины
+  Remark42 (опц.); RSS.

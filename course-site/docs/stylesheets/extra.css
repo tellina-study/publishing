@@ -1,0 +1,16 @@
+/* Слайды лекций: раз изображение вставляется сырым <img> (ради loading=lazy),
+   задаём вид явно — во всю ширину колонки, аккуратная рамка. */
+.slide-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  margin: 0.2rem 0 0.6rem;
+}
+
+/* Подпись-заголовок слайда (### ...) — компактнее обычного H3. */
+.md-typeset h3[id^="s-"] {
+  margin-top: 2.2rem;
+  font-size: 1.1rem;
+}

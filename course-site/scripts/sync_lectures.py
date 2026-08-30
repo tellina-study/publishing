@@ -28,6 +28,7 @@ from pathlib import Path
 
 import yaml
 import pymupdf
+from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 SITE = HERE.parent                       # course-site/
@@ -39,7 +40,8 @@ DEFAULT_LESSONS = Path(os.environ.get(
 ))
 PROOF_LECTURES = ["lec-01", "lec-08", "lec-10", "lec-13"]  # по одному на диалект
 ALL_LECTURES = [f"lec-{n:02d}" for n in range(1, 18) if n != 16]  # lec-01…17, нет lec-16
-DPI = 132
+DPI = 120
+WEBP_QUALITY = 80  # WebP + lazy-load: ~−70% веса против PNG@132
 
 
 # ─────────────────────────── speech.md парсинг ───────────────────────────
@@ -81,6 +83,22 @@ def slide_caption(title: str) -> str:
     if m:
         return re.sub(r'\s*·.*$', '', m.group(1)).strip()
     return re.sub(r'^\[|\]$', '', t)
+
+def normalize_title(raw: str, num) -> str:
+    """Единый вид «Лекция N. Заголовок»; чистка шума («речь лектора»)."""
+    core = raw.strip()
+    core = re.sub(r'^Лекци[яю]\s*\d+\s*[.．]\s*', '', core)          # снять «Лекция N.»
+    core = re.sub(r'\s*[—–-]\s*речь\s+лектора\s*\.?\s*$', '', core, flags=re.I)  # хвост «— речь лектора»
+    core = re.sub(r'^речь\s+лектора\s*[.—–-]*\s*', '', core, flags=re.I)         # начало «Речь лектора.»
+    core = re.sub(r'речь\s+лектора\s*\.?\s*', '', core, flags=re.I)             # остатки в середине
+    core = core.strip(' .—–-')
+    return f"Лекция {num}. {core}" if num else core
+
+
+def yaml_q(s: str) -> str:
+    """Безопасно закавычить строку для YAML (двоеточия в заголовке ломали frontmatter)."""
+    return '"' + str(s).replace('\\', '\\\\').replace('"', '\\"') + '"'
+
 
 def parse_frontmatter(text: str) -> dict:
     if text.startswith('---'):
@@ -125,13 +143,15 @@ def parse_speech(path: Path) -> tuple[list[dict], dict]:
 
 def render_pdf(pdf: Path, out_dir: Path, dpi: int = DPI) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
-    for f in out_dir.glob("page-*.png"):
+    for f in list(out_dir.glob("page-*.png")) + list(out_dir.glob("page-*.webp")):
         f.unlink()
     doc = pymupdf.open(pdf)
     n = doc.page_count
     for k in range(n):
         pix = doc.load_page(k).get_pixmap(dpi=dpi)
-        pix.save(out_dir / f"page-{k + 1:02d}.png")
+        img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
+        img.save(out_dir / f"page-{k + 1:02d}.webp", "WEBP",
+                 quality=WEBP_QUALITY, method=6)
     doc.close()
     return n
 
@@ -162,13 +182,12 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
 
     # frontmatter-схемы разнятся по лекциям: title|lecture_title, lecture|lecture_number
     num = fm.get("lecture") or fm.get("lecture_number") or ""
-    title = fm.get("title") or fm.get("lecture_title") or f"Лекция {lec}"
-    if fm.get("lecture_title") and num and not str(title).lower().startswith("лекц"):
-        title = f"Лекция {num}. {title}"
+    raw = str(fm.get("title") or fm.get("lecture_title") or f"Лекция {lec}")
+    title = normalize_title(raw, num)
     dur = fm.get("length_min") or fm.get("duration_min") or ""
     lang = fm.get("language", lang)
 
-    out = [f"---", f"title: {title}", "---", "", f"# {title}", ""]
+    out = ["---", f"title: {yaml_q(title)}", "---", "", f"# {title}", ""]
     meta = []
     if num:
         meta.append(f"Лекция {num}")
@@ -184,7 +203,11 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         cap = sl["caption"] or f"Слайд {i}"
         out.append(f"### {cap} {{#{anchor}}}")
         out.append("")
-        out.append(f"![Слайд {i}](../assets/{lang}/{lec}/page-{i:02d}.png)")
+        # raw <img> ради loading=lazy — грузятся только видимые слайды
+        out.append(
+            f'<img src="../assets/{lang}/{lec}/page-{i:02d}.webp" '
+            f'alt="Слайд {i}: {cap}" loading="lazy" class="slide-img">'
+        )
         out.append("")
         if sl["body"]:
             out.append(sl["body"])
