@@ -40,6 +40,9 @@ DEFAULT_LESSONS = Path(os.environ.get(
 ))
 PROOF_LECTURES = ["lec-01", "lec-08", "lec-10", "lec-13"]  # по одному на диалект
 ALL_LECTURES = [f"lec-{n:02d}" for n in range(1, 18) if n != 16]  # lec-01…17, нет lec-16
+# published (publication-config: status=published) — чистые + двуязычные; 05..17 = draft (пауза)
+PUBLISHED = ["lec-01", "lec-02", "lec-03", "lec-04"]
+LANGS = ["ru", "en"]
 DPI = 120
 WEBP_QUALITY = 80  # WebP + lazy-load: ~−70% веса против PNG@132
 
@@ -84,15 +87,17 @@ def slide_caption(title: str) -> str:
         return re.sub(r'\s*·.*$', '', m.group(1)).strip()
     return re.sub(r'^\[|\]$', '', t)
 
-def normalize_title(raw: str, num) -> str:
-    """Единый вид «Лекция N. Заголовок»; чистка шума («речь лектора»)."""
+def normalize_title(raw: str, num, lang: str = "ru") -> str:
+    """Единый вид «Лекция N. Заголовок» / «Lecture N. Title»; чистка шума («речь лектора»)."""
     core = raw.strip()
-    core = re.sub(r'^Лекци[яю]\s*\d+\s*[.．]\s*', '', core)          # снять «Лекция N.»
-    core = re.sub(r'\s*[—–-]\s*речь\s+лектора\s*\.?\s*$', '', core, flags=re.I)  # хвост «— речь лектора»
-    core = re.sub(r'^речь\s+лектора\s*[.—–-]*\s*', '', core, flags=re.I)         # начало «Речь лектора.»
-    core = re.sub(r'речь\s+лектора\s*\.?\s*', '', core, flags=re.I)             # остатки в середине
-    core = core.strip(' .—–-')
-    return f"Лекция {num}. {core}" if num else core
+    core = re.sub(r'^(Лекци[яю]|Lecture)\s*\d+\s*[.．:]\s*', '', core, flags=re.I)   # снять «Лекция N.»
+    noise = r'(речь\s+лектора|lecturer.?s?\s+(?:speech|script|talk))'
+    core = re.sub(r'\s*[—–-]\s*' + noise + r'\s*\.?\s*$', '', core, flags=re.I)      # хвост
+    core = re.sub(r'^' + noise + r'\s*[.—–-]*\s*', '', core, flags=re.I)             # начало
+    core = re.sub(noise + r'\s*\.?\s*', '', core, flags=re.I)                        # остатки
+    core = core.strip(' .—–-:')
+    prefix = "Лекция" if lang == "ru" else "Lecture"
+    return f"{prefix} {num}. {core}" if num else core
 
 
 def yaml_q(s: str) -> str:
@@ -163,14 +168,32 @@ def render_pdf(pdf: Path, out_dir: Path, dpi: int = DPI, force: bool = False) ->
 
 # ─────────────────────────── сборка страницы ───────────────────────────
 
+# подписи интерфейса генератора по языкам
+L10N = {
+    "ru": {"lecture": "Лекция", "slides": lambda n: plural_slides(n), "slide": "Слайд", "min": "мин"},
+    "en": {"lecture": "Lecture", "slides": lambda n: "slides", "slide": "Slide", "min": "min"},
+}
+
+def lecture_files(lec_dir: Path, lec: str, lang: str):
+    """RU→EN маппинг файлов (publication-config naming). Footer-less pub-дек RU — если есть."""
+    if lang == "en":
+        speech = lec_dir / "speech.en.md"
+        pdf = lec_dir / "rendered" / f"{lec}-en.pdf"
+    else:
+        speech = lec_dir / "speech.md"
+        pub = lec_dir / "rendered" / f"{lec}-pub.pdf"   # footer-less RU pub, если появится
+        pdf = pub if pub.exists() else lec_dir / "rendered" / f"{lec}.pdf"
+    return speech, pdf
+
+
 def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
     lec_dir = lessons_dir / lec
-    pdf = lec_dir / "rendered" / f"{lec}.pdf"
-    speech = lec_dir / "speech.md"
+    speech, pdf = lecture_files(lec_dir, lec, lang)
     if not pdf.exists():
-        raise FileNotFoundError(f"{lec}: нет {pdf}")
+        raise FileNotFoundError(f"{lec}/{lang}: нет {pdf}")
     if not speech.exists():
-        raise FileNotFoundError(f"{lec}: нет {speech}")
+        raise FileNotFoundError(f"{lec}/{lang}: нет {speech}")
+    loc = L10N.get(lang, L10N["ru"])
 
     slides, fm = parse_speech(speech)
     assets = DOCS / "assets" / lang / lec
@@ -187,33 +210,33 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
 
     # frontmatter-схемы разнятся по лекциям: title|lecture_title, lecture|lecture_number
     num = fm.get("lecture") or fm.get("lecture_number") or ""
-    raw = str(fm.get("title") or fm.get("lecture_title") or f"Лекция {lec}")
-    title = normalize_title(raw, num)
+    raw = str(fm.get("title") or fm.get("lecture_title") or f"{loc['lecture']} {lec}")
+    title = normalize_title(raw, num, lang)
     dur = fm.get("length_min") or fm.get("duration_min") or ""
-    lang = fm.get("language", lang)
 
     out = ["---", f"title: {yaml_q(title)}", "---", "", f"# {title}", ""]
     meta = []
     if num:
-        meta.append(f"Лекция {num}")
+        meta.append(f"{loc['lecture']} {num}")
     if dur:
-        meta.append(f"~{dur} мин")
-    meta.append(f"{n_pages} слайдов")
+        meta.append(f"~{dur} {loc['min']}")
+    meta.append(f"{n_pages} {loc['slides'](n_pages)}")
     if meta:
         out.append("*" + " · ".join(str(m) for m in meta) + "*")
         out.append("")
 
     for i, sl in enumerate(slides, 1):
         anchor = f"s-{i:02d}"
-        cap = sl["caption"] or f"Слайд {i}"
-        out.append(f"### {cap} {{#{anchor}}}")
+        cap = sl["caption"] or f"{loc['slide']} {i}"
+        # номер слайда в подзаголовке → правый TOC читается как нумерованный список
+        out.append(f"### {i:02d} · {cap} {{#{anchor}}}")
         out.append("")
         # markdown-картинка (MkDocs сам пересчитывает путь под directory-URL) +
         # attr_list добавляет loading=lazy и класс — грузятся только видимые слайды
         alt = cap.replace("]", " ").replace("[", " ")
         img = f"../assets/{lang}/{lec}/page-{i:02d}.webp"
         # картинка кликабельна → открывается в полном размере
-        out.append(f"[![Слайд {i}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
+        out.append(f"[![{loc['slide']} {i}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
         out.append("")
         if sl["body"]:
             out.append(sl["body"])
@@ -227,36 +250,53 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
     return {"id": lec, "title": str(title), "num": num, "slides": n_pages, "lang": lang}
 
 
-HERO = """---
-title: AI-usage-lessons — открытый курс
+HERO = {
+    "ru": """---
+title: Использование ИИ в различных индустриях
 ---
 
-# AI-usage-lessons
+# Использование ИИ в различных индустриях
 
-Открытый курс про то, как **пользоваться AI на практике** — без хайпа и без магии.
-Каждая лекция здесь — это слайды и разбор к ним: смотришь слайд, читаешь, что за ним стоит.
+Открытый курс о том, как **ИИ работает в реальных отраслях** — где помогает, где нет, и как это
+понять. Каждая лекция — это слайды и разбор к ним: смотришь слайд, читаешь, что за ним стоит.
 
 ## Лекции
 
 <div class="grid cards" markdown>
-"""
+""",
+    "en": """---
+title: AI Across Industries
+---
+
+# AI Across Industries
+
+An open course on how **AI works in real-world industries** — where it helps, where it doesn't, and
+how to tell. Each lecture is slides plus commentary: look at a slide, read what's behind it.
+
+## Lectures
+
+<div class="grid cards" markdown>
+""",
+}
 
 def write_landing(manifest: list[dict], lang: str = "ru") -> None:
-    """Генерит лендинг-витрину из манифеста лекций."""
+    """Генерит лендинг-витрину из манифеста лекций (по языку)."""
+    loc = L10N.get(lang, L10N["ru"])
+    open_label = "Открыть →" if lang == "ru" else "Open →"
     cards = []
     for m in sorted(manifest, key=lambda x: x["id"]):
         t = str(m["title"])
-        # «Лекция N. Заголовок» → показать красиво
-        body = re.sub(r'^Лекци[яю]\s*\d+[.\s—-]*', '', t).strip() or t
+        body = re.sub(r'^(Лекци[яю]|Lecture)\s*\d+[.\s—-]*', '', t, flags=re.I).strip() or t
+        num_prefix = f"{loc['lecture']} {m['num']}. " if m["num"] else ""
         cards.append(
-            f"-   **{html_num(m['num'])}{esc(body)}**\n\n"
+            f"-   **{num_prefix}{esc(body)}**\n\n"
             f"    ---\n\n"
-            f"    {m['slides']} {plural_slides(m['slides'])}\n\n"
-            f"    [Открыть →](lectures/{m['id']}.md)\n"
+            f"    {m['slides']} {loc['slides'](m['slides'])}\n\n"
+            f"    [{open_label}](lectures/{m['id']}.md)\n"
         )
-    text = HERO + "\n".join(cards) + "\n</div>\n"
+    text = HERO.get(lang, HERO["ru"]) + "\n".join(cards) + "\n</div>\n"
     (DOCS / f"index.{lang}.md").write_text(text, encoding="utf-8")
-    print(f"  ✓ лендинг: {len(manifest)} карточек → docs/index.{lang}.md")
+    print(f"  ✓ лендинг ({lang}): {len(manifest)} карточек → docs/index.{lang}.md")
 
 def html_num(num) -> str:
     return f"Лекция {num}. " if num else ""
@@ -284,6 +324,8 @@ def main() -> None:
                     help="lec-01 lec-08 … (по умолчанию — все 16 лекций)")
     ap.add_argument("--proof", action="store_true",
                     help="только 4 proof-лекции (по одному диалекту)")
+    ap.add_argument("--all", action="store_true",
+                    help="все 16 лекций (иначе — только published 01-04)")
     ap.add_argument("--no-landing", action="store_true",
                     help="не перегенерировать лендинг")
     ap.add_argument("--lessons", default=str(DEFAULT_LESSONS),
@@ -297,23 +339,35 @@ def main() -> None:
         lectures = args.lectures
     elif args.proof:
         lectures = PROOF_LECTURES
-    else:
+    elif args.all:
         lectures = ALL_LECTURES
+    else:
+        lectures = PUBLISHED
 
     print(f"lessons: {lessons_dir}")
-    manifest, skipped = [], []
+    manifests = {lang: [] for lang in LANGS}
+    skipped = []
     for lec in lectures:
-        try:
-            manifest.append(build_lecture(lec, lessons_dir))
-        except GuardMismatch as e:
-            print(f"  ✗ ПРОПУСК {e}")
-            skipped.append(str(e))
+        for lang in LANGS:
+            # язык собираем только если есть язык-специфичные исходники
+            speech, pdf = lecture_files(lessons_dir / lec, lec, lang)
+            if not speech.exists() or not pdf.exists():
+                if lang == "en":
+                    continue  # нет EN — тихо пропускаем (RU-first)
+            try:
+                manifests[lang].append(build_lecture(lec, lessons_dir, lang))
+            except GuardMismatch as e:
+                print(f"  ✗ ПРОПУСК {lec}/{lang}: {e}")
+                skipped.append(str(e))
+    ru_manifest = manifests["ru"]
     if not args.no_landing:
-        write_landing(manifest)
-    print(f"\nГотово: {len(manifest)} лекц. собрано, {len(skipped)} пропущено.")
+        for lang in LANGS:
+            if manifests[lang]:
+                write_landing(manifests[lang], lang)
+    print(f"\nГотово: {len(ru_manifest)} лекц. (RU) + EN где есть, {len(skipped)} пропущено.")
     for s in skipped:
         print(f"  ✗ {s}")
-    print_nav(manifest)
+    print_nav(ru_manifest)
 
 
 if __name__ == "__main__":

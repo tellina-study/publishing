@@ -36,9 +36,10 @@ services:
       REMARK_URL: https://${SITE_DOMAIN}/comments
       SECRET: ${REMARK_SECRET}
       SITE: course
-      # аноним + соц-логин без обязательного GitHub (под смешанную RU-аудиторию)
+      # простой логин по имени (анонимный вход Remark42) — без обязательных соц-сетей
       AUTH_ANON: "true"
-      # включишь соц-логины, добавив их ключи (telegram/google/...) позже
+      # админ (модерация/удаление) — ID владельца: anonymous_<hash> или провайдерский ID
+      ADMIN_SHARED_ID: ${REMARK_ADMIN_ID:-}
       EMOJI: "true"
     volumes:
       - remark42:/srv/var

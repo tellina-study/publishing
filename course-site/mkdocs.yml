@@ -1,5 +1,5 @@
-site_name: AI-usage-lessons
-site_description: Открытый курс про практическое использование AI — слайды и разбор к ним.
+site_name: Использование ИИ в различных индустриях
+site_description: Открытый курс о том, как ИИ работает в реальных отраслях — слайды и разбор к ним.
 site_url: https://ai-usage-lessons.pages.dev
 docs_dir: docs
 # copyright появится позже; язык по умолчанию — RU (EN подтянется upstream)
@@ -46,12 +46,11 @@ plugins:
           default: true
           name: Русский
           build: true
-        # EN выключен до появления перевода (upstream в lessons): иначе переключатель
-        # ведёт на /en/, где из-за fallback тот же русский текст — выглядит «не работает».
-        # Вернуть build: true, когда появятся docs/**/*.en.md.
+          site_name: "Использование ИИ в различных индустриях"
         - locale: en
           name: English
-          build: false
+          build: true
+          site_name: "AI Across Industries"
 
 extra_css:
   - stylesheets/extra.css
@@ -72,15 +71,4 @@ nav:
       - lectures/lec-01.md
       - lectures/lec-02.md
       - lectures/lec-03.md
-      - lectures/lec-05.md
-      - lectures/lec-06.md
-      - lectures/lec-07.md
-      - lectures/lec-08.md
-      - lectures/lec-09.md
-      - lectures/lec-10.md
-      - lectures/lec-11.md
-      - lectures/lec-12.md
-      - lectures/lec-13.md
-      - lectures/lec-14.md
-      - lectures/lec-15.md
-      - lectures/lec-17.md
+      - lectures/lec-04.md
