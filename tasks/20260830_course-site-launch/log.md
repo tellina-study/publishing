@@ -103,3 +103,16 @@
   - End-to-end: pageview event 200, embed.js 200.
 - Осталось: сменить root-пароль VM (владелец); дизайн/брендинг (#20); lec-04 фикс в lessons; соц-логины
   Remark42 (опц.); RSS.
+
+## 2026-08-30 — картинки (регрессия), RU-блокировка, EN
+- **Картинки пропали** после перехода на сырой `<img loading=lazy>`: MkDocs не переписывает пути в
+  сыром HTML → `../assets` при directory-URL уходил на уровень выше (404, пустые слайды). Фикс: назад на
+  markdown-картинку с `attr_list {loading=lazy .slide-img}` — путь пересчитывается (`../../assets`),
+  lazy сохранён. Проверено live (lec-08/13). Передеплой.
+- **RU-доступ:** сайт из РФ только под VPN. Диагноз: origin = Vultr **Amsterdam** (AS20473) — РКН режет
+  подсеть. Не наша ошибка, не Vultr-блок. Владелец выбрал **CDN без Cloudflare (Gcore/BunnyCDN)**.
+  Написал `deploy/cdn-setup.md` (Gcore рек.): pull-zone, custom domain lessons.tellian.io, origin.tellian.io
+  → A на IP, bypass-cache для /stats,/comments. Нужен аккаунт владельца + DNS; origin-часть я довожу после.
+- **EN:** контента нет (перевод — upstream-задача владельца в lessons); дефолт — ждём, сайт соберёт EN
+  автоматически при появлении `*.en.md`. Переключатель выключен, чтобы не был мёртвым. Стопгэп машинного
+  EN — по слову владельца.
