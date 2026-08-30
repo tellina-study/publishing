@@ -203,10 +203,12 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         cap = sl["caption"] or f"Слайд {i}"
         out.append(f"### {cap} {{#{anchor}}}")
         out.append("")
-        # raw <img> ради loading=lazy — грузятся только видимые слайды
+        # markdown-картинка (MkDocs сам пересчитывает путь под directory-URL) +
+        # attr_list добавляет loading=lazy и класс — грузятся только видимые слайды
+        alt = cap.replace("]", " ").replace("[", " ")
         out.append(
-            f'<img src="../assets/{lang}/{lec}/page-{i:02d}.webp" '
-            f'alt="Слайд {i}: {cap}" loading="lazy" class="slide-img">'
+            f"![Слайд {i}. {alt}](../assets/{lang}/{lec}/page-{i:02d}.webp)"
+            f"{{loading=lazy .slide-img}}"
         )
         out.append("")
         if sl["body"]:
