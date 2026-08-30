@@ -4,6 +4,14 @@
 
 {% block extrahead %}
   {{ super() }}
+  <!-- Google Analytics (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-99D2ZE94Y7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-99D2ZE94Y7');
+  </script>
   <!-- Umami: просмотры (self-host на этом же VM, отдаётся через /stats) -->
   <script defer src="/stats/script.js"
           data-website-id="35d3e86c-2507-45ec-ac7f-72ea825df3db"

@@ -1,11 +1,13 @@
-# Caddyfile — self-host курса-сайта на Vultr (авто-TLS Let's Encrypt) + фаза B same-origin.
-# Живёт на VM в /etc/caddy/Caddyfile. Домен: lessons.tellian.io → A-запись на IP VM.
+# Caddyfile — origin за Gcore CDN (RU-доступ). Живёт на VM в /etc/caddy/Caddyfile.
 #
-# Фаза A: статика из /var/www/course-site. Фаза B: Umami (/stats) + Remark42 (/comments)
-# проксируются на localhost-контейнеры (docker-compose в deploy/phase-b/) — one-origin,
-# без CORS, TLS терминируется здесь.
+# Схема: пользователь → Gcore edge (HTTPS, LE) → origin (этот Caddy, HTTP) → статика + Umami/Remark42.
+# Gcore тянет с origin по HTTP (originProtocol=HTTP, hostHeader=lessons.tellian.io), поэтому origin
+# отдаёт и http://, и https:// БЕЗ редиректа (иначе Gcore получал бы 308). TLS для юзеров — на edge.
+#
+# DNS: lessons.tellian.io = CNAME → cl-gl845efb71.gcdn.co (Gcore). Origin Gcore знает по IP.
 
-lessons.tellian.io {
+http://lessons.tellian.io, https://lessons.tellian.io {
+	log
 	encode gzip zstd
 	header {
 		X-Content-Type-Options nosniff
@@ -13,16 +15,16 @@ lessons.tellian.io {
 		-Server
 	}
 
-	# Umami (аналитика: просмотры + scroll-глубина). data-host-url в шаблоне = /stats
+	# Umami (аналитика: просмотры + scroll-глубина) — same-origin через /stats
 	handle_path /stats/* {
 		reverse_proxy 127.0.0.1:3000
 	}
-	# Remark42 (комментарии/реакции/RSS). REMARK_URL = https://.../comments
+	# Remark42 (комментарии/реакции/RSS) — same-origin через /comments
 	handle_path /comments/* {
 		reverse_proxy 127.0.0.1:8080
 	}
 
-	# Статика курса (fallback)
+	# Статика курса (кэшируется на Gcore; /assets — immutable)
 	handle {
 		root * /var/www/course-site
 		@assets path /assets/*

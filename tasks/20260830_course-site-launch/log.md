@@ -116,3 +116,18 @@
 - **EN:** контента нет (перевод — upstream-задача владельца в lessons); дефолт — ждём, сайт соберёт EN
   автоматически при появлении `*.en.md`. Переключатель выключен, чтобы не был мёртвым. Стопгэп машинного
   EN — по слову владельца.
+
+## 2026-08-30 — Google Analytics + Gcore CDN (RU-доступ) ЖИВЫЕ
+- **Google Analytics** G-99D2ZE94Y7 — gtag во все страницы (overrides/main.html), рядом с Umami. Задеплоено.
+- **RU-блокировка → Gcore CDN (без Cloudflare):**
+  - Диагноз: origin Vultr-Amsterdam режется РКН (2 IP той же площадки — оба недоступны из РФ).
+  - Gcore CDN resource id 1023343, cname lessons.tellian.io, origin 136.244.103.245 (HTTP, hostHeader),
+    edge CNAME cl-gl845efb71.gcdn.co. Кэш-правила /stats,/comments = 0s (bypass). redirect_http→https on.
+  - Origin (Caddy) переведён на отдачу http+https без редиректа (Gcore тянет по HTTP).
+  - **Let's Encrypt**: LE-cert через `POST /cdn/sslData {automated:true}` (id 308318) → привязка sslEnabled+sslData.
+    Выпущен (CN lessons.tellian.io, до 2026-11-28), раскатан на edge.
+  - **Verified live over HTTPS через Gcore:** landing/lecture/slide.webp/umami/remark = 200, TLS valid.
+  - DNS: владелец поставил CNAME lessons→cl-gl845efb71.gcdn.co (удалил старую A). Propagation ~2 мин на edge.
+- ⚠️ Проверить из РФ без VPN (Gcore RU-PoP) — на стороне владельца.
+- 🔐 Токен Gcore засветился в чате — рекомендовать отзыв/пересоздание.
+- Sibling bec6d1d2: EN lec-01..04 + lec-04-fix + publication-config (#177/#178) — интеграция следующим заходом.
