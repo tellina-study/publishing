@@ -28,11 +28,15 @@
 
 ## Чеклист ПОСЛЕ гейта (не начинать до одобрения)
 - [ ] Скелет MkDocs Material + `mkdocs.yml` + `requirements.txt`
-- [ ] `scripts/sync_lectures.py` + тесты (парс deck/speech, pdftoppm)
-- [ ] lec-01 RU — proof-of-format на превью, показать владельцу «пощупать»
-- [ ] Гейт по формату лекции → масштабирование на 16 лекций
+- [ ] Установить poppler локально; отрисовать lec-01 в целевом DPI → реальная цифра размера (git vs LFS)
+- [ ] `scripts/sync_lectures.py`: парсер на **4 диалекта speech**, индекс=speech, whitelist слайд-секций,
+      guard «секций==страниц», language-aware; + тесты
+- [ ] Proof-of-format на **по одному представителю каждого диалекта: lec-01 + lec-08 + lec-10 + lec-13**
+      (не только чистая lec-01), показать владельцу «пощупать»
+- [ ] Гейт по формату → масштабирование на 16 лекций
+- [ ] **PII/лицензия-скраб + owner sign-off** на лекцию перед публикацией
 - [ ] CF Pages деплой + домен + SEO/sitemap/hreflang
-- [ ] Фаза B: Umami + Remark42 (когда подтверждён Vultr)
+- [ ] Фаза B: Umami (scroll-глубина = кастом-JS) + Remark42 (когда подтверждён Vultr)
 - [ ] Close-the-loop: wiki/онтология/decisions
 
 ## Риски / на что смотреть
