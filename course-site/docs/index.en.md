@@ -14,7 +14,7 @@ how to tell. Each lecture is slides plus commentary: look at a slide, read what'
 
     ---
 
-    36 slides
+    34 slides
 
     [Open →](lectures/lec-01.md)
 
@@ -38,7 +38,7 @@ how to tell. Each lecture is slides plus commentary: look at a slide, read what'
 
     ---
 
-    41 slides
+    40 slides
 
     [Open →](lectures/lec-04.md)
 

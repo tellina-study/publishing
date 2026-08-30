@@ -51,6 +51,9 @@ plugins:
           name: English
           build: true
           site_name: "AI Across Industries"
+          nav_translations:
+            Курс: Course
+            Лекции: Lectures
 
 extra_css:
   - stylesheets/extra.css

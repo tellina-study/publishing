@@ -41,30 +41,31 @@
 {% block content %}
   {{ super() }}
   {% if page and page.url and 'lectures/lec' in page.url %}
+  {% set _en = page.url.startswith('en/') %}
   <!-- Плавающие кнопки: наверх · комментарий · к списку лекций -->
-  <nav class="fab-stack" aria-label="Быстрые действия">
-    <a class="fab" href="{{ nav.homepage.url | url }}" title="К списку лекций" aria-label="К списку лекций">
+  <nav class="fab-stack" aria-label="{{ 'Quick actions' if _en else 'Быстрые действия' }}">
+    <a class="fab" href="{{ nav.homepage.url | url }}" title="{{ 'All lectures' if _en else 'К списку лекций' }}" aria-label="{{ 'All lectures' if _en else 'К списку лекций' }}">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
     </a>
-    <a class="fab" href="#comments" title="Оставить комментарий" aria-label="Оставить комментарий">
+    <a class="fab" href="#comments" title="{{ 'Leave a comment' if _en else 'Оставить комментарий' }}" aria-label="{{ 'Leave a comment' if _en else 'Оставить комментарий' }}">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H8l-4 4V5a1 1 0 0 1 1-1z"/></svg>
     </a>
-    <button class="fab fab-top" type="button" title="Наверх" aria-label="Наверх"
+    <button class="fab fab-top" type="button" title="{{ 'Top' if _en else 'Наверх' }}" aria-label="{{ 'Top' if _en else 'Наверх' }}"
             onclick="window.scrollTo({top:0,behavior:'smooth'})">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 6l7 7-1.4 1.4L13 9.8V20h-2V9.8l-4.6 4.6L5 13z"/></svg>
     </button>
   </nav>
 
-  <!-- Remark42: комментарии/реакции (аноним + соц-логин), отдаётся через /comments -->
+  <!-- Remark42: комментарии/реакции (аноним), отдаётся через /comments -->
   <hr>
-  <h2 id="comments">Комментарии</h2>
+  <h2 id="comments">{{ 'Comments' if _en else 'Комментарии' }}</h2>
   <div id="remark42"></div>
   <script>
     var remark_config = {
       host: "https://lessons.tellian.io/comments",
       site_id: "course",
       components: ["embed"],
-      locale: "ru",
+      locale: "{{ 'en' if _en else 'ru' }}",
       theme: (document.body.getAttribute('data-md-color-scheme') === 'slate') ? 'dark' : 'light'
     };
     (function () {

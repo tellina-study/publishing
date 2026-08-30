@@ -55,6 +55,23 @@ class GuardMismatch(Exception):
 
 HEADING = re.compile(r'^(#{1,6})\s+(.*\S)\s*$')
 
+# Исключаемые секции (publication-config exclude_slides/exclude_inline): универ-специфика.
+# Дропаем ЦЕЛИКОМ (и комментарий, и слайд): карта семестра, оценивание, посещаемость,
+# рубежный контроль, домашки, семинары-мостики, чат курса в MAX. Telegram/email — оставляем.
+EXCLUDE_SECTION_RE = re.compile(
+    r'карт[аы]\s+семестр|semester\s+map|'
+    r'оценк\w*\s+за\s+семестр|оцениван\w*|semester\s+grade|grading|'
+    r'чат\s+курса|course\s+chat|\bв\s+max\b|'
+    r'посещаемост\w*|attendance|'
+    r'рубежн\w*\s+контрол\w*|\bрк\s*[123]\b|midterm|'
+    r'домашн\w*\s+задани\w*|homework|'
+    r'семинар\w*\s*(?:№|\d|мостик|bridge)|seminar\s*(?:\d|bridge)',
+    re.I,
+)
+
+def is_excluded_section(title: str) -> bool:
+    return bool(EXCLUDE_SECTION_RE.search(title))
+
 def is_slide_heading(title: str) -> bool:
     """4 диалекта. Инструкторские секции («Раздел N», «Подготовка…») → False."""
     t = title.strip()
@@ -105,6 +122,17 @@ def yaml_q(s: str) -> str:
     return '"' + str(s).replace('\\', '\\\\').replace('"', '\\"') + '"'
 
 
+def strip_stage_directions(body: str) -> str:
+    """Убрать сценические ремарки в [квадратных скобках] (для лектора, не для читателя):
+    «[На слайде— …]», «[Backup-фраза …]», «[I turn on the laptop …]».
+    Сохраняем: [N]-цитаты (только цифры) и markdown-ссылки [text](url)."""
+    # скобки с буквой внутри, НЕ являющиеся началом markdown-ссылки (нет '(' сразу после)
+    body = re.sub(r'\[[^\]]*[A-Za-zА-Яа-яЁё][^\]]*\](?!\()', '', body)
+    body = re.sub(r'[ \t]+\n', '\n', body)          # хвостовые пробелы
+    body = re.sub(r'\n{3,}', '\n\n', body)          # схлопнуть пустые абзацы
+    return body.strip()
+
+
 def parse_frontmatter(text: str) -> dict:
     if text.startswith('---'):
         end = text.find('\n---', 3)
@@ -133,13 +161,15 @@ def parse_speech(path: Path) -> tuple[list[dict], dict]:
     for h, (line_i, level, title) in enumerate(heads):
         if not is_slide_heading(title):
             continue
+        if is_excluded_section(title):        # универ-специфика — дропаем целиком
+            continue
         # конец тела: следующий заголовок с уровнем <= level
         body_end = len(lines)
         for (nline_i, nlevel, _) in heads[h + 1:]:
             if nlevel <= level:
                 body_end = nline_i
                 break
-        body = "\n".join(lines[line_i + 1:body_end]).strip()
+        body = strip_stage_directions("\n".join(lines[line_i + 1:body_end]))
         slides.append({"caption": slide_caption(title), "body": body})
     return slides, fm
 
@@ -164,6 +194,92 @@ def render_pdf(pdf: Path, out_dir: Path, dpi: int = DPI, force: bool = False) ->
                  quality=WEBP_QUALITY, method=6)
     doc.close()
     return n
+
+
+# ────────────── content-based маппинг: страница PDF ↔ секция speech ──────────────
+# Порядок страниц PDF не всегда == порядку секций speech (вставленные/переставленные
+# слайды — напр. бауманские в lec-01). Сопоставляем по СОДЕРЖИМОМУ: заголовок секции
+# ищем в тексте страницы. Глобальное жадное 1:1 + позиционная подсказка. Страницы без
+# пары (лишние слайды) отбрасываются, секции без пары — без картинки (флагуем).
+
+_STOP = set("и в на что как не с по за из от до или а но the of a an to in on for and or is are".split())
+
+def _norm_txt(s: str) -> str:
+    return re.sub(r'[^0-9a-zа-яё]+', ' ', str(s).lower()).strip()
+
+def _title_tokens(title: str) -> list[str]:
+    return [w for w in _norm_txt(title).split() if len(w) >= 3 and w not in _STOP]
+
+def _score(title_toks: list[str], page_text: str) -> float:
+    if not title_toks:
+        return 0.0
+    return sum(1 for w in title_toks if w in page_text) / len(title_toks)
+
+def build_page_map(doc, slides: list[dict], gap: float = -0.12) -> list:
+    """section_idx → pdf_page_idx (или None) через УПОРЯДОЧЕННОЕ выравнивание (DP, как diff).
+    Обе последовательности (секции speech и реальные слайды PDF) идут в порядке лекции;
+    вставленные лишние страницы (бауманские) пропускаются как 'insertions', пропущенные
+    слайды — как 'deletions'. Диагональ (позиционная) выигрывает на чистых лекциях —
+    обложки/Q&A/дивайдеры с малым текстом остаются на месте."""
+    S = len(slides)
+    P = doc.page_count
+    page_texts = [_norm_txt(doc.load_page(k).get_text()) for k in range(P)]
+    toks = [_title_tokens(s["caption"]) for s in slides]
+
+    dp = [[0.0] * (P + 1) for _ in range(S + 1)]
+    bt = [[""] * (P + 1) for _ in range(S + 1)]
+    for j in range(1, P + 1):
+        dp[0][j] = dp[0][j - 1] + gap; bt[0][j] = "P"     # пропуск страницы
+    for i in range(1, S + 1):
+        dp[i][0] = dp[i - 1][0] + gap; bt[i][0] = "S"     # пропуск секции
+    for i in range(1, S + 1):
+        for j in range(1, P + 1):
+            m = dp[i - 1][j - 1] + _score(toks[i - 1], page_texts[j - 1])
+            sp = dp[i][j - 1] + gap
+            ss = dp[i - 1][j] + gap
+            best = max(m, sp, ss)
+            dp[i][j] = best
+            bt[i][j] = "M" if best == m else ("P" if best == sp else "S")
+
+    sec2page = [None] * S
+    i, j = S, P
+    while i > 0 or j > 0:
+        move = bt[i][j] if (i and j) else ("S" if i > 0 else "P")
+        if move == "M":
+            sec2page[i - 1] = j - 1; i -= 1; j -= 1
+        elif move == "P":
+            j -= 1
+        else:
+            i -= 1
+
+    # RESCUE: локальные перестановки слайдов в PDF монотонный DP роняет. Досопоставляем
+    # секции-без-пары пропущенным страницам по содержимому. Бауманские страницы (совпадают
+    # с exclude-паттерном) в кандидаты НЕ берём — их дропаем намеренно.
+    used = {p for p in sec2page if p is not None}
+    free = [k for k in range(P) if k not in used and not EXCLUDE_SECTION_RE.search(page_texts[k])]
+    for i in range(S):
+        if sec2page[i] is not None:
+            continue
+        best, best_sc = None, 0.34
+        for k in free:
+            sc = _score(toks[i], page_texts[k])
+            if sc > best_sc:
+                best_sc, best = sc, k
+        if best is not None:
+            sec2page[i] = best
+            free.remove(best)
+    return sec2page
+
+def render_mapped(doc, page_map: list, out_dir: Path, dpi: int = DPI) -> None:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for f in list(out_dir.glob("page-*.png")) + list(out_dir.glob("page-*.webp")):
+        f.unlink()
+    for i, k in enumerate(page_map, 1):
+        if k is None:
+            continue
+        pix = doc.load_page(k).get_pixmap(dpi=dpi)
+        Image.frombytes("RGB", (pix.width, pix.height), pix.samples).save(
+            out_dir / f"page-{i:02d}.webp", "WEBP", quality=WEBP_QUALITY, method=6)
 
 
 # ─────────────────────────── сборка страницы ───────────────────────────
@@ -197,16 +313,17 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
 
     slides, fm = parse_speech(speech)
     assets = DOCS / "assets" / lang / lec
-    n_pages = render_pdf(pdf, assets)
 
-    # GUARD: индекс истины — speech; должен совпасть со страницами PDF.
-    # Если нет — НЕ гадаем (иначе комментарии съедут на чужие слайды): пропускаем лекцию.
-    if len(slides) != n_pages:
-        raise GuardMismatch(
-            f"{lec}: слайд-секций speech={len(slides)} != страниц PDF={n_pages} "
-            f"(Δ={n_pages - len(slides)}) — дефект исходника в lessons (build-шаги/пропуски). "
-            f"Нужна сверка страница↔секция или переэкспорт PDF."
-        )
+    # CONTENT-MAPPING: сопоставляем каждую секцию speech её странице PDF по СОДЕРЖИМОМУ
+    # (порядок страниц PDF ≠ порядку секций из-за вставленных/переставленных слайдов).
+    doc = pymupdf.open(pdf)
+    page_map = build_page_map(doc, slides)      # section_idx → pdf_page_idx | None
+    render_mapped(doc, page_map, assets)        # webp только для сопоставленных, по исходному индексу
+    doc.close()
+    dropped = [slides[i]["caption"] for i, p in enumerate(page_map) if p is None]
+    if dropped:
+        print(f"    ⚠ {lec}/{lang}: без сопоставленного слайда (не публикуются): {dropped}")
+    n_pages = sum(1 for p in page_map if p is not None)
 
     # frontmatter-схемы разнятся по лекциям: title|lecture_title, lecture|lecture_number
     num = fm.get("lecture") or fm.get("lecture_number") or ""
@@ -225,18 +342,20 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         out.append("*" + " · ".join(str(m) for m in meta) + "*")
         out.append("")
 
-    for i, sl in enumerate(slides, 1):
-        anchor = f"s-{i:02d}"
-        cap = sl["caption"] or f"{loc['slide']} {i}"
-        # номер слайда в подзаголовке → правый TOC читается как нумерованный список
-        out.append(f"### {i:02d} · {cap} {{#{anchor}}}")
+    disp = 0
+    for orig_i, sl in enumerate(slides):
+        if page_map[orig_i] is None:
+            continue                        # нет слайда → секцию не публикуем (нет висячих комментов)
+        disp += 1
+        anchor = f"s-{disp:02d}"
+        cap = sl["caption"] or f"{loc['slide']} {disp}"
+        # последовательный номер в подзаголовке → правый TOC как нумерованный список
+        out.append(f"### {disp:02d} · {cap} {{#{anchor}}}")
         out.append("")
-        # markdown-картинка (MkDocs сам пересчитывает путь под directory-URL) +
-        # attr_list добавляет loading=lazy и класс — грузятся только видимые слайды
+        # webp назван по ИСХОДНОМУ индексу секции (как в render_mapped)
         alt = cap.replace("]", " ").replace("[", " ")
-        img = f"../assets/{lang}/{lec}/page-{i:02d}.webp"
-        # картинка кликабельна → открывается в полном размере
-        out.append(f"[![{loc['slide']} {i}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
+        img = f"../assets/{lang}/{lec}/page-{orig_i + 1:02d}.webp"
+        out.append(f"[![{loc['slide']} {disp}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
         out.append("")
         if sl["body"]:
             out.append(sl["body"])
