@@ -14,3 +14,47 @@
   margin-top: 2.2rem;
   font-size: 1.1rem;
 }
+
+/* Слайд кликабелен → полный размер; курсор-подсказка */
+a.slide-link { display: block; cursor: zoom-in; }
+a.slide-link:hover .slide-img { border-color: var(--md-accent-fg-color); }
+
+/* Плавающие кнопки действий (страницы лекций) */
+.fab-stack {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.fab-stack .fab {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--md-primary-fg-color);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.fab-stack .fab:hover {
+  background: var(--md-accent-fg-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+}
+.fab-stack .fab:focus-visible {
+  outline: 3px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fab-stack .fab { transition: none; }
+}
+@media (max-width: 480px) {
+  .fab-stack { right: .7rem; bottom: .7rem; gap: .5rem; }
+  .fab-stack .fab { width: 40px; height: 40px; }
+}

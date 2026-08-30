@@ -141,12 +141,17 @@ def parse_speech(path: Path) -> tuple[list[dict], dict]:
 
 # ─────────────────────────── рендер PDF → PNG ───────────────────────────
 
-def render_pdf(pdf: Path, out_dir: Path, dpi: int = DPI) -> int:
+def render_pdf(pdf: Path, out_dir: Path, dpi: int = DPI, force: bool = False) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
-    for f in list(out_dir.glob("page-*.png")) + list(out_dir.glob("page-*.webp")):
-        f.unlink()
     doc = pymupdf.open(pdf)
     n = doc.page_count
+    # пропуск: если webp уже отрисованы в нужном количестве — не перерисовываем
+    existing = sorted(out_dir.glob("page-*.webp"))
+    if not force and len(existing) == n and not list(out_dir.glob("page-*.png")):
+        doc.close()
+        return n
+    for f in list(out_dir.glob("page-*.png")) + list(out_dir.glob("page-*.webp")):
+        f.unlink()
     for k in range(n):
         pix = doc.load_page(k).get_pixmap(dpi=dpi)
         img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
@@ -206,10 +211,9 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         # markdown-картинка (MkDocs сам пересчитывает путь под directory-URL) +
         # attr_list добавляет loading=lazy и класс — грузятся только видимые слайды
         alt = cap.replace("]", " ").replace("[", " ")
-        out.append(
-            f"![Слайд {i}. {alt}](../assets/{lang}/{lec}/page-{i:02d}.webp)"
-            f"{{loading=lazy .slide-img}}"
-        )
+        img = f"../assets/{lang}/{lec}/page-{i:02d}.webp"
+        # картинка кликабельна → открывается в полном размере
+        out.append(f"[![Слайд {i}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
         out.append("")
         if sl["body"]:
             out.append(sl["body"])
@@ -247,8 +251,8 @@ def write_landing(manifest: list[dict], lang: str = "ru") -> None:
         cards.append(
             f"-   **{html_num(m['num'])}{esc(body)}**\n\n"
             f"    ---\n\n"
-            f"    {m['slides']} слайдов.\n\n"
-            f"    [:octicons-arrow-right-24: Открыть](lectures/{m['id']}.md)\n"
+            f"    {m['slides']} {plural_slides(m['slides'])}\n\n"
+            f"    [Открыть →](lectures/{m['id']}.md)\n"
         )
     text = HERO + "\n".join(cards) + "\n</div>\n"
     (DOCS / f"index.{lang}.md").write_text(text, encoding="utf-8")
@@ -256,6 +260,13 @@ def write_landing(manifest: list[dict], lang: str = "ru") -> None:
 
 def html_num(num) -> str:
     return f"Лекция {num}. " if num else ""
+
+def plural_slides(n: int) -> str:
+    n = int(n)
+    if 11 <= n % 100 <= 14:
+        return "слайдов"
+    d = n % 10
+    return "слайд" if d == 1 else ("слайда" if 2 <= d <= 4 else "слайдов")
 
 def esc(s: str) -> str:
     return s.replace("[", "").replace("]", "")

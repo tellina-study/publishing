@@ -33,6 +33,20 @@
 {% block content %}
   {{ super() }}
   {% if page and page.url and 'lectures/lec' in page.url %}
+  <!-- Плавающие кнопки: наверх · комментарий · к списку лекций -->
+  <nav class="fab-stack" aria-label="Быстрые действия">
+    <a class="fab" href="{{ nav.homepage.url | url }}" title="К списку лекций" aria-label="К списку лекций">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+    </a>
+    <a class="fab" href="#comments" title="Оставить комментарий" aria-label="Оставить комментарий">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H8l-4 4V5a1 1 0 0 1 1-1z"/></svg>
+    </a>
+    <button class="fab fab-top" type="button" title="Наверх" aria-label="Наверх"
+            onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 6l7 7-1.4 1.4L13 9.8V20h-2V9.8l-4.6 4.6L5 13z"/></svg>
+    </button>
+  </nav>
+
   <!-- Remark42: комментарии/реакции (аноним + соц-логин), отдаётся через /comments -->
   <hr>
   <h2 id="comments">Комментарии</h2>
