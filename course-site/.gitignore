@@ -1,0 +1,11 @@
+# Сборка и окружение
+site/
+.venv/
+__pycache__/
+*.pyc
+
+# Сгенерированный вывод (воспроизводится scripts/sync_lectures.py из репо lessons).
+# Решение git-vs-LFS для PNG отложено до гейта — пока не коммитим ~190 МБ.
+docs/assets/
+docs/lectures/lec-*.ru.md
+docs/lectures/lec-*.en.md
