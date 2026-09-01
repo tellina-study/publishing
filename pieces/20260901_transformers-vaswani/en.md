@@ -20,7 +20,7 @@ September 1 — the day the school year traditionally starts, Knowledge Day in R
 
 ChatGPT — late 2022. Transformers, the architecture it stands on — 2017. And the idea that transformers and everything else sprouted from? Dig to the very root and you land on September 1, 2014, in a paper from Montreal. Twelve years ago to the day, right on Knowledge Day.
 
-You couldn't ask for a better excuse to wish AI a happy birthday. The date does the work for you.
+You couldn't ask for a better excuse to wish AI a happy birthday.
 
 That paper was about a narrow, practical thing: teach a program to "look" at the right words while it translates a long sentence. Twelve years later, that grew into systems that write code and hold a conversation. The idea got a name — **attention** — and everything started there.
 
@@ -81,7 +81,7 @@ Two things opened the road together, and it matters not to confuse them. One was
 
 Attention gave the model sharp sight; dropping the queue gave it speed.
 
-And then everything went wide. Once training splits into parallel work, you can **feed it ever more computation**: more graphics cards, more text, in the same time. And then a fact of almost indecent simplicity turned up: this predictably turns into quality. More scale — a smarter model, and not by luck but along a fairly smooth curve (later measured and written up in the "scaling laws" — the work of [Kaplan](https://arxiv.org/abs/2001.08361), then [Chinchilla](https://arxiv.org/abs/2203.15556)).
+And then everything went wide. Once training splits into parallel work, you can **feed it ever more computation**: more graphics cards, more text, in the same time. And then a fact turned up that was almost embarrassingly simple: this predictably turns into quality. More scale — a smarter model, and not by luck but along a fairly smooth curve (later measured and written up in the "scaling laws" — the work of [Kaplan](https://arxiv.org/abs/2001.08361), then [Chinchilla](https://arxiv.org/abs/2203.15556)).
 
 > Before, making a model smarter took a new bright idea. Now, much of the time, it was enough to add computation and data — and wait.
 
