@@ -1,6 +1,6 @@
 ---
 slug: "transformers-vaswani"
-title: "День ИИ: как одна идея из 2014-го выросла в ChatGPT"  # рабочий; финализируется
+title: "День ИИ: как перевод длинной фразы дорос до ChatGPT"  # утверждён владельцем
 date: 2026-09-01
 kind: piece
 channels: [blog, telegram, linkedin]
