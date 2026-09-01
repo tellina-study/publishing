@@ -25,11 +25,11 @@ That paper was about a narrow, practical thing: teach a program to "look" at the
 
 ## What attention is — and why nothing works without it
 
-Picture translating a long sentence out of a language you barely know. You can't hold the whole thing in your head at once. You look at the first chunk, translate it, move your eyes to the next, keep the link to the beginning in mind — which noun is the subject, what that pronoun points back to — and so on to the period. At every moment you're looking at the word that matters right now, not at the whole sentence at once. And when you reach the verb at the end of the German sentence, you still remember who, back at its start, was doing the thing.
+Picture translating a long sentence out of a language you barely know. You can't hold the whole thing in your head at once. You look at the first chunk, translate it, move your eyes to the next, keep the link to the beginning in mind — which noun is the subject, what that pronoun points back to — and so on to the period. At each step you're looking at the word that matters right now, not the whole sentence. And when you reach the verb at the end of the German sentence, you still remember who, back at its start, was doing the thing.
 
-That's **attention** — a program's ability, at each step, to look at exactly the source words it needs right now, instead of trying to take everything in at one gulp.
+That's **attention** — a program's ability, at each step, to look at exactly the source words it needs right now, instead of trying to take it all in at once.
 
-Early machine translators worked differently. The program read the whole sentence start to finish and tried to cram its meaning into one cramped cell — a short list of numbers of a fixed size, an extremely compressed summary. Then, working from that one distillation and no longer looking at the original, it assembled the translation.
+Early machine translators worked differently. The program read the whole sentence start to finish and tried to squeeze its whole meaning into one small cell — a short, fixed-length list of numbers, an extremely compressed summary. Then, working from that one distillation and no longer looking at the original, it assembled the translation.
 
 For a short phrase the trick held: everything fit in the summary. On a long one the cell overflowed. A whole sentence's meaning won't fit in a handful of numbers — something has to be dropped, and what gets dropped is exactly what didn't fit. "The cat sat on the mat" you can still translate this way. A half-page paragraph, no.
 
@@ -41,18 +41,18 @@ A team in Yoshua Bengio's lab (Dzmitry Bahdanau, Kyunghyun Cho; MILA, University
 
 The [paper](https://arxiv.org/abs/1409.0473) names the diagnosis without hedging: *"the use of a fixed-length vector is a bottleneck."* A long sentence simply won't fit — and everything that doesn't fit is lost. Half the work in science is naming the disease correctly. Here they named it, and it became clear where to strike.
 
-And they struck like this. While assembling the translation, let the model, at each word, **look** at all the words of the original and take exactly what matters right now — with different weights, stronger here, weaker there. Not a compressed retelling of the whole sentence, but a live gaze sliding across the source. That's how attention was born.
+Here's how they struck. While building the translation, let the model, at each word, **look** at all the words of the original and take exactly what matters right now — with different weights, stronger here, weaker there. Not a compressed retelling of the whole sentence, but a live look that slides across the source. That's how attention was born.
 
 The model itself had a dry name — RNNsearch; the word "attention," which would later carry an entire era, was added, by Bahdanau's own account, by Bengio — on one of the final passes, almost in passing. The reasoning was simple: a human really does keep one or two words in mind at a time, not the whole sentence at once. The word turned out to be apt — but it was set down without fanfare.
 
 ## Why "real AI" still didn't arrive after 2014
 
-The idea was excellent — and it hit the old design of the models themselves.
+The idea was excellent — and it ran straight into the old design of the models.
 
 - **Recurrence.** A model of those years read text in strict order, word by word, holding in mind a short "summary" of everything it had read so far. Each next word went on top of that summary. Like reading a book through a slit: one word visible, the next only when you slide further.
-- **And here's the drag.** Training ran in that same strict order: each step waited on the one before, and there was no way to split the work across many hands at once. So training the model on enormous volumes of text was agonizingly slow — and no amount of "add more power" really helped, because the next step still ran into the previous one. Computing became too slow and too expensive to grow at any serious scale.
+- **And here's the drag.** Training ran in that same strict order: each step waited on the one before, and there was no way to split the work across many hands at once. So training the model on enormous volumes of text was agonizingly slow — and simply adding more power didn't really help, because the next step still waited on the one before. Training was too slow and too costly to push to any serious scale.
 
-Attention back then cured one disease — the overflowing cell. But the second, the slowness of reading in sequence, it never touched: it stayed a bolt-on over the old design, which still read word by word. Training on big data got no faster. No revolution in models came after 2014 — not because the idea was weak, but because it had nowhere to stretch: attention could look in the right place, but it was bolted to an engine you couldn't rev. For the idea to fire, someone had to swap the engine itself. That took three years.
+Attention back then cured one disease — the overflowing cell. But the second — the slowness of reading in sequence — it left untouched: it stayed a bolt-on over the old design, which still read word by word. Training on big data got no faster. No revolution in models came after 2014 — not because the idea was weak, but because it had nowhere to stretch: attention could look in the right place, but it was bolted to an engine you couldn't rev. For the idea to fire, someone had to swap the engine itself. That took three years.
 
 ## 2017: strip out everything else, keep attention alone
 
@@ -97,18 +97,18 @@ The best proof of how big the shift was: its skeleton still holds the frontier, 
 What survived into our flagships out of each of the two papers:
 
 - **from 2014** — the idea of attention itself. It's at the heart of every large model today, without a single exception. When ChatGPT "understands" what that "it" refers to in your long question, the same mechanism is at work — the one invented to translate German sentences.
-- **from 2017** — Vaswani's specific design at the very core: every word's attention to every other, several parallel "heads" of attention at once, residual connections with normalization, the alternation of "attention → processing" blocks, and the very thought that word order has to be told to the model separately (since there's no queue anymore, it won't arise on its own).
+- **from 2017** — Vaswani's specific design at the very core: every word's attention to every other, several parallel "heads" of attention at once, residual connections with normalization, blocks that alternate "attention → processing," and the very idea that word order has to be told to the model separately (since there's no queue anymore, it won't arise on its own).
 
 Meanwhile the 2017 blueprint has been quietly rewritten in many places over these years:
 
 - normalization was moved so training would go smoother — pre-norm ([Xiong, 2020](https://arxiv.org/abs/2002.04745));
-- the way of telling the model position was swapped for a more flexible one — RoPE ([Su, 2021](https://arxiv.org/abs/2104.09864)), ALiBi ([Press, 2021](https://arxiv.org/abs/2108.12409));
+- how position is fed to the model was swapped for something more flexible — RoPE ([Su, 2021](https://arxiv.org/abs/2104.09864)), ALiBi ([Press, 2021](https://arxiv.org/abs/2108.12409));
 - from the encoder-decoder pair, large language models moved to a single decoder (the GPT line);
 - the O(n²) square was taught to be computed more cleverly, without materializing the whole matrix in memory — FlashAttention ([Dao, 2022](https://arxiv.org/abs/2205.14135));
 - attention was thinned out for cheapness — GQA ([Ainslie, 2023](https://arxiv.org/abs/2305.13245));
 - dense processing was replaced by a "mixture of experts," where only part of the model switches on for each word — MoE/Switch ([Fedus, 2021](https://arxiv.org/abs/2101.03961)).
 
-The skeleton is 2017's; the flesh grown onto it is largely new.
+The skeleton is 2017's; the flesh grown on it is largely new.
 
 The frontier today is still that same transformer with attention at its core. Every flagship (models on the level of GPT-5, Claude, Gemini, Llama 4, DeepSeek, Qwen) is a transformer refined around the edges; the upgrades run around the core, and the core holds. One caveat: the makers of the closed models never disclosed their architecture — so for GPT-5, Claude, and Gemini this is a strong inference from indirect signs, not a confirmed fact.
 
