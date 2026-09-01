@@ -15,6 +15,8 @@ a source worth keeping.
 | <a id="language-confusion"></a>Language Confusion (EMNLP 2024) | primary | language, placement | [arXiv:2406.20052](https://arxiv.org/abs/2406.20052) | high | Isolated language instruction confuses less than an integrated one; one example ≈80% correct-language. |
 | <a id="chinese-mythbuster"></a>Mythbuster: Chinese is not more efficient (2026) | primary | tokenization, language | [arXiv:2604.14210](https://arxiv.org/abs/2604.14210) | medium | Preprint; the Chinese-saves-tokens claim is unconfirmed and model-dependent. |
 | <a id="anthropic-context-engineering"></a>Anthropic — effective context engineering | secondary | context-engineering | [anthropic.com](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) | high | Effective context < spec window; what fills the budget matters. |
+| <a id="bahdanau-attention"></a>Bahdanau, Cho, Bengio — Neural MT by Jointly Learning to Align and Translate (2014) | primary | transformers, attention, machine-translation | [arXiv:1409.0473](https://arxiv.org/abs/1409.0473) | high | Origin of the attention mechanism; a bolt-on to an RNN encoder-decoder, fixed the fixed-vector bottleneck on long sentences. Not yet the parallelization win. |
+| <a id="vaswani-transformer"></a>Vaswani et al. — Attention Is All You Need (2017) | primary | transformers, attention | [arXiv:1706.03762](https://arxiv.org/abs/1706.03762) | high | Removed recurrence → parallelism → scaling → the LLM era. The architecture the frontier still runs on. |
 
 ## How to use
 - The `researcher` checks here before searching the web.
