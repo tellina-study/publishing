@@ -219,4 +219,5 @@
   вместо «правильно-но-умного» (let/company/brings; «risks and all» вместо «price in the risks»;
   «starting a course / putting it online»). Вывод: самый простой вариант > идиоматичный выбор
   стилиста; после `stylist-en` делать ещё один проход на простоту. → `lessons-learned` L07, канон
-  `linkedin.md`. **Пост понёс в LinkedIn сам** (URL добавлю, когда пришлёт).
+  `linkedin.md`. **Опубликовано в LinkedIn:**
+  https://www.linkedin.com/feed/update/urn:li:activity:7500473853014638592/
