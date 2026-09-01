@@ -1,0 +1,119 @@
+/* Слайды лекций: раз изображение вставляется сырым <img> (ради loading=lazy),
+   задаём вид явно — во всю ширину колонки, аккуратная рамка. */
+.slide-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  margin: 0.2rem 0 0.6rem;
+}
+
+/* Подпись-заголовок слайда (### ...) — компактнее обычного H3. */
+.md-typeset h3[id^="s-"] {
+  margin-top: 2.2rem;
+  font-size: 1.1rem;
+}
+
+/* Слайд кликабелен → полный размер; курсор-подсказка */
+a.slide-link { display: block; cursor: zoom-in; }
+a.slide-link:hover .slide-img { border-color: var(--md-accent-fg-color); }
+
+/* Плавающие кнопки действий (страницы лекций) */
+.fab-stack {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.fab-stack .fab {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--md-primary-fg-color);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.fab-stack .fab:hover {
+  background: var(--md-accent-fg-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+}
+.fab-stack .fab:focus-visible {
+  outline: 3px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fab-stack .fab { transition: none; }
+}
+@media (max-width: 480px) {
+  .fab-stack { right: .7rem; bottom: .7rem; gap: .5rem; }
+  .fab-stack .fab { width: 40px; height: 40px; }
+}
+
+/* ── Навигация: убираем «слепое полотно» ─────────────────────────────── */
+
+/* Правый TOC = список слайдов лекции. Делаем читаемым, с воздухом. */
+.md-nav--secondary .md-nav__title {
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.md-nav--secondary .md-nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.md-nav--secondary .md-nav__link {
+  padding: 0.32rem 0.55rem;
+  margin: 0;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  line-height: 1.35;
+  color: var(--md-default-fg-color--light);
+  transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+.md-nav--secondary .md-nav__link:hover {
+  background: var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color);
+}
+.md-nav--secondary .md-nav__link--active,
+.md-nav--secondary .md-nav__link--passed.md-nav__link--active {
+  color: var(--md-primary-fg-color);
+  font-weight: 600;
+  border-left-color: var(--md-primary-fg-color);
+  background: var(--md-default-fg-color--lightest);
+}
+
+/* Левое меню: активный пункт заметнее, разделы — с воздухом. */
+.md-nav--primary .md-nav__item {
+  margin: 1px 0;
+}
+.md-nav--primary .md-nav__link {
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  transition: background .12s ease;
+}
+.md-nav--primary .md-nav__link:hover {
+  background: var(--md-default-fg-color--lightest);
+}
+.md-nav--primary .md-nav__link--active {
+  font-weight: 700;
+  color: var(--md-primary-fg-color);
+}
+/* Заголовки секций меню («Курс», «Лекции») — как рубрики */
+.md-nav--primary > .md-nav__list > .md-nav__item--section > .md-nav__link,
+.md-nav--primary .md-nav__item--section > label.md-nav__link {
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .72rem;
+  color: var(--md-default-fg-color--light);
+  margin-top: .5rem;
+}

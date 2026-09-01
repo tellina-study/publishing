@@ -1,0 +1,77 @@
+site_name: Использование ИИ в различных индустриях
+site_description: Открытый курс о том, как ИИ работает в реальных отраслях — слайды и разбор к ним.
+site_url: https://ai-usage-lessons.pages.dev
+docs_dir: docs
+# copyright появится позже; язык по умолчанию — RU (EN подтянется upstream)
+
+theme:
+  name: material
+  language: ru
+  custom_dir: overrides
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - toc.follow          # правый TOC = навигатор по слайдам внутри лекции
+    - search.suggest
+    - search.highlight
+    - content.tooltips
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Тёмная тема
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Светлая тема
+
+plugins:
+  - search:
+      lang:
+        - ru
+        - en
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      languages:
+        - locale: ru
+          default: true
+          name: Русский
+          build: true
+          site_name: "Использование ИИ в различных индустриях"
+        - locale: en
+          name: English
+          build: true
+          site_name: "AI Across Industries"
+          nav_translations:
+            Курс: Course
+            Лекции: Lectures
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - attr_list        # {#s-01} — якоря слайдов
+  - md_in_html
+  - tables
+  - admonition
+  - pymdownx.details
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+nav:
+  - Курс: index.md
+  - Лекции:
+      - lectures/lec-01.md
+      - lectures/lec-02.md
+      - lectures/lec-03.md
+      - lectures/lec-04.md

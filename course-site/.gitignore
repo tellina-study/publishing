@@ -1,0 +1,12 @@
+# Сборка и окружение
+site/
+.venv/
+__pycache__/
+*.pyc
+
+# Генерируемый вывод (воспроизводится scripts/sync_lectures.py из репо lessons).
+# Хранить ли PNG в git — зависит от выбора хостинга (self-host Vultr → rsync, PNG не нужны
+# в git; GH Pages → возможно нужны/или рендер в CI). Решаем вместе с хостингом.
+docs/assets/
+docs/lectures/lec-*.md
+docs/index.ru.md
