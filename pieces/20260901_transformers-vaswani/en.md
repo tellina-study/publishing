@@ -1,5 +1,5 @@
 ---
-title: "AI Day: how translating a long sentence grew into ChatGPT"
+title: 'AI Day: how translating a long sentence grew into ChatGPT'
 slug: ai-day-transformers
 status: draft
 categories:
@@ -11,6 +11,7 @@ tags:
 - LLM
 - History of AI
 - Neural Networks
+wp_post_id: 309
 ---
 
 > Twelve years ago a paper came out about machine translation. Step by step, ChatGPT grew out of it.
