@@ -39,6 +39,27 @@ L05 — Every owner edit of a draft is taste signal — capture it (mirror + mem
   the highest-signal taste data we get; folding them keeps the mirror honest.
   Anchor: notes/owner-taste.md / memory linkedin-style
 
+L06 — A social hook must be CURRENT — never build on a limitation the tooling already fixed.
+  Why: round-1 LinkedIn drafts hooked on "AI can't multiply / can't count letters in strawberry."
+  Both are outdated — calculators/tools closed them long ago; presenting them as "today AI can't X"
+  is simply wrong. Rule: before a fact-hook ships, ask "is this still true in <current year>?" Prefer
+  recent (last ~12 mo) or fundamental-and-still-true. Anchor: pieces/20260901_lessons-linkedin-announce
+  / notes/owner-taste.md «Факт и актуальность»
+
+L07 — Simplify past the point that feels enough; plainest word wins over the stylist's clever/idiomatic one.
+  Why: Max asked to simplify the LinkedIn post THREE times after it already read clean. Each pass we
+  traded "correct-but-clever" for plain: trusted→let, corporate→company, delivers→brings, "price in the
+  risks"→"risks and all", "putting together/publishing openly"→"starting/putting it online", "judge a
+  use case before you bet on it"→"tell where it's worth using". stylist-en (Williams & Bizup) is the
+  EN equivalent of Нора Галь for our English pieces — but its idiomatic pick isn't always the *simplest*;
+  do one more plain-language plane after it. Anchor: pieces/20260901_lessons-linkedin-announce
+  / blueprint/channels/linkedin.md
+
+L08 — English social posts go through stylist-en, not stylist-ru — pick the tool by the TEXT's language.
+  Why: "гони Нору Галь" on an English post means the English clarity pass (stylist-en / Williams &
+  Bizup), not stylist-ru. Same principles (kill deadwood, verb over construction, clarity), right tool.
+  Anchor: pieces/20260901_lessons-linkedin-announce
+
 <!--
 L01 — <rule>.
   Why: <what happened>.
