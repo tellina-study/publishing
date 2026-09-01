@@ -5,6 +5,18 @@ newest at top. One line each, dated. Strategy and "why", not mechanics (mechanic
 
 ---
 
+## 2026-09-01 — Transformer piece: angle pivoted to the positive "AI Day / adventure of one idea" framing
+The transformers piece (ai-day-transformers, issue #26) started as "an underappreciated paper" —
+a corrective, slightly grievance-shaped angle. After owner review the frame flipped to the
+**positive story of one idea growing up**: attention born 2014, freed of recurrence in 2017, scaling
+into the LLM era — a **12-year "AI Day" anniversary**. Same honest boundaries kept (2014 attention
+was a bolt-on to an RNN, not the parallelization win; the frontier still runs on attention; Mamba/SSM
+only in niche hybrids). Why: the celebratory lineage lands better for a general reader than a
+"they got it wrong" corrective, without softening the technical honesty. Shipped RU+EN (blog),
+Telegram; LinkedIn draft ready.
+
+---
+
 ## 2026-06-21 — Close-the-Loop tracks `main`, not the ship
 The KB must mirror `main` (the source of truth), not wait for a SHIP verdict. Heavy doc-layer sync
 is rekeyed: **merge to `main`** → `wiki/pieces/INDEX.md` (status bucket) + ontology + RAG (auto);
