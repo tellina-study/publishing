@@ -8,7 +8,8 @@
 **Выбран E.** Язык упрощён; 2-й абзац развёрнут — открывается курсом как ответом на вопрос из
 хука; CTA без «if». C2/D — отклонены (лозунгово / «старьё»).
 
-**FINAL (год убран, stylist-en применён):**
+**FINAL (год убран, stylist-en применён) — PUBLISHED 2026-09-01:**
+https://www.linkedin.com/feed/update/urn:li:activity:7500473853014638592/
 
 > **A delivery company's chatbot swore at customers. A city's official bot told small businesses they could break the law. An airline's bot invented a refund — and a court made the airline pay it.**
 >
