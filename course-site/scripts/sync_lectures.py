@@ -104,6 +104,35 @@ def slide_caption(title: str) -> str:
         return re.sub(r'\s*·.*$', '', m.group(1)).strip()
     return re.sub(r'^\[|\]$', '', t)
 
+def slide_id(title: str) -> str | None:
+    """ID слайда из заголовка: [s02a · …]/s02a → 's02a'. Диалект C ([Слайд N]) без sNN → None."""
+    m = re.match(r'^\[?\s*s(\d+[a-z]?)\b', title.strip())
+    return "s" + m.group(1) if m else None
+
+def _is_bare_id_caption(cap: str) -> bool:
+    """Подпись вида «s01» / «s02a · 0.5 мин» — т.е. заголовок speech не содержал названия."""
+    return bool(re.match(r'^s\d+[a-z]?\s*(·.*)?$', cap.strip()))
+
+def load_deck_titles(lec_dir: Path, lang: str) -> dict:
+    """id слайда → assertion (текст-название НА слайде) из deck.yaml/deck.en.yaml.
+    Для диалектов, где заголовок speech без названия ([sNN · dur]) — источник подписи."""
+    p = lec_dir / ("deck.en.yaml" if lang == "en" else "deck.yaml")
+    if not p.exists():
+        return {}
+    try:
+        data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError:
+        return {}
+    out = {}
+    for s in (data.get("slides") or []):
+        if isinstance(s, dict):
+            sid = s.get("id")
+            a = s.get("assertion") or s.get("title")
+            if sid and a:
+                out[str(sid).strip()] = str(a).strip()
+    return out
+
+
 def normalize_title(raw: str, num, lang: str = "ru") -> str:
     """Единый вид «Лекция N. Заголовок» / «Lecture N. Title»; чистка шума («речь лектора»)."""
     core = raw.strip()
@@ -143,9 +172,11 @@ def parse_frontmatter(text: str) -> dict:
                 return {}
     return {}
 
-def parse_speech(path: Path) -> tuple[list[dict], dict]:
+def parse_speech(path: Path, deck_titles: dict | None = None) -> tuple[list[dict], dict]:
     """Возвращает (слайды по порядку, frontmatter). Каждый слайд:
-    {caption, body_md}. Тело — до следующего заголовка уровня <= текущего."""
+    {caption, body_md}. Тело — до следующего заголовка уровня <= текущего.
+    deck_titles (id→assertion) — подпись для диалектов без названия в заголовке."""
+    deck_titles = deck_titles or {}
     text = path.read_text(encoding="utf-8")
     fm = parse_frontmatter(text)
     lines = text.splitlines()
@@ -170,11 +201,51 @@ def parse_speech(path: Path) -> tuple[list[dict], dict]:
                 body_end = nline_i
                 break
         body = strip_stage_directions("\n".join(lines[line_i + 1:body_end]))
-        slides.append({"caption": slide_caption(title), "body": body})
+        cap = slide_caption(title)
+        # заголовок speech без названия ([sNN · dur]) → берём assertion из deck.yaml
+        if _is_bare_id_caption(cap):
+            sid = slide_id(title)
+            if sid and deck_titles.get(sid):
+                cap = deck_titles[sid]
+        slides.append({"caption": cap, "body": body})
     return slides, fm
 
 
 # ─────────────────────────── рендер PDF → PNG ───────────────────────────
+
+def _pagecount(p: Path) -> int:
+    d = pymupdf.open(p); n = d.page_count; d.close(); return n
+
+
+# страничные футеры вида «2/47» (RU-деки С номерами страниц). pub/EN-деки уже
+# footer-less; для RU-полного дека срезаем футер редактированием — surgically,
+# не кропом (кроп сдвинул бы и footer-less слайды). No-op, если футеров нет,
+# поэтому безопасно и для будущих аналогичных дек.
+_PGNUM_RE = re.compile(r'^\d{1,3}\s*/\s*\d{1,3}$')
+
+def strip_footer_pagenums(doc, band_frac: float = 0.09) -> int:
+    """Убирает из нижней полосы каждой страницы текст-пагинацию «N/NN».
+    Возвращает число зачищенных футеров (0 ⇒ дек уже чистый)."""
+    removed = 0
+    for page in doc:
+        r = page.rect
+        cut = r.y1 - r.height * band_frac        # нижние ~9% страницы
+        lines: dict = {}
+        for w in page.get_text("words"):         # (x0,y0,x1,y1,word,block,line,wordno)
+            x0, y0, x1, y1, word = w[0], w[1], w[2], w[3], w[4]
+            if y0 >= cut:
+                lines.setdefault((w[5], w[6]), []).append(w)
+        for ws in lines.values():
+            ws.sort(key=lambda t: t[0])
+            joined = "".join(t[4] for t in ws).replace(" ", "")
+            if _PGNUM_RE.match(joined):
+                rect = pymupdf.Rect(min(t[0] for t in ws) - 2, min(t[1] for t in ws) - 2,
+                                    max(t[2] for t in ws) + 2, max(t[3] for t in ws) + 2)
+                page.add_redact_annot(rect, fill=(1, 1, 1))
+                removed += 1
+        page.apply_redactions()
+    return removed
+
 
 def render_pdf(pdf: Path, out_dir: Path, dpi: int = DPI, force: bool = False) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -297,9 +368,24 @@ def lecture_files(lec_dir: Path, lec: str, lang: str):
         pdf = lec_dir / "rendered" / f"{lec}-en.pdf"
     else:
         speech = lec_dir / "speech.md"
-        pub = lec_dir / "rendered" / f"{lec}-pub.pdf"   # footer-less RU pub, если появится
-        pdf = pub if pub.exists() else lec_dir / "rendered" / f"{lec}.pdf"
+        pdf = lec_dir / "rendered" / f"{lec}.pdf"       # full RU-дек; pub предпочтём в build_lecture
     return speech, pdf
+
+
+def choose_ru_pdf(lec_dir: Path, lec: str, full: Path, n_sections: int) -> Path:
+    """RU: предпочитаем footer-less pub-дек, НО только если он покрывает все секции
+    speech (speech.md — индекс истины). Если страниц в pub меньше числа секций — он
+    устарел (старая структура дека): берём full и срежем футеры сами. Дискриминатор —
+    счётчик секций, а не число страниц full (у full бывают лишние бауманские слайды)."""
+    pub = lec_dir / "rendered" / f"{lec}-pub.pdf"
+    if not pub.exists():
+        return full
+    pp = _pagecount(pub)
+    if pp >= n_sections:
+        return pub
+    print(f"    ⚠ {lec}: {lec}-pub.pdf устарел ({pp}с < {n_sections} секций speech) "
+          f"— беру {lec}.pdf и срезаю футеры")
+    return full
 
 
 def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
@@ -311,12 +397,20 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         raise FileNotFoundError(f"{lec}/{lang}: нет {speech}")
     loc = L10N.get(lang, L10N["ru"])
 
-    slides, fm = parse_speech(speech)
+    slides, fm = parse_speech(speech, load_deck_titles(lec_dir, lang))
     assets = DOCS / "assets" / lang / lec
+
+    # RU: pub-дек (footer-less) предпочитаем только если он покрывает все секции speech;
+    # устаревший pub (старая структура) отбраковываем — берём full и срезаем футеры.
+    if lang == "ru":
+        pdf = choose_ru_pdf(lec_dir, lec, pdf, len(slides))
 
     # CONTENT-MAPPING: сопоставляем каждую секцию speech её странице PDF по СОДЕРЖИМОМУ
     # (порядок страниц PDF ≠ порядку секций из-за вставленных/переставленных слайдов).
     doc = pymupdf.open(pdf)
+    footers = strip_footer_pagenums(doc)        # RU-полный дек «N/NN» → footer-less (no-op на чистых)
+    if footers:
+        print(f"    · {lec}/{lang}: срезано футеров-пагинации: {footers}")
     page_map = build_page_map(doc, slides)      # section_idx → pdf_page_idx | None
     render_mapped(doc, page_map, assets)        # webp только для сопоставленных, по исходному индексу
     doc.close()
