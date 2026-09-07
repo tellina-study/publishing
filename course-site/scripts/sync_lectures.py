@@ -72,14 +72,30 @@ EXCLUDE_SECTION_RE = re.compile(
 def is_excluded_section(title: str) -> bool:
     return bool(EXCLUDE_SECTION_RE.search(title))
 
+# Инструкторские ПОД-секции внутри слайда (H3+ под слайд-заголовком): заготовки ответов
+# на Q&A, prep-заметки, резерв/буфер. Тело слайда обрезаем на них — в паблик не идут.
+INSTRUCTOR_NOTE_RE = re.compile(
+    r'заготовк\w*\s+ответ|prepared\s+answers?|'
+    r'подготовк\w*\s+перед\s+лекци|preparation\s+before\s+the\s+lecture|'
+    r'резерв\s*[·:]\s*буфер|reserve\s*[·:]\s*buffer',
+    re.I,
+)
+
+def is_instructor_note(title: str) -> bool:
+    return bool(INSTRUCTOR_NOTE_RE.search(title))
+
+# id слайда: s + (цифра | дефис), далее буквы/цифры/дефис/подчёркивание.
+# Покрывает s01, s02a, s22a_multi, s-classic-prompt (lec-03 v6.3). НЕ ловит [system …].
+_SID = r's[\d-][\w-]*'
+
 def is_slide_heading(title: str) -> bool:
     """4 диалекта. Инструкторские секции («Раздел N», «Подготовка…») → False."""
     t = title.strip()
-    if re.match(r'^\[s\d', t):          # A / B: [sNN …]
+    if re.match(r'^\[' + _SID, t):      # A / B: [sNN …] / [s-classic-… …]
         return True
     if re.match(r'^\[Слайд\s+\d', t):   # C: [Слайд N …]
         return True
-    if re.match(r'^s\d+\b', t):         # D: sNN — …
+    if re.match(r'^' + _SID + r'\b', t):  # D: sNN — …
         return True
     return False
 
@@ -91,45 +107,63 @@ def slide_caption(title: str) -> str:
     if m:
         return m.group(1).strip()
     # A/B: [sNN · dur] — Title      → Title
-    m = re.match(r'^\[s\d[^\]]*\]\s*[—–-]\s*(.*)$', t)
+    m = re.match(r'^\[' + _SID + r'[^\]]*\]\s*[—–-]\s*(.*)$', t)
     if m:
         return m.group(1).strip()
     # A/B без тире после скобки: [sNN · dur]  → снять скобки
-    m = re.match(r'^\[s\d[^\]]*\]\s*(.*)$', t)
+    m = re.match(r'^\[' + _SID + r'[^\]]*\]\s*(.*)$', t)
     if m and m.group(1).strip():
         return m.group(1).strip()
     # D: sNN — Title · dur          → Title (без хвоста · dur)
-    m = re.match(r'^s\d+\s*[—–-]\s*(.*)$', t)
+    m = re.match(r'^' + _SID + r'\s*[—–-]\s*(.*)$', t)
     if m:
         return re.sub(r'\s*·.*$', '', m.group(1)).strip()
     return re.sub(r'^\[|\]$', '', t)
 
 def slide_id(title: str) -> str | None:
-    """ID слайда из заголовка: [s02a · …]/s02a → 's02a'. Диалект C ([Слайд N]) без sNN → None."""
-    m = re.match(r'^\[?\s*s(\d+[a-z]?)\b', title.strip())
-    return "s" + m.group(1) if m else None
+    """ID слайда из заголовка: [s02a · …]→'s02a', [s-classic-rag · …]→'s-classic-rag'.
+    Диалект C ([Слайд N]) без sNN → None."""
+    m = re.match(r'^\[?\s*(' + _SID + r')', title.strip())
+    return m.group(1) if m else None
 
 def _is_bare_id_caption(cap: str) -> bool:
-    """Подпись вида «s01» / «s02a · 0.5 мин» — т.е. заголовок speech не содержал названия."""
-    return bool(re.match(r'^s\d+[a-z]?\s*(·.*)?$', cap.strip()))
+    """Подпись вида «s01» / «s-classic-rag · 3.5 мин» — заголовок speech без названия."""
+    return bool(re.match(r'^' + _SID + r'\s*(·.*)?$', cap.strip()))
+
+def _ordered_parts(lec_dir: Path, stem: str, suf: str) -> list[Path]:
+    """Многочастные материалы по порядку: <stem><suf>, <stem>-part2<suf>, …
+    (lec-03 v6.3: speech.md+speech-part2.md, deck.yaml+deck-part2+deck-part3)."""
+    files = []
+    main = lec_dir / f"{stem}{suf}"
+    if main.exists():
+        files.append(main)
+    i = 2
+    while (p := lec_dir / f"{stem}-part{i}{suf}").exists():
+        files.append(p)
+        i += 1
+    return files
+
+def speech_files(lec_dir: Path, lang: str) -> list[Path]:
+    return _ordered_parts(lec_dir, "speech", ".en.md" if lang == "en" else ".md")
+
+def deck_files(lec_dir: Path, lang: str) -> list[Path]:
+    return _ordered_parts(lec_dir, "deck", ".en.yaml" if lang == "en" else ".yaml")
 
 def load_deck_titles(lec_dir: Path, lang: str) -> dict:
-    """id слайда → assertion (текст-название НА слайде) из deck.yaml/deck.en.yaml.
+    """id слайда → assertion (текст-название НА слайде) из deck.yaml(+part2/part3)/deck.en.yaml.
     Для диалектов, где заголовок speech без названия ([sNN · dur]) — источник подписи."""
-    p = lec_dir / ("deck.en.yaml" if lang == "en" else "deck.yaml")
-    if not p.exists():
-        return {}
-    try:
-        data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-    except yaml.YAMLError:
-        return {}
     out = {}
-    for s in (data.get("slides") or []):
-        if isinstance(s, dict):
-            sid = s.get("id")
-            a = s.get("assertion") or s.get("title")
-            if sid and a:
-                out[str(sid).strip()] = str(a).strip()
+    for p in deck_files(lec_dir, lang):
+        try:
+            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError:
+            continue
+        for s in (data.get("slides") or []):
+            if isinstance(s, dict):
+                sid = s.get("id")
+                a = s.get("assertion") or s.get("title")
+                if sid and a:
+                    out[str(sid).strip()] = str(a).strip()
     return out
 
 
@@ -194,10 +228,11 @@ def parse_speech(path: Path, deck_titles: dict | None = None) -> tuple[list[dict
             continue
         if is_excluded_section(title):        # универ-специфика — дропаем целиком
             continue
-        # конец тела: следующий заголовок с уровнем <= level
+        # конец тела: следующий заголовок с уровнем <= level ИЛИ инструкторская
+        # под-секция (заготовки ответов / prep / резерв) — её в паблик не тащим.
         body_end = len(lines)
-        for (nline_i, nlevel, _) in heads[h + 1:]:
-            if nlevel <= level:
+        for (nline_i, nlevel, ntitle) in heads[h + 1:]:
+            if nlevel <= level or is_instructor_note(ntitle):
                 body_end = nline_i
                 break
         body = strip_stage_directions("\n".join(lines[line_i + 1:body_end]))
@@ -209,6 +244,18 @@ def parse_speech(path: Path, deck_titles: dict | None = None) -> tuple[list[dict
                 cap = deck_titles[sid]
         slides.append({"caption": cap, "body": body})
     return slides, fm
+
+def parse_speech_all(files: list[Path], deck_titles: dict | None = None) -> tuple[list[dict], dict]:
+    """Склейка многочастной речи (speech.md + speech-part2.md + …) по порядку.
+    frontmatter — из первого файла, где он есть."""
+    all_slides: list[dict] = []
+    fm: dict = {}
+    for f in files:
+        slides, f_fm = parse_speech(f, deck_titles)
+        all_slides.extend(slides)
+        if not fm and f_fm:
+            fm = f_fm
+    return all_slides, fm
 
 
 # ─────────────────────────── рендер PDF → PNG ───────────────────────────
@@ -397,7 +444,7 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         raise FileNotFoundError(f"{lec}/{lang}: нет {speech}")
     loc = L10N.get(lang, L10N["ru"])
 
-    slides, fm = parse_speech(speech, load_deck_titles(lec_dir, lang))
+    slides, fm = parse_speech_all(speech_files(lec_dir, lang), load_deck_titles(lec_dir, lang))
     assets = DOCS / "assets" / lang / lec
 
     # RU: pub-дек (footer-less) предпочитаем только если он покрывает все секции speech;
