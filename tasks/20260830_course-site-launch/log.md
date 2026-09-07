@@ -202,3 +202,13 @@
 - Deploy: full sync → mkdocs --strict (0 warn) → rsync → RU VPS 88.218.62.36.
 - Live проверено из РФ: lec-03 RU=55/EN=55, 5 classic-base на месте, footer-less, без утечек;
   lec-01=34, lec-02=47, lec-04=40 — без регрессий; лендинг=4 карточки. Issue #28 закрыт (SHIP).
+
+## 2026-09-07 — Лекция 5 (PDLC, 56 слайдов) опубликована RU+EN
+- «опубликуй лекцию 5 с pdlc» → lec-05 (AI-продукт: полный жизненный цикл / PDLC), AI-usage-lessons PR #195.
+- Структура консистентна: RU/EN speech=56 (speech.md+part2), deck=56 (deck.yaml+part2), pdf RU=56/EN=56.
+  Mismatch как в lec-03 нет. Stale pub нет.
+- Добавил lec-05 в PUBLISHED + nav (mkdocs.yml). Issue #29.
+- Доработка генератора: меж-частная сноска в lec-05 — код-спан `speech-part2.md` (в lec-03 был линк);
+  обобщил вырезание строки на любое упоминание speech*.md (commit 8b190b9).
+- Deploy: full sync → mkdocs --strict (0 warn) → rsync → RU VPS. Live: RU 56/EN 56, footer-less,
+  s05 keystone-петля маппится верно, сносок нет; лендинг=5; lec-01..04 без регрессий. Issue #29 закрыт (SHIP).
