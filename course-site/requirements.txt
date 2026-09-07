@@ -1,0 +1,8 @@
+# Сборка курса-сайта (Cloudflare Pages ставит это же).
+# Рендер слайдов PDF→PNG идёт локально (PyMuPDF), в билд PNG уже в git — poppler не нужен.
+mkdocs-material>=9.5
+mkdocs-static-i18n>=1.2
+mkdocs-rss-plugin>=1.12
+# Для локальной генерации страниц (не нужно на билде CF Pages):
+pymupdf>=1.24
+PyYAML>=6.0

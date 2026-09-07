@@ -1,0 +1,51 @@
+# Фаза B: Umami (просмотры + scroll-глубина) + Remark42 (комментарии/реакции/RSS).
+# Крутится на том же Vultr VM, что и статика (Caddy). Всё слушает только 127.0.0.1 —
+# наружу отдаёт Caddy через reverse-proxy (/stats, /comments) → same-origin, TLS от Caddy.
+#
+# Перед запуском заполни .env (см. .env.example). Затем: docker compose up -d
+services:
+  umami-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD}
+    volumes:
+      - umami-db:/var/lib/postgresql/data
+    # low-RAM тюнинг (VM 1.6 ГБ): не даём postgres раздуться
+    command: ["postgres", "-c", "shared_buffers=128MB", "-c", "max_connections=50"]
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: unless-stopped
+    depends_on: [umami-db]
+    environment:
+      DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD}@umami-db:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: ${UMAMI_APP_SECRET}
+      # сайт живёт под /stats/ (Caddy reverse-proxy) — Umami сам по себе в корне контейнера
+      BASE_PATH: ""
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  remark42:
+    image: umputun/remark42:latest
+    restart: unless-stopped
+    environment:
+      REMARK_URL: https://${SITE_DOMAIN}/comments
+      SECRET: ${REMARK_SECRET}
+      SITE: course
+      # простой логин по имени (анонимный вход Remark42) — без обязательных соц-сетей
+      AUTH_ANON: "true"
+      # админ (модерация/удаление) — ID владельца: anonymous_<hash> или провайдерский ID
+      ADMIN_SHARED_ID: ${REMARK_ADMIN_ID:-}
+      EMOJI: "true"
+    volumes:
+      - remark42:/srv/var
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  umami-db:
+  remark42:
