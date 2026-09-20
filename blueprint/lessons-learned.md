@@ -39,6 +39,19 @@ L05 — Every owner edit of a draft is taste signal — capture it (mirror + mem
   the highest-signal taste data we get; folding them keeps the mirror honest.
   Anchor: notes/owner-taste.md / memory linkedin-style
 
+L06 — «Последняя версия» ищется по ВЕТКАМ И ВОРКТРИ, а не по origin: ветка, которую никто не
+  запушил, невидима для любой проверки через remote.
+  Why: лекция 3 v6.4 (14 коммитов, дек 55→67 слайдов) месяц лежала только в локальном воркри
+  умершей сессии. `git ls-remote` показывал, что свежее v6.3 ничего нет, и это было враньём.
+  Anchor: AI-usage-lessons PR #200 / tasks/20260830_course-site-launch/log.md
+
+L07 — Перед публикацией сверяй ПОКРЫТИЕ артефактов друг другом, а не их наличие: версия,
+  поднятая в одном артефакте, не поднята в остальных.
+  Why: v6.4 углубила дек и главу, не тронув speech.md — 55 секций против 67 слайдов, 7 из них
+  про удалённые слайды. Артефакты были на месте и «свежие», а публикация по речи дала бы 48
+  слайдов — регресс против уже живых 55. Ловится одной проверкой: id дека ⊆ id речи.
+  Anchor: publishing PR #32 / course-site/scripts/sync_lectures.py:deck_covers_speech
+
 <!--
 L01 — <rule>.
   Why: <what happened>.
