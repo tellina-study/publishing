@@ -16,13 +16,18 @@ cd "$HERE"
 : "${COURSE_SSH:?укажи user@host VM}"
 : "${COURSE_REMOTE_DIR:=/var/www/course-site}"
 
-echo "==> 1/3 генерация страниц из lessons ($COURSE_LESSONS_DIR)"
+# Семинары ПЕРВЫМИ: они пишут docs/.seminars-manifest.json, из которого sync_lectures.py
+# собирает второй блок карточек на лендинге. Обратный порядок даст лендинг без семинаров.
+echo "==> 1/4 генерация страниц семинаров из lessons"
+python3 scripts/sync_seminars.py --lessons "$COURSE_LESSONS_DIR"
+
+echo "==> 2/4 генерация страниц лекций + лендинга из lessons ($COURSE_LESSONS_DIR)"
 python3 scripts/sync_lectures.py --lessons "$COURSE_LESSONS_DIR"
 
-echo "==> 2/3 сборка сайта (mkdocs build --strict)"
+echo "==> 3/4 сборка сайта (mkdocs build --strict)"
 python3 -m mkdocs build --strict
 
-echo "==> 3/3 rsync → $COURSE_SSH:$COURSE_REMOTE_DIR"
+echo "==> 4/4 rsync → $COURSE_SSH:$COURSE_REMOTE_DIR"
 rsync -avz --delete --checksum site/ "$COURSE_SSH:$COURSE_REMOTE_DIR/"
 
 echo "Готово. Проверь https://<домен>/ (Caddy отдаёт $COURSE_REMOTE_DIR)."

@@ -20,6 +20,7 @@ Usage:
     COURSE_LESSONS_DIR=/path/to/lessons/library/lectures python3 scripts/sync_lectures.py
 """
 from __future__ import annotations
+import json
 import os
 import re
 import sys
@@ -263,6 +264,89 @@ def parse_speech_all(files: list[Path], deck_titles: dict | None = None) -> tupl
     return all_slides, fm
 
 
+# ───────── deck.yaml + slides/*.md как источник (когда speech.md отстала/её нет) ─────────
+# speech.md — индекс истины ровно до тех пор, пока покрывает дек. lec-03 v6.4 углубил дек
+# 55→67 слайдов, не тронув речь (19 слайдов без секции, 7 секций про удалённые слайды), а у
+# семинаров speech.md нет вовсе. В обоих случаях покомментарийный источник — «## Speaker
+# notes» внутри slides/*.md: они есть на каждом слайде дека и в v6.4 глубже речи (350-420 слов).
+
+_NOTES_H = r'(?:Speaker notes|Заметки докладчика)'
+
+def md_section(text: str, name_re: str) -> str:
+    """Тело секции «## <name>» до следующего H2."""
+    m = re.search(r'^##\s*' + name_re + r'\s*$', text, re.M | re.I)
+    if not m:
+        return ""
+    return re.split(r'^##\s', text[m.end():], flags=re.M)[0].strip()
+
+def slide_notes(text: str) -> str:
+    return md_section(text, _NOTES_H)
+
+def slide_visible(text: str) -> str:
+    """Всё, что на слайде (без frontmatter и без заметок) — материал для матчинга с PDF."""
+    body = re.sub(r'^---\n.*?\n---\n', '', text, flags=re.S)
+    m = re.search(r'^##\s*' + _NOTES_H + r'\s*$', body, re.M | re.I)
+    return body[:m.start()] if m else body
+
+def slide_title(text: str) -> str:
+    """Заголовок, который реально напечатан на слайде: «## Title bar» (лекции) или «# …» (семинары)."""
+    t = md_section(text, r'Title bar')
+    if t:
+        return re.sub(r'^[«"\']|[»"\']$', '', t.splitlines()[0]).strip()
+    m = re.search(r'^#\s+(.*)$', text, re.M)
+    if m and _norm_txt(m.group(1)) != "visible content":
+        return m.group(1).strip()
+    return ""
+
+def load_deck_entries(deck_dir: Path, lang: str) -> list[dict]:
+    """Слайды дека по порядку: [{id, file, assertion}] из deck.yaml(+part2/part3)."""
+    out = []
+    for p in deck_files(deck_dir, lang):
+        try:
+            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError:
+            continue
+        for s in (data.get("slides") or []):
+            if isinstance(s, dict) and s.get("id"):
+                out.append({
+                    "id": str(s["id"]).strip(),
+                    "file": s.get("file") or "",
+                    "assertion": str(s.get("assertion") or s.get("title") or "").strip(),
+                })
+    return out
+
+def parse_deck_slides(deck_dir: Path, lang: str,
+                      exclude_re: re.Pattern | None = None) -> list[dict]:
+    """Слайды из дека: caption = assertion (иначе заголовок слайда), body = Speaker notes.
+    match_text — весь видимый текст слайда: он и матчится со страницей PDF (богаче caption)."""
+    if exclude_re is None:
+        exclude_re = EXCLUDE_SECTION_RE
+    slides = []
+    for e in load_deck_entries(deck_dir, lang):
+        f = deck_dir / e["file"]
+        text = f.read_text(encoding="utf-8") if e["file"] and f.exists() else ""
+        title = slide_title(text)
+        cap = e["assertion"] or title or e["id"]
+        if exclude_re.search(cap) or (title and exclude_re.search(title)):
+            continue                       # админ-специфика вуза — целиком мимо паблика
+        slides.append({
+            "caption": cap,
+            "body": strip_stage_directions(slide_notes(text)),
+            "match_text": f"{title} {slide_visible(text)}",
+        })
+    return slides
+
+def deck_covers_speech(lec_dir: Path, lang: str) -> bool:
+    """True, если каждый слайд дека имеет секцию в speech.md. Если нет — речь отстала
+    от дека и брать её как индекс значит потерять новые слайды (lec-03 v6.4)."""
+    ids = {e["id"] for e in load_deck_entries(lec_dir, lang)}
+    if not ids:
+        return True
+    text = "".join(p.read_text(encoding="utf-8") for p in speech_files(lec_dir, lang))
+    seen = set(re.findall(r'^#{1,6}\s*\[?\s*(' + _SID + r')', text, re.M))
+    return ids <= seen
+
+
 # ─────────────────────────── рендер PDF → PNG ───────────────────────────
 
 def _pagecount(p: Path) -> int:
@@ -347,7 +431,7 @@ def build_page_map(doc, slides: list[dict], gap: float = -0.12) -> list:
     S = len(slides)
     P = doc.page_count
     page_texts = [_norm_txt(doc.load_page(k).get_text()) for k in range(P)]
-    toks = [_title_tokens(s["caption"]) for s in slides]
+    toks = [_title_tokens(s.get("match_text") or s["caption"]) for s in slides]
 
     dp = [[0.0] * (P + 1) for _ in range(S + 1)]
     bt = [[""] * (P + 1) for _ in range(S + 1)]
@@ -392,6 +476,38 @@ def build_page_map(doc, slides: list[dict], gap: float = -0.12) -> list:
             sec2page[i] = best
             free.remove(best)
     return sec2page
+
+def collapse_progressive_builds(doc, page_map: list) -> int:
+    """Прогрессивный билд («появляется по шагам») = несколько страниц одного слайда: каждая
+    следующая дополняет предыдущую. Мапится он на ОДНУ секцию, и монотонный DP цепляет
+    ПЕРВУЮ страницу — то есть версию без ответов (sem-01: квиз «Верно или неверно?»,
+    стр. 19-25, полный разбор только на 25-й). Для читателя сайта нужен последний кадр:
+    сдвигаем сопоставление вперёд, пока следующая страница ничья и её текст — надмножество
+    текущей. No-op, когда страниц ровно столько же, сколько секций (все заняты)."""
+    claimed = {p for p in page_map if p is not None}
+    texts: dict[int, set] = {}
+
+    def toks(k: int) -> set:
+        if k not in texts:
+            texts[k] = set(_norm_txt(doc.load_page(k).get_text()).split())
+        return texts[k]
+
+    moved = 0
+    for i, k in enumerate(page_map):
+        if k is None:
+            continue
+        cur = k
+        while cur + 1 < doc.page_count and (cur + 1) not in claimed:
+            a, b = toks(cur), toks(cur + 1)
+            if not a or len(b) < len(a) or len(a - b) > 0.1 * len(a):
+                break                      # следующая страница — другой слайд, а не его шаг
+            claimed.discard(cur)
+            cur += 1
+            claimed.add(cur)
+            moved += 1
+        page_map[i] = cur
+    return moved
+
 
 def render_mapped(doc, page_map: list, out_dir: Path, dpi: int = DPI) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -450,6 +566,16 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
     loc = L10N.get(lang, L10N["ru"])
 
     slides, fm = parse_speech_all(speech_files(lec_dir, lang), load_deck_titles(lec_dir, lang))
+    # Речь — индекс истины, пока покрывает дек. Если дек ушёл вперёд (lec-03 v6.4: 67 слайдов
+    # против 55 секций речи), берём комментарии из «## Speaker notes» в slides/*.md: иначе
+    # новые слайды просто не попадут на страницу, а секции про удалённые останутся висеть.
+    if not deck_covers_speech(lec_dir, lang):
+        deck_slides = parse_deck_slides(lec_dir, lang)
+        if deck_slides:
+            print(f"    · {lec}/{lang}: speech отстала от дека "
+                  f"({len(slides)} секций против {len(load_deck_entries(lec_dir, lang))} слайдов) "
+                  f"— комментарии беру из slides/*.md (Speaker notes)")
+            slides = deck_slides
     assets = DOCS / "assets" / lang / lec
 
     # RU: pub-дек (footer-less) предпочитаем только если он покрывает все секции speech;
@@ -464,6 +590,7 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
     if footers:
         print(f"    · {lec}/{lang}: срезано футеров-пагинации: {footers}")
     page_map = build_page_map(doc, slides)      # section_idx → pdf_page_idx | None
+    collapse_progressive_builds(doc, page_map)  # прогрессивный билд → последний кадр
     render_mapped(doc, page_map, assets)        # webp только для сопоставленных, по исходному индексу
     doc.close()
     dropped = [slides[i]["caption"] for i, p in enumerate(page_map) if p is None]
@@ -544,24 +671,50 @@ how to tell. Each lecture is slides plus commentary: look at a slide, read what'
 """,
 }
 
-def write_landing(manifest: list[dict], lang: str = "ru") -> None:
-    """Генерит лендинг-витрину из манифеста лекций (по языку)."""
+
+SEM_HERO = {
+    "ru": "\n## Семинары\n\nРазборы и упражнения к лекциям: голосования, кейсы, ошибки моделей — и что из них\nследует.\n\n<div class=\"grid cards\" markdown>\n",
+    "en": "\n## Seminars\n\nWorkshops that go with the lectures: polls, cases, model failures — and what follows from\nthem. **Russian only** for now.\n\n<div class=\"grid cards\" markdown>\n",
+}
+
+def load_seminars_manifest() -> list[dict]:
+    f = DOCS / ".seminars-manifest.json"
+    if not f.exists():
+        return []
+    try:
+        return json.loads(f.read_text(encoding="utf-8")) or []
+    except json.JSONDecodeError:
+        return []
+
+def _cards(manifest: list[dict], kind: str, lang: str) -> str:
+    """kind — 'lectures' | 'seminars': и подпись карточки, и каталог страницы."""
     loc = L10N.get(lang, L10N["ru"])
     open_label = "Открыть →" if lang == "ru" else "Open →"
+    prefix_word = loc["lecture"] if kind == "lectures" else "Семинар"
+    strip_re = r'^(Лекци[яю]|Lecture)\s*\d+[.\s—-]*' if kind == "lectures" else r'^Семинар\s*\d+[.\s—-]*'
     cards = []
     for m in sorted(manifest, key=lambda x: x["id"]):
-        t = str(m["title"])
-        body = re.sub(r'^(Лекци[яю]|Lecture)\s*\d+[.\s—-]*', '', t, flags=re.I).strip() or t
-        num_prefix = f"{loc['lecture']} {m['num']}. " if m["num"] else ""
+        body = re.sub(strip_re, '', str(m["title"]), flags=re.I).strip() or str(m["title"])
+        num_prefix = f"{prefix_word} {m['num']}. " if m.get("num") else ""
         cards.append(
             f"-   **{num_prefix}{esc(body)}**\n\n"
             f"    ---\n\n"
             f"    {m['slides']} {loc['slides'](m['slides'])}\n\n"
-            f"    [{open_label}](lectures/{m['id']}.md)\n"
+            f"    [{open_label}]({kind}/{m['id']}.md)\n"
         )
-    text = HERO.get(lang, HERO["ru"]) + "\n".join(cards) + "\n</div>\n"
+    return "\n".join(cards) + "\n</div>\n"
+
+def write_landing(manifest: list[dict], lang: str = "ru",
+                  seminars: list[dict] | None = None) -> None:
+    """Генерит лендинг-витрину из манифестов лекций и семинаров (по языку).
+    Семинары — RU-only (перевода нет); на EN-лендинге показываем те же карточки с пометкой,
+    i18n fallback_to_default отдаст по ним русскую страницу вместо 404."""
+    text = HERO.get(lang, HERO["ru"]) + _cards(manifest, "lectures", lang)
+    if seminars:
+        text += SEM_HERO.get(lang, SEM_HERO["ru"]) + _cards(seminars, "seminars", lang)
     (DOCS / f"index.{lang}.md").write_text(text, encoding="utf-8")
-    print(f"  ✓ лендинг ({lang}): {len(manifest)} карточек → docs/index.{lang}.md")
+    print(f"  ✓ лендинг ({lang}): {len(manifest)} лекц. + {len(seminars or [])} семин. "
+          f"→ docs/index.{lang}.md")
 
 def html_num(num) -> str:
     return f"Лекция {num}. " if num else ""
@@ -626,9 +779,10 @@ def main() -> None:
                 skipped.append(str(e))
     ru_manifest = manifests["ru"]
     if not args.no_landing:
+        sem_manifest = load_seminars_manifest()   # пишется sync_seminars.py, если он отработал
         for lang in LANGS:
             if manifests[lang]:
-                write_landing(manifests[lang], lang)
+                write_landing(manifests[lang], lang, sem_manifest)
     print(f"\nГотово: {len(ru_manifest)} лекц. (RU) + EN где есть, {len(skipped)} пропущено.")
     for s in skipped:
         print(f"  ✗ {s}")
