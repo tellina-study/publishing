@@ -61,9 +61,8 @@ EXCLUDE_BY_ID = {
         "s01": "обложка с «МГТУ им. Н.Э. Баумана» на самом слайде",
         "s03": "карта курса с метками РК1/РК2/РК3 (рубежный контроль)",
     },
-    "sem-03": {
-        "s01": "обложка с «МГТУ им. Н.Э. Баумана» на самом слайде",
-    },
+    # sem-03 — с v2 (кейс-формат) исключений нет: скан всех 43 страниц по
+    # «МГТУ / Бауман / ИУ6 / рубежный / посещаемость / чат курса» даёт ноль.
 }
 
 
@@ -85,13 +84,90 @@ def seminar_title(meta: dict, num, sem: str) -> str:
     return f"Семинар {num}. {core}" if num else (core or raw)
 
 
+# Подписи-заглушки: в deck.yaml у структурных слайдов в assertion стоит их kind.
+KIND_CAPTIONS = {"closing": "Что унести", "cover": "Обложка", "map": "Карта занятия"}
+
+
+def compose_closing(entry: dict) -> str:
+    """Финальный слайд кейс-формата: notes нет, содержание — takeaways + bridge."""
+    parts = []
+    tk = entry.get("takeaways")
+    if isinstance(tk, (list, tuple)):
+        parts += [f"- {t}" for t in tk]
+    elif tk:
+        parts.append(str(tk))
+    if entry.get("bridge"):
+        parts += ["", str(entry["bridge"])]
+    return "\n".join(parts).strip()
+
+
+def seminar_pdf(sem_dir: Path, sem: str) -> Path:
+    """Канонический рендер — rendered/sem-NN.pdf. Кейс-формат (sem-03 v2) выкладывает
+    только rendered/sem-NN-preview.pdf: канонический там удалён самой контент-сессией."""
+    for name in (f"{sem}.pdf", f"{sem}-preview.pdf"):
+        p = sem_dir / "rendered" / name
+        if p.exists():
+            return p
+    raise FileNotFoundError(f"{sem}: нет ни rendered/{sem}.pdf, ни rendered/{sem}-preview.pdf")
+
+
+def attach_spec_notes(sem_dir: Path, sem: str, slides: list[dict]) -> int:
+    """Кейс-формат (doc-first, sem-03 v2): slides/*.md — стабы, а текст и speaker notes
+    живут в tools/seminar-render/spec_<sem>.py (список S, порядок 1:1 с deck.yaml).
+    Дописываем заметки тем слайдам, у которых их нет. No-op для sem-01/02 (заметки в md)
+    и вообще везде, где спека нет."""
+    spec_file = sem_dir.parents[2] / "tools" / "seminar-render" / f"spec_{sem.replace('-', '')}.py"
+    if not spec_file.exists() or all(s["body"] for s in slides):
+        return 0
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(f"spec_{sem}", spec_file)
+    mod = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(mod)
+    except Exception as e:                       # спека — чужой код, падать из-за неё не хотим
+        print(f"    ⚠ {sem}: не смог прочитать {spec_file.name}: {e}")
+        return 0
+    entries = [e for e in (getattr(mod, "S", None) or []) if isinstance(e, dict)]
+    deck = L.load_deck_entries(sem_dir, LANG)
+    if len(entries) != len(deck):
+        print(f"    ⚠ {sem}: в {spec_file.name} {len(entries)} слайдов, в deck.yaml {len(deck)} "
+              f"— заметки не привязываю (порядок не гарантирован)")
+        return 0
+    # Порядок спека 1:1 с deck.yaml, поэтому ключ — подпись слайда из дека, а не title
+    # спека: у слайдов «Кейс N.N · Разбор» они расходятся. `slides` уже отфильтрованы
+    # по exclude, так что по индексу их сопоставлять нельзя — только по подписи.
+    by_caption = {}
+    for e, d in zip(entries, deck):
+        cap = (d["assertion"] or str(e.get("title") or "")).strip()
+        if cap and e.get("notes"):
+            by_caption.setdefault(cap, str(e["notes"]).strip())
+    # У финального слайда notes нет — его содержание лежит в takeaways/bridge.
+    by_caption.update({
+        (d["assertion"] or "").strip(): compose_closing(e)
+        for e, d in zip(entries, deck)
+        if not e.get("notes") and compose_closing(e)
+    })
+    n = 0
+    for sl in slides:
+        cap = sl["caption"].strip()                 # ключ by_caption — подпись ИЗ ДЕКА
+        if not sl["body"] and by_caption.get(cap):
+            sl["body"] = L.strip_stage_directions(by_caption[cap])
+            n += 1
+        # подпись вида «closing»/«cover» — это kind из дека, а не название слайда;
+        # переименовываем ПОСЛЕ поиска заметки, иначе ключ перестанет совпадать
+        if cap.lower() in KIND_CAPTIONS:
+            sl["caption"] = KIND_CAPTIONS[cap.lower()]
+    if n:
+        print(f"    · {sem}: заметок взято из {spec_file.name}: {n}")
+    return n
+
+
 def build_seminar(sem: str, sems_dir: Path) -> dict:
     sem_dir = sems_dir / sem
-    pdf = sem_dir / "rendered" / f"{sem}.pdf"
-    if not pdf.exists():
-        raise FileNotFoundError(f"{sem}: нет {pdf}")
+    pdf = seminar_pdf(sem_dir, sem)
 
     slides = L.parse_deck_slides(sem_dir, LANG, exclude_re=SEM_EXCLUDE_RE)
+    attach_spec_notes(sem_dir, sem, slides)
     # точечные исключения по id — снимаем ПОСЛЕ парсинга, сверяя по assertion/заголовку
     by_id = EXCLUDE_BY_ID.get(sem, {})
     if by_id:
