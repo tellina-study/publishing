@@ -525,8 +525,10 @@ def render_mapped(doc, page_map: list, out_dir: Path, dpi: int = DPI) -> None:
 
 # подписи интерфейса генератора по языкам
 L10N = {
-    "ru": {"lecture": "Лекция", "slides": lambda n: plural_slides(n), "slide": "Слайд", "min": "мин"},
-    "en": {"lecture": "Lecture", "slides": lambda n: "slides", "slide": "Slide", "min": "min"},
+    "ru": {"lecture": "Лекция", "seminar": "Семинар", "slides": lambda n: plural_slides(n),
+           "slide": "Слайд", "min": "мин"},
+    "en": {"lecture": "Lecture", "seminar": "Seminar", "slides": lambda n: "slides",
+           "slide": "Slide", "min": "min"},
 }
 
 def lecture_files(lec_dir: Path, lec: str, lang: str):
@@ -674,24 +676,30 @@ how to tell. Each lecture is slides plus commentary: look at a slide, read what'
 
 SEM_HERO = {
     "ru": "\n## Семинары\n\nРазборы и упражнения к лекциям: голосования, кейсы, ошибки моделей — и что из них\nследует.\n\n<div class=\"grid cards\" markdown>\n",
-    "en": "\n## Seminars\n\nWorkshops that go with the lectures: polls, cases, model failures — and what follows from\nthem. **Russian only** for now.\n\n<div class=\"grid cards\" markdown>\n",
+    "en": "\n## Seminars\n\nWorkshops that go with the lectures: polls, cases, model failures — and what follows from\nthem.\n\n<div class=\"grid cards\" markdown>\n",
 }
 
-def load_seminars_manifest() -> list[dict]:
+def load_seminars_manifest() -> dict[str, list[dict]]:
+    """Пишется sync_seminars.py — {"ru": [...], "en": [...]}. Старый плоский формат
+    (список без языков) трактуем как RU-only, для совместимости с уже сгенерённым файлом."""
     f = DOCS / ".seminars-manifest.json"
     if not f.exists():
-        return []
+        return {}
     try:
-        return json.loads(f.read_text(encoding="utf-8")) or []
+        data = json.loads(f.read_text(encoding="utf-8")) or {}
     except json.JSONDecodeError:
-        return []
+        return {}
+    if isinstance(data, list):
+        return {"ru": data}
+    return data
 
 def _cards(manifest: list[dict], kind: str, lang: str) -> str:
     """kind — 'lectures' | 'seminars': и подпись карточки, и каталог страницы."""
     loc = L10N.get(lang, L10N["ru"])
     open_label = "Открыть →" if lang == "ru" else "Open →"
-    prefix_word = loc["lecture"] if kind == "lectures" else "Семинар"
-    strip_re = r'^(Лекци[яю]|Lecture)\s*\d+[.\s—-]*' if kind == "lectures" else r'^Семинар\s*\d+[.\s—-]*'
+    prefix_word = loc["lecture"] if kind == "lectures" else loc["seminar"]
+    strip_re = (r'^(Лекци[яю]|Lecture)\s*\d+[.\s—-]*' if kind == "lectures"
+                else r'^(Семинар|Seminar)\s*\d+[.\s—-]*')
     cards = []
     for m in sorted(manifest, key=lambda x: x["id"]):
         body = re.sub(strip_re, '', str(m["title"]), flags=re.I).strip() or str(m["title"])
@@ -707,8 +715,9 @@ def _cards(manifest: list[dict], kind: str, lang: str) -> str:
 def write_landing(manifest: list[dict], lang: str = "ru",
                   seminars: list[dict] | None = None) -> None:
     """Генерит лендинг-витрину из манифестов лекций и семинаров (по языку).
-    Семинары — RU-only (перевода нет); на EN-лендинге показываем те же карточки с пометкой,
-    i18n fallback_to_default отдаст по ним русскую страницу вместо 404."""
+    `seminars` — уже манифест НУЖНОГО языка (per-lang, из sync_seminars.py); семинар без
+    EN-перевода просто не попадёт в en-манифест, i18n fallback_to_default отдаст по нему
+    русскую страницу вместо 404."""
     text = HERO.get(lang, HERO["ru"]) + _cards(manifest, "lectures", lang)
     if seminars:
         text += SEM_HERO.get(lang, SEM_HERO["ru"]) + _cards(seminars, "seminars", lang)
@@ -779,10 +788,10 @@ def main() -> None:
                 skipped.append(str(e))
     ru_manifest = manifests["ru"]
     if not args.no_landing:
-        sem_manifest = load_seminars_manifest()   # пишется sync_seminars.py, если он отработал
+        sem_manifests = load_seminars_manifest()   # пишется sync_seminars.py, если он отработал
         for lang in LANGS:
             if manifests[lang]:
-                write_landing(manifests[lang], lang, sem_manifest)
+                write_landing(manifests[lang], lang, sem_manifests.get(lang, []))
     print(f"\nГотово: {len(ru_manifest)} лекц. (RU) + EN где есть, {len(skipped)} пропущено.")
     for s in skipped:
         print(f"  ✗ {s}")
