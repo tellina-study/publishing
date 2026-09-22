@@ -38,3 +38,20 @@ Set up the `publishing` harness (tellina-study/publishing, public). Lifecycle BR
 FACT-CHECK → CRITIQUE → SHIP; knowledge base = wiki + lightweight ontology + local RAG; agents =
 researcher / fact-checker / editor / librarian. Patterns adapted from the tradebotint/research lab
 harness and the AI-usage-lessons knowledge repo.
+
+## 2026-09-20 — Семинары публикуются: у курса-сайта появился раздел «Семинары»
+Владелец отменил решение 2026-08-30 «Семинары: СКРЫТЬ пока» — на lessons.tellian.io сделан
+отдельный раздел, опубликованы семинары 1-3. Из паблика убрана только универ-админка
+(чат курса в MAX, рубежный контроль) плюс три слайда, где «МГТУ им. Н.Э. Баумана» и метки
+РК1-3 вшиты в КАРТИНКУ и текстовым фильтром не снимаются — перерендер вернёт их обратно.
+Кросс-ссылки лекций на семинары больше не считаются «висячими».
+Anchor: publishing#31 / PR publishing#32 / AI-usage-lessons PR #202
+
+## 2026-09-20 — Источник комментариев на сайте: не только speech.md
+Раньше `speech.md` была единственным индексом истины для страниц курса. Теперь генератор
+берёт комментарии из `## Speaker notes` в `slides/*.md`, когда речь ОТСТАЛА от дека
+(проверяется покрытием id) или её нет вовсе (семинары). Речь остаётся источником по
+умолчанию: пока она покрывает дек, ничего не меняется. Повод — lec-03 v6.4: дек углубили
+55→67 слайдов, речь не тронули, и публикация по речи дала бы 48 слайдов вместо 67.
+Anchor: publishing PR #32 / course-site/scripts/sync_lectures.py
+

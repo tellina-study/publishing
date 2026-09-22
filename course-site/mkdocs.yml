@@ -54,6 +54,7 @@ plugins:
           nav_translations:
             Курс: Course
             Лекции: Lectures
+            Семинары: Seminars
 
 extra_css:
   - stylesheets/extra.css
@@ -76,3 +77,7 @@ nav:
       - lectures/lec-03.md
       - lectures/lec-04.md
       - lectures/lec-05.md
+  - Семинары:
+      - seminars/sem-01.md
+      - seminars/sem-02.md
+      - seminars/sem-03.md

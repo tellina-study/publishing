@@ -9,5 +9,7 @@ __pycache__/
 # в git; GH Pages → возможно нужны/или рендер в CI). Решаем вместе с хостингом.
 docs/assets/
 docs/lectures/lec-*.md
+docs/seminars/sem-*.md
+docs/.seminars-manifest.json
 docs/index.ru.md
 docs/index.en.md
