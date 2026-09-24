@@ -60,6 +60,26 @@ L08 — English social posts go through stylist-en, not stylist-ru — pick the 
   Bizup), not stylist-ru. Same principles (kill deadwood, verb over construction, clarity), right tool.
   Anchor: pieces/20260901_lessons-linkedin-announce
 
+L09 — Число из вторичного реестра — `[UNVERIFIED]`, пока не резолвлен первичный отчёт.
+  Why: в одной задаче посредник `workain/agent-harness-registry` дважды поставил в черновик
+  «Лестницы» число без публично проверяемого первоисточника. Раунд 1 снял память CrewAI
+  «46,0% против 57,6%» — происхождение нашлось только в раунде 3: промо-issue платформы
+  benchd.ai (`crewAIInc/crewAI#5800`), закрытый мейнтейнерами как `not_planned`. Раунд 2 снял
+  проверку Anthropic Memory Tool «4 из 24 (17%)» — первичный отчёт живёт в приватном
+  репозитории и отдаёт 404. Правило: реестр/агрегатор резолвит ссылку, но не факт; «реестр
+  выглядит солидно» проверкой не является, и второй раз от того же посредника — уже не
+  совпадение, а системный риск. Anchor: pieces/20260923_agent-config-ladder/fact-check-round2.md
+  (+ round3 п. 3b) / tasks/20260923_sdlc-ai-pitfalls/log.md
+
+L10 — Если OUTPUT CONTRACT требует файл на диске, у профиля агента должно быть право записи.
+  Why: оба прогона `stylist-ru` вернули готовые списки правок (35 и 50) и не смогли записать
+  `style-ru.md` — в тулсете профиля только Read/Grep/Glob. Работа вернулась в чат и жила бы
+  только в транскрипте (умри сессия — пропала); оркестратору пришлось сохранять артефакты
+  руками. Правило: перед диспатчем сверь OUTPUT CONTRACT с тулсетом профиля — либо дай Write,
+  либо честно напиши в контракте «возвращаю текст, сохраняет вызывающий». Кандидат на правку:
+  `.claude/agents/stylist-ru.md`. Anchor: tasks/20260923_sdlc-ai-pitfalls/log.md (2026-09-24,
+  «обе статьи доведены до гейта»)
+
 <!--
 L01 — <rule>.
   Why: <what happened>.
