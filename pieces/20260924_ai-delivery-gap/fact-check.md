@@ -204,3 +204,126 @@
 
 VERDICT: **16 claims must be fixed** (все — формулировка/ссылка/оговорка, ни одной выдуманной
 цитаты и ни одной битой ссылки). После правок текст можно вести в роаст.
+
+---
+
+## Раунд 2: fitness-функции (абзац «Архитектура и ADR», ru.md, стр. 249–259)
+
+Проверен ровно один абзац — тот, что остался нерезолвленным после раунда 1. Всё, что закрыто выше,
+не переоткрывалось. Метод: подтверждено только то, что я открыл сам; для каждой ссылки ниже
+проверен HTTP-статус.
+
+| # | Утверждение в статье | Источник (резолвнутая ссылка) | Дословно | Вердикт | Заметка |
+|---|---|---|---|---|---|
+| F1 | «Практику ввели Нил Форд, Ребекка Парсонс и Патрик Куа в „Building Evolutionary Architectures" (2017)» | OpenLibrary, запись произведения: <https://openlibrary.org/works/OL19541931W> (HTTP 200) | `title: Building Evolutionary Architectures: Support Constant Change`, `author_name: ['Neal Ford', 'Rebecca Parsons', 'Patrick Kua']`, `first_publish_year: 2017` | **Verified this run** | Издатель O'Reilly, ISBN-13 978-1-4919-8636-3. 2-е издание — 2022/2023, там добавлен четвёртый автор, Прамод Садаладж. Канонический URL главы на oreilly.com отдаёт **403** — инлайном его ставить нельзя. |
+| F2 | То же, подтверждение из независимого источника + дата попадания в отраслевой оборот | Thoughtworks Technology Radar, блип «Architectural fitness function»: <https://www.thoughtworks.com/radar/techniques/architectural-fitness-function> (HTTP 200) | «Borrowed from evolutionary computing, a fitness function is used to summarize how close a given design solution is to achieving the set aims. <…> An architectural fitness function, **as defined in Building Evolutionary Architectures**, provides an objective integrity assessment of some architectural characteristics, which may encompass existing verification criteria, such as unit testing, metrics, monitors, and so on.» | **Verified this run** | Блип впервые — **Nov 2017**, кольцо **Trial**; переподтверждён **May 2018**, то же кольцо; страница помечена «NOT ON THE CURRENT EDITION», last updated May 15, 2018. То есть за восемь лет Radar так и не вывел практику из Trial. Смежный блип «Evolutionary architecture» есть на Radar с **Jan 2010**, но fitness-функции в нём не упоминаются — то есть датировка «2017» для самой практики корректна. |
+| F3 | «архитектурное требование формулируется как **исполняемая** проверка» | Гл. 2, «What is a Fitness Function?» (текст 1-го издания, зеркало: <https://ebrary.net/53995/economics/what_fitness_function>, HTTP 200) | «the fitness functions for evolutionary architecture **may not be implementable in software** (e.g., a required manual process for regulatory reasons), but architects must still define **manual fitness functions** <…> While automated checks are preferable, some projects cannot automate all fitness functions.» И: «Developers commonly express fitness functions using different kinds of mechanisms, such as **tests or metrics**.» | **Wrong (сужение)** | У авторов определение шире: фитнес-функция необязательно исполняемая и необязательно автоматическая. «Automated Versus Manual» — одна из семи заявленных категорий. |
+| F4 | «архитектура жива ровно в той мере, в какой эти проверки прогоняются» | там же | Ближайшее, что есть: «The fitness functions **collectively denote what matters to us in our architecture**, allowing us to make the kinds of trade-off decisions that are both crucial and vexing» и «**Not all tests are fitness functions, but some tests are** — if the test helps verify the integrity of architectural concerns, we consider it a fitness function.» | **Not verified** | Формулы «архитектура жива ровно в той мере» в источнике нет — это авторская компрессия. Ближайшее *чужое* утверждение такого регистра — не у Форда, а в блипе Radar: «We **believe** architects can communicate, validate and preserve architectural characteristics in an automated, continual manner, which is the key to building evolutionary architectures». Это декларация веры Thoughtworks, не измерение. Либо снять, либо атрибутировать. |
+| F5 | «В репозитории это обычный тест рядом с кодом, запускаемый в CI» | Гл. 2, «Categories / Atomic Versus Holistic»: <https://ebrary.net/53996/economics/categories>; «Static Versus Dynamic, Automated Versus Manual»: <https://ebrary.net/53998/economics/static_versus_dynamic> (оба HTTP 200) | «Atomic fitness functions run against a singular context <…> An excellent example of an atomic fitness function is **a unit test that verifies some architectural characteristic, such as modular coupling** <…> but **not all unit tests serve as fitness functions — only the ones that verify architecture characteristic(s)**.» «developers will execute most fitness functions within an automated context: **continuous integration, deployment pipelines**, and so on.» | **Verified this run — но только для одного подвида** | Описание точно попадает в atomic + triggered + static + automated. Полная авторская классификация — **семь осей**: Atomic/Holistic, Triggered/Continual, Static/Dynamic, Automated/Manual, Temporal, Intentional over Emergent, Domain-specific. Нужна оговорка «самый ходовой вид», иначе абзац выдаёт одну клетку за всю таблицу. |
+| F6 | Пример «модуль оплаты не импортирует модуль отчётности» | там же + оглавление книги (раздел «Guarding Against Component Cycles») | «a unit test that verifies some architectural characteristic, such as **modular coupling**» | **Verified this run** | Жанр совпадает с авторским примером. |
+| F7 | Пример «циклических зависимостей между пакетами нет» | Оглавление 1-го издания: раздел **«Guarding Against Component Cycles»** (глава про архитектурную связанность) | заголовок раздела дословно | **Verified this run** | Циклы компонентов — прямо названная авторами мишень. |
+| F8 | Пример «время ответа на 95-м перцентиле не больше 300 мс» — **в составе перечня «обычный тест в CI»** | Гл. 2, «Triggered Versus Continual»: <https://ebrary.net/53997/economics/triggered_versus_continual> (HTTP 200); и «What is a Fitness Function?» | Про перформанс: «Consider a requirement that **all service calls must respond within 100ms**. We can implement a test (i.e., fitness function) that measures the response <…>». Но про транзакционное время: «**instead of using a triggered test**, developers build a fitness function that **simulates a transaction in production** while all the other real transactions run <…> Monitoring-driven development (MDD) <…> These **continual** fitness functions are more dynamic than standard triggered tests.» | **Wrong (не туда положено)** | Сам порог «p95 ≤ 300 мс» — легитимная фитнес-функция и точный аналог авторского «100 ms». Но авторы такие проверки относят к **continual** — они живут в мониторинге прода, а не в сборке. В статье пример стоит третьим в списке «обычный тест … запускаемый в CI» — и это ровно та путаница, которую книга разводит явно. |
+| F9 | **«Сравнительных измерений эффекта мы не нашли <…> нет числа»** | (1) Knodel, Muthig, Rost, ICSM 2008, DOI [10.1109/ICSM.2008.4658077](https://doi.org/10.1109/ICSM.2008.4658077) (HTTP 202; абстракт резолвнут через OpenAlex: `https://api.openalex.org/works/doi:10.1109/ICSM.2008.4658077`), открытый пересказ с числом: <https://fb-swt.gi.de/fileadmin/FB/SWT/Softwaretechnik-Trends/Verzeichnis/Band_29_Heft_2/06-knodel.pdf> (HTTP 200, PDF прочитан целиком). (2) Olsson, Toll, Ericsson, Wingkvist, ECSA-W 2016, DOI 10.1145/2993412.3003391; открытая карточка с абстрактом: <https://urn.kb.se/resolve?urn=urn:nbn:se:lnu:diva-60472> (HTTP 200) | (1) Абстракт ICSM 2008: «An experiment with **six component development teams** gives evidence that this training pro-actively prevents architecture decay. **The three teams supported by the live compliance checking inserted about 60% less structural violations** into the architecture than did the three other development teams.» Он же, открытый PDF Knodel: «the number of architecture violations was, after an initial peak, **almost constantly 60% lower in the group that was supported by SAVE LiFe, compared to the control group** <…> **All teams invested approximately the same development effort**». (2) Абстракт ECSA-W 2016: «The service was evaluated in a **field experiment that consisted of eight student projects**. We found that **the four projects that used the service produced significantly fewer violations** compared to those that did not.» | **Wrong как написано** | Под самим именем «fitness function» измерений действительно нет (см. следующую строку). Но **механизм** — автоматическая проверка архитектурного правила прямо в рабочем цикле — измерен сравнительно **дважды**, и оба раза со свидетельством в пользу. Обе работы старше термина (2008 и 2016) и слова «fitness function» не употребляют — вот почему поиск по имени их не находит. Утверждение «нет числа» в текущей редакции просто неверно. |
+| F10 | То же, но в узком чтении: «нет измерений **под именем fitness function**» | Отрицательные результаты поиска, выполненные в этом прогоне | Semantic Scholar `paper/search?query=architectural fitness function` → пустой `data`; запросы «fitness functions evolutionary architecture» / «evolutionary architecture fitness function case study» дают только генетические алгоритмы и NAS, ни одной работы по архитектурному управлению. Единственная академическая работа, употребляющая термин в нужном смысле, — [«Sustaining Research Software: A Fitness Function Approach», arXiv:2509.10085](https://arxiv.org/abs/2509.10085) (HICSS), и она **предлагает** набор фитнес-функций под FAIR, контрольной группы не имеет. SLR/мэппинга по теме не существует. | **Verified this run (отрицательный результат)** | Знаменатель отрицания честный: три поисковых системы (Semantic Scholar API, веб-поиск, arXiv через веб), плюс отдельная проверка по ArchUnit — эмпирики, меряющей эффект внедрения ArchUnit, тоже нет. |
+| F11 | «у практики есть авторы, формулировка и **инструменты**» — инструмент не назван | ArchUnit, официальный сайт: <https://www.archunit.org/> (HTTP 200) | «ArchUnit is a **free, simple and extensible library for checking the architecture of your Java code using any plain Java unit test framework**. That is, ArchUnit can check **dependencies between packages and classes, layers and slices, check for cyclic dependencies** and more. It does so by analyzing given Java bytecode». Слоган сайта: «Unit test your Java architecture». | **Verified this run** | В абзаце (и во всём `ru.md` — проверено grep'ом) **ArchUnit не упоминается ни разу**. Слово «инструменты» висит без единого примера. ArchUnit — ровно то, чем его обычно называют: Java-библиотека, гоняющая архитектурные правила как обычные юнит-тесты; оба первых примера статьи (импорт между модулями, циклы между пакетами) — буквально её штатные проверки. Есть порт для .NET/C#. |
+
+### Must fix before ship
+
+- **F9 — «Сравнительных измерений эффекта мы не нашли <…> нет числа».** Неверно. Два сравнительных
+  замера существуют и оба резолвятся. Это единственная правка в абзаце, которая меняет смысл, а не
+  формулировку — и меняет его в пользу статьи: появляется число там, где сейчас стоит признание
+  в его отсутствии. Оставить как есть нельзя: это ровно тот жанр «мы поискали и не нашли», который
+  статья сама разбирает у других.
+- **F3 — «формулируется как исполняемая проверка».** Авторы явно оговаривают ручные фитнес-функции.
+  Нужна оговорка либо замена на авторское «объективная оценка целостности архитектурной характеристики».
+- **F8 — p95 в списке «обычный тест в CI».** Книга относит такие проверки к continual/мониторингу
+  и разводит их с triggered-тестами абзацем. Пример надо либо вынести, либо пометить.
+- **F4 — «архитектура жива ровно в той мере, в какой эти проверки прогоняются».** В источнике этого
+  нет. Либо снять кавычку доверия к источнику (это ваша мысль, не Форда), либо заменить на сорсабельное.
+
+### Флаги
+
+- **F5 / полнота классификации.** У авторов семь осей категорий. Абзац описывает одну клетку
+  (atomic + triggered + static + automated) как «это». Достаточно двух слов — «самый ходовой вид».
+- **F11 / «инструменты» без примера.** Утверждение об инструментах в абзаце, который именно и
+  упрекает практику в бездоказательности, само остаётся без единого имени. ArchUnit закрывает дыру
+  одной ссылкой.
+- **Знаменатели у новых чисел (обязательно назвать).** 60% — это 3 команды против 3, один
+  эксперимент, 2008 год, замер по числу структурных нарушений при примерно равных трудозатратах
+  («All teams invested approximately the same development effort»). «Значимо меньше» у Ольссона —
+  это 4 студенческих проекта против 4, размер эффекта в абстракте не назван. Подавать их без этих
+  цифр — наступить в собственный антипаттерн «цифра без знаменателя»; с ними — это честное
+  «дважды посмотрели, и оба раза в нужную сторону», а не «практика работает».
+- **Хронология термина.** «Fitness function» заимствован из эволюционных вычислений, и авторы это
+  сами проговаривают. «Практику ввели» — корректно; «термин ввели» было бы неверно.
+- **Radar застрял в Trial.** Блип не выходил из Trial с ноября 2017 и с мая 2018 не пересматривался
+  вовсе. Для абзаца, который спорит о зрелости практики, это сильная и бесплатная деталь.
+- **Противоречий с `wiki/topics/anti-patterns.md` не найдено** — упоминаний fitness-функций и
+  архитектурного управления там нет.
+- **Связь с флагом #95 раунда 1.** Там было предложено перевести утверждения об отсутствии в «мы не
+  нашли». Здесь случай хуже: формулировка уже была «мы не нашли», и она всё равно оказалась
+  фактически неверной. Вывод для `lessons-learned`: «мы не нашли» — не индульгенция, а обещание, что
+  искали; отрицание нужно перепроверять сменой ключевого слова (здесь помог отказ от термина
+  «fitness function» в пользу «architecture conformance checking»).
+
+### Готовая правка
+
+Развёрнутый вариант — заменяет всё от «Практику ввели…» до конца абзаца:
+
+> Практику ввели Нил Форд, Ребекка Парсонс и Патрик Куа в
+> [«Building Evolutionary Architectures»](https://openlibrary.org/works/OL19541931W) (O'Reilly, 2017);
+> тогда же она попала в
+> [Technology Radar](https://www.thoughtworks.com/radar/techniques/architectural-fitness-function) —
+> в кольцо Trial, откуда с мая 2018 года так и не вышла. Определение у авторов широкое: фитнес-функция
+> даёт «объективную оценку целостности какой-то архитектурной характеристики» и может быть тестом,
+> метрикой, монитором в проде или даже ручной процедурой. Самый ходовой её вид — обычный тест рядом
+> с кодом, запускаемый в CI: «модуль оплаты не импортирует модуль отчётности», «циклических
+> зависимостей между пакетами нет»; для Java это [ArchUnit](https://www.archunit.org/). Проверки
+> вроде «время ответа на 95-м перцентиле не больше 300 мс» авторы относят к непрерывным — их место
+> в мониторинге, а не в сборке.
+>
+> Под именем «fitness-функция» сравнительных измерений эффекта мы не нашли — ни одной работы с
+> контрольной группой. Но сам механизм, автоматическую проверку архитектурного правила прямо в
+> рабочем цикле, мерили дважды, и обе работы старше термина.
+> [Кнодель, Мутиг и Рост (ICSM 2008)](https://doi.org/10.1109/ICSM.2008.4658077): шесть команд, три
+> с живой проверкой в IDE, три без; у поддержанных
+> [структурных нарушений «почти постоянно на 60% меньше»](https://fb-swt.gi.de/fileadmin/FB/SWT/Softwaretechnik-Trends/Verzeichnis/Band_29_Heft_2/06-knodel.pdf)
+> при примерно равных трудозатратах.
+> [Ольссон и соавторы (ECSA-W 2016)](https://urn.kb.se/resolve?urn=urn:nbn:se:lnu:diva-60472):
+> восемь студенческих проектов, четыре с сервисом, проверяющим MVC на каждое изменение кода, —
+> «значимо меньше нарушений», размер эффекта не назван. Знаменатели тут крошечные: шесть команд и
+> восемь студенческих проектов. Это не «практика работает» — это «дважды посмотрели, и оба раза в
+> нужную сторону».
+
+Короткий вариант, если абзац нельзя раздувать (заменяет только последнее предложение):
+
+> Под своим именем практика не измерена ни разу. Механизм — автоматическая проверка архитектурного
+> правила в рабочем цикле — мерили дважды, до появления термина и на крошечных выборках:
+> [шесть команд, 2008](https://fb-swt.gi.de/fileadmin/FB/SWT/Softwaretechnik-Trends/Verzeichnis/Band_29_Heft_2/06-knodel.pdf)
+> — у трёх поддержанных структурных нарушений на 60% меньше;
+> [восемь студенческих проектов, 2016](https://urn.kb.se/resolve?urn=urn:nbn:se:lnu:diva-60472) —
+> у четырёх с автопроверкой «значимо меньше нарушений» без названного размера эффекта.
+
+### Ссылки для инлайна (все проверены на статус в этом прогоне)
+
+| Назначение | URL | HTTP |
+|---|---|---|
+| Книга (первоисточник практики) | `https://openlibrary.org/works/OL19541931W` | 200 |
+| Отраслевая запись практики + определение | `https://www.thoughtworks.com/radar/techniques/architectural-fitness-function` | 200 |
+| Инструмент (Java) | `https://www.archunit.org/` | 200 |
+| Измерение 1 — DOI | `https://doi.org/10.1109/ICSM.2008.4658077` | 202 (IEEE, абстракт открыт) |
+| Измерение 1 — открытый PDF с числом 60% | `https://fb-swt.gi.de/fileadmin/FB/SWT/Softwaretechnik-Trends/Verzeichnis/Band_29_Heft_2/06-knodel.pdf` | 200 |
+| Измерение 2 — постоянная ссылка с абстрактом | `https://urn.kb.se/resolve?urn=urn:nbn:se:lnu:diva-60472` | 200 |
+
+**Не ставить инлайном:** `https://www.oreilly.com/library/view/building-evolutionary-architectures/9781491986356/`
+— отдаёт **403**; `https://doi.org/10.1145/2993412.3003391` — **403** (для ECSA-W 2016 использовать
+URN-ссылку из таблицы выше); `https://ebrary.net/...` — это зеркало текста книги, годится для
+верификации цитат, но не для публикации.
+
+---
+
+VERDICT (раунд 2): **4 claims must be fixed** — F9 (неверное утверждение об отсутствии измерений,
+меняет смысл), F3, F8, F4 (сужения и несорсабельная формулировка). Ни одной выдуманной цитаты,
+ни одной битой ссылки в самом абзаце — но и ни одной ссылки там сейчас вообще нет: абзац был
+единственным местом статьи, где несущие утверждения стояли без источников. После правки —
+шесть резолвимых ссылок и два числа со знаменателями.
