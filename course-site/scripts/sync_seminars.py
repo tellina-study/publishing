@@ -32,7 +32,7 @@ import yaml
 
 import sync_lectures as L
 
-SEMINARS = ["sem-01", "sem-02", "sem-03"]
+SEMINARS = ["sem-01", "sem-02", "sem-03", "sem-04"]
 LANGS = ["ru", "en"]
 SEM_MANIFEST = L.DOCS / ".seminars-manifest.json"
 
@@ -287,7 +287,7 @@ def build_all(sems: list[str], lessons_dir: Path) -> dict[str, list[dict]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Собрать страницы семинаров из lessons.")
-    ap.add_argument("seminars", nargs="*", default=None, help="sem-01 sem-03 … (по умолчанию 01-03)")
+    ap.add_argument("seminars", nargs="*", default=None, help="sem-01 sem-03 … (по умолчанию 01-04)")
     ap.add_argument("--lessons", default=os.environ.get("COURSE_LESSONS_DIR", str(L.DEFAULT_LESSONS)),
                     help="путь к library/lectures в репо lessons (семинары ищутся рядом)")
     args = ap.parse_args()

@@ -315,6 +315,104 @@ def load_deck_entries(deck_dir: Path, lang: str) -> list[dict]:
                 })
     return out
 
+# ───────── дек ссылается на слайд-файл строкой, и эта строка устаревает ─────────
+# lec-04 round-6 перенумеровала slides/*.md, не тронув `file:` в deck.yaml: 38 из 58
+# записей RU ссылались на несуществующий файл (комментарий пустой), а у трёх файл
+# существовал, но принадлежал СОСЕДНЕМУ слайду — подпись и заметки уезжали на чужую
+# картинку, и content-mapping ронял один слайд (57 вместо 58). `file:` — не индекс
+# истины; истина — содержимое самого слайда. Но и переписывать вслепую нельзя: у
+# lec-03 v6.4 деково `assertion` — пересказ слайда (s01 «Air Canada» и слайд про выбор
+# архитектуры почти не пересекаются словами), и чистый матчинг по содержимому уводил
+# ПРАВИЛЬНЫЕ ссылки на чужие файлы. Поэтому прямая ссылка — сильная априорная гипотеза
+# (бонус к баллу), а не приговор: перебить её может только заметно лучшее совпадение
+# по содержимому — ровно случай lec-04, где на файл претендует соседняя запись.
+
+def _slide_order_key(p: Path):
+    m = re.match(r'^s(\d+)([a-z]*)', p.stem)
+    return (int(m.group(1)), m.group(2)) if m else (10 ** 6, p.stem)
+
+def slide_dir(deck_dir: Path, lang: str) -> Path:
+    return deck_dir / ("slides-en" if lang == "en" else "slides")
+
+def _slide_files(deck_dir: Path, lang: str) -> list[Path]:
+    d = slide_dir(deck_dir, lang)
+    return sorted(d.glob("s*.md"), key=_slide_order_key) if d.is_dir() else []
+
+def _frontmatter_assertion(text: str) -> str:
+    m = re.match(r'^---\n(.*?)\n---', text, re.S)
+    if not m:
+        return ""
+    try:
+        return str((yaml.safe_load(m.group(1)) or {}).get("assertion") or "")
+    except yaml.YAMLError:
+        return ""
+
+DIRECT_PRIOR = 0.5   # насколько прямая ссылка дека «весит» против совпадения по тексту
+
+def _match_files(entries: list[dict], texts: list[str], direct_idx: list,
+                 floor: float = 0.34) -> list:
+    """Запись дека → индекс файла: жадное глобальное 1:1 по содержимому + априор.
+    Упорядоченного выравнивания (DP, как для страниц PDF) здесь мало — имена файлов
+    слайдов НЕ обязаны идти в порядке лекции (lec-04: s18-small-units идёт в деке
+    раньше, чем s17b-gemini), так что порядок тут не сигнал, а помеха."""
+    toks = [_title_tokens(e["assertion"] or e["id"]) for e in entries]
+    pairs = []
+    for i in range(len(entries)):
+        for j in range(len(texts)):
+            sc = _score(toks[i], texts[j])
+            if direct_idx[i] == j:
+                sc += DIRECT_PRIOR
+            if sc >= floor:
+                pairs.append((sc, i, j))
+    pairs.sort(key=lambda t: (-t[0], t[1], t[2]))
+    out = [None] * len(entries)
+    busy_i, busy_j = set(), set()
+    for sc, i, j in pairs:
+        if i in busy_i or j in busy_j:
+            continue
+        out[i] = j; busy_i.add(i); busy_j.add(j)
+    # ссылка, которую никто не перебил и не забрал, остаётся за своей записью
+    for i, j in enumerate(direct_idx):
+        if out[i] is None and j is not None and j not in busy_j:
+            out[i] = j; busy_j.add(j)
+    return out
+
+def resolve_deck_files(deck_dir: Path, lang: str, entries: list[dict],
+                       quiet: bool = False) -> list[Path | None]:
+    """Запись дека → реальный slides/*.md. Прямые ссылки, пока дек и файлы согласны."""
+    direct, agree = [], True
+    for e in entries:
+        f = deck_dir / e["file"] if e["file"] else None
+        if not (f and f.exists()):
+            agree = False
+            direct.append(None)
+            continue
+        fa = _frontmatter_assertion(f.read_text(encoding="utf-8"))
+        # согласие проверяем по assertion слайда; там, где его нет, доверяем ссылке
+        if fa and _score(_title_tokens(e["assertion"]), _norm_txt(fa)) < 0.6:
+            agree = False
+        direct.append(f)
+    if agree:
+        return direct
+
+    files = _slide_files(deck_dir, lang)
+    if not files:
+        return direct
+    texts = []
+    for p in files:
+        t = p.read_text(encoding="utf-8")
+        texts.append(_norm_txt(f"{_frontmatter_assertion(t)} {slide_title(t)} {slide_visible(t)}"))
+    pos = {p: k for k, p in enumerate(files)}
+    idx = _match_files(entries, texts, [pos.get(d) for d in direct])
+    aligned = [files[k] if k is not None else None for k in idx]
+    repointed = sum(1 for a, d in zip(aligned, direct) if a != d)
+    lost = sum(1 for a in aligned if a is None)
+    if not quiet and (repointed or lost):
+        print(f"    · {deck_dir.name}/{lang}: `file:` в деке отстали от slides/ — "
+              f"переадресовано по содержимому: {repointed} из {len(entries)}"
+              + (f", без файла осталось {lost}" if lost else ""))
+    return aligned
+
 def parse_deck_slides(deck_dir: Path, lang: str,
                       exclude_re: re.Pattern | None = None) -> list[dict]:
     """Слайды из дека: caption = assertion (иначе заголовок слайда), body = Speaker notes.
@@ -322,9 +420,9 @@ def parse_deck_slides(deck_dir: Path, lang: str,
     if exclude_re is None:
         exclude_re = EXCLUDE_SECTION_RE
     slides = []
-    for e in load_deck_entries(deck_dir, lang):
-        f = deck_dir / e["file"]
-        text = f.read_text(encoding="utf-8") if e["file"] and f.exists() else ""
+    entries = load_deck_entries(deck_dir, lang)
+    for e, f in zip(entries, resolve_deck_files(deck_dir, lang, entries)):
+        text = f.read_text(encoding="utf-8") if f is not None else ""
         title = slide_title(text)
         cap = e["assertion"] or title or e["id"]
         if exclude_re.search(cap) or (title and exclude_re.search(title)):
