@@ -218,6 +218,7 @@ def build_seminar(sem: str, sems_dir: Path, lang: str) -> dict | None:
 
     assets = L.DOCS / "assets" / lang / sem
     doc = pymupdf.open(pdf)
+    refs_by_page = L.collect_references(doc)   # подписи-референсы со слайдов — ДО редактирования
     footers = L.strip_footer_pagenums(doc)
     if footers:
         print(f"    · {sem}/{lang}: срезано футеров-пагинации: {footers}")
@@ -258,8 +259,12 @@ def build_seminar(sem: str, sems_dir: Path, lang: str) -> dict | None:
         img = f"../assets/{lang}/{sem}/page-{orig_i + 1:02d}.webp"
         out.append(f"[![{loc['slide']} {disp}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
         out.append("")
-        if sl["body"]:
-            out += [sl["body"], ""]
+        refs = refs_by_page.get(page_map[orig_i], [])
+        body = L.strip_sources_tail(sl["body"]) if refs else sl["body"]
+        if body:
+            out += [body, ""]
+        if refs:                               # у семинаров подписи-референсов пока нет ни на одном
+            out += [L.format_references(refs, loc["sources"]), ""]
 
     dest_dir = L.DOCS / "seminars"
     dest_dir.mkdir(parents=True, exist_ok=True)

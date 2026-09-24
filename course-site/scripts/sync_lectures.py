@@ -624,10 +624,78 @@ def render_mapped(doc, page_map: list, out_dir: Path, dpi: int = DPI) -> None:
 # подписи интерфейса генератора по языкам
 L10N = {
     "ru": {"lecture": "Лекция", "seminar": "Семинар", "slides": lambda n: plural_slides(n),
-           "slide": "Слайд", "min": "мин"},
+           "slide": "Слайд", "min": "мин", "sources": "Источники"},
     "en": {"lecture": "Lecture", "seminar": "Seminar", "slides": lambda n: "slides",
-           "slide": "Slide", "min": "min"},
+           "slide": "Slide", "min": "min", "sources": "Sources"},
 }
+
+
+# ───────────────── источники со слайда: подпись внизу страницы PDF ─────────────────
+# Референсы лекции живут НА слайде — нижней строкой «[1] Автор — работа · [2] …», и в PDF
+# у каждой из них есть настоящая ссылка-аннотация. На сайте слайд — картинка, поэтому и
+# сами подписи, и URL за ними пропадали: в комментарии оставались висячие маркеры [1],
+# [2] без легенды. Вытаскиваем строку из нижней полосы страницы и ставим её текстом под
+# слайдом, подставляя URL из аннотаций — на сайте ссылки становятся кликабельными,
+# чего у картинки не было никогда.
+
+_REF_BAND = 0.16                       # нижняя часть страницы, где печатается подпись
+_REF_HEAD = re.compile(r'^\[(\d+)\]')
+
+def _band_lines(page, band: float = _REF_BAND) -> list[tuple[float, str, list]]:
+    """Строки текста из нижней полосы страницы: (y, текст, слова)."""
+    cut = page.rect.y1 - page.rect.height * band
+    lines: dict = {}
+    for w in page.get_text("words"):
+        if w[1] >= cut:
+            lines.setdefault((w[5], w[6]), []).append(w)
+    out = []
+    for ws in lines.values():
+        ws.sort(key=lambda t: t[0])
+        out.append((min(t[1] for t in ws), " ".join(t[4] for t in ws).strip(), ws))
+    return sorted(out, key=lambda t: t[0])
+
+def page_references(page) -> list[dict]:
+    """[{n, title, uri}] из подписи-референсов внизу страницы. Пусто — если её там нет."""
+    uris = []
+    for l in page.get_links():
+        if l.get("uri"):
+            rect = pymupdf.Rect(l["from"])
+            if rect.y0 >= page.rect.y1 - page.rect.height * _REF_BAND:
+                uris.append((_norm_txt(page.get_textbox(rect).replace("\n", " ")), l["uri"]))
+    refs = []
+    for _, text, _ws in _band_lines(page):
+        if not _REF_HEAD.match(text):
+            continue
+        for chunk in re.split(r'\s*·\s*|\s{3,}', text):
+            m = re.match(r'\[(\d+)\]\s*(.+)$', chunk.strip())
+            if not m:
+                continue
+            title = re.sub(r'\s+', ' ', m.group(2)).strip(' ·')
+            key = _norm_txt(title)
+            uri = next((u for t, u in uris if t and (t in key or key in t)), None)
+            refs.append({"n": int(m.group(1)), "title": title, "uri": uri})
+    seen, out = set(), []
+    for r in sorted(refs, key=lambda r: r["n"]):
+        if r["n"] not in seen:
+            seen.add(r["n"]); out.append(r)
+    return out
+
+def collect_references(doc) -> dict:
+    """pdf_page_idx → список референсов. Считать ДО редактирования страниц."""
+    return {i: refs for i in range(doc.page_count) if (refs := page_references(doc[i]))}
+
+# Подпись внизу слайда дублируется в тексте комментария у тех лекций, где её вписали в
+# slides/*.md руками (lec-03). Свой хвост «Источники: …» тогда снимаем — версия из PDF
+# та же самая, но со ссылками.
+_SRC_TAIL = re.compile(r'(?ms)^\s*(?:Источники|Sources)\s*:?\s*$.*\Z')
+
+def strip_sources_tail(body: str) -> str:
+    return _SRC_TAIL.sub('', body).rstrip()
+
+def format_references(refs: list[dict], label: str) -> str:
+    parts = [f"[{r['n']}] [{r['title']}]({r['uri']})" if r["uri"] else f"[{r['n']}] {r['title']}"
+             for r in refs]
+    return f"**{label}:** " + " · ".join(parts)
 
 def lecture_files(lec_dir: Path, lec: str, lang: str):
     """RU→EN маппинг файлов (publication-config naming). Footer-less pub-дек RU — если есть."""
@@ -686,6 +754,7 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
     # CONTENT-MAPPING: сопоставляем каждую секцию speech её странице PDF по СОДЕРЖИМОМУ
     # (порядок страниц PDF ≠ порядку секций из-за вставленных/переставленных слайдов).
     doc = pymupdf.open(pdf)
+    refs_by_page = collect_references(doc)      # подписи-референсы со слайдов — ДО редактирования
     footers = strip_footer_pagenums(doc)        # RU-полный дек «N/NN» → footer-less (no-op на чистых)
     if footers:
         print(f"    · {lec}/{lang}: срезано футеров-пагинации: {footers}")
@@ -730,8 +799,13 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         img = f"../assets/{lang}/{lec}/page-{orig_i + 1:02d}.webp"
         out.append(f"[![{loc['slide']} {disp}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
         out.append("")
-        if sl["body"]:
-            out.append(sl["body"])
+        refs = refs_by_page.get(page_map[orig_i], [])
+        body = strip_sources_tail(sl["body"]) if refs else sl["body"]
+        if body:
+            out.append(body)
+            out.append("")
+        if refs:                                # подпись со слайда — под слайдом и со ссылками
+            out.append(format_references(refs, loc["sources"]))
             out.append("")
 
     lectures_dir = DOCS / "lectures"
