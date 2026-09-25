@@ -32,7 +32,7 @@ import yaml
 
 import sync_lectures as L
 
-SEMINARS = ["sem-01", "sem-02", "sem-03"]
+SEMINARS = ["sem-01", "sem-02", "sem-03", "sem-04"]
 LANGS = ["ru", "en"]
 SEM_MANIFEST = L.DOCS / ".seminars-manifest.json"
 
@@ -218,6 +218,7 @@ def build_seminar(sem: str, sems_dir: Path, lang: str) -> dict | None:
 
     assets = L.DOCS / "assets" / lang / sem
     doc = pymupdf.open(pdf)
+    refs_by_page = L.collect_references(doc)   # подписи-референсы со слайдов — ДО редактирования
     footers = L.strip_footer_pagenums(doc)
     if footers:
         print(f"    · {sem}/{lang}: срезано футеров-пагинации: {footers}")
@@ -258,8 +259,12 @@ def build_seminar(sem: str, sems_dir: Path, lang: str) -> dict | None:
         img = f"../assets/{lang}/{sem}/page-{orig_i + 1:02d}.webp"
         out.append(f"[![{loc['slide']} {disp}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
         out.append("")
-        if sl["body"]:
-            out += [sl["body"], ""]
+        refs = refs_by_page.get(page_map[orig_i], [])
+        body = L.strip_sources_tail(sl["body"]) if refs else sl["body"]
+        if body:
+            out += [body, ""]
+        if refs:                               # у семинаров подписи-референсов пока нет ни на одном
+            out += [L.format_references(refs, loc["sources"]), ""]
 
     dest_dir = L.DOCS / "seminars"
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -287,7 +292,7 @@ def build_all(sems: list[str], lessons_dir: Path) -> dict[str, list[dict]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Собрать страницы семинаров из lessons.")
-    ap.add_argument("seminars", nargs="*", default=None, help="sem-01 sem-03 … (по умолчанию 01-03)")
+    ap.add_argument("seminars", nargs="*", default=None, help="sem-01 sem-03 … (по умолчанию 01-04)")
     ap.add_argument("--lessons", default=os.environ.get("COURSE_LESSONS_DIR", str(L.DEFAULT_LESSONS)),
                     help="путь к library/lectures в репо lessons (семинары ищутся рядом)")
     args = ap.parse_args()

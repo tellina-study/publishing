@@ -315,6 +315,104 @@ def load_deck_entries(deck_dir: Path, lang: str) -> list[dict]:
                 })
     return out
 
+# ───────── дек ссылается на слайд-файл строкой, и эта строка устаревает ─────────
+# lec-04 round-6 перенумеровала slides/*.md, не тронув `file:` в deck.yaml: 38 из 58
+# записей RU ссылались на несуществующий файл (комментарий пустой), а у трёх файл
+# существовал, но принадлежал СОСЕДНЕМУ слайду — подпись и заметки уезжали на чужую
+# картинку, и content-mapping ронял один слайд (57 вместо 58). `file:` — не индекс
+# истины; истина — содержимое самого слайда. Но и переписывать вслепую нельзя: у
+# lec-03 v6.4 деково `assertion` — пересказ слайда (s01 «Air Canada» и слайд про выбор
+# архитектуры почти не пересекаются словами), и чистый матчинг по содержимому уводил
+# ПРАВИЛЬНЫЕ ссылки на чужие файлы. Поэтому прямая ссылка — сильная априорная гипотеза
+# (бонус к баллу), а не приговор: перебить её может только заметно лучшее совпадение
+# по содержимому — ровно случай lec-04, где на файл претендует соседняя запись.
+
+def _slide_order_key(p: Path):
+    m = re.match(r'^s(\d+)([a-z]*)', p.stem)
+    return (int(m.group(1)), m.group(2)) if m else (10 ** 6, p.stem)
+
+def slide_dir(deck_dir: Path, lang: str) -> Path:
+    return deck_dir / ("slides-en" if lang == "en" else "slides")
+
+def _slide_files(deck_dir: Path, lang: str) -> list[Path]:
+    d = slide_dir(deck_dir, lang)
+    return sorted(d.glob("s*.md"), key=_slide_order_key) if d.is_dir() else []
+
+def _frontmatter_assertion(text: str) -> str:
+    m = re.match(r'^---\n(.*?)\n---', text, re.S)
+    if not m:
+        return ""
+    try:
+        return str((yaml.safe_load(m.group(1)) or {}).get("assertion") or "")
+    except yaml.YAMLError:
+        return ""
+
+DIRECT_PRIOR = 0.5   # насколько прямая ссылка дека «весит» против совпадения по тексту
+
+def _match_files(entries: list[dict], texts: list[str], direct_idx: list,
+                 floor: float = 0.34) -> list:
+    """Запись дека → индекс файла: жадное глобальное 1:1 по содержимому + априор.
+    Упорядоченного выравнивания (DP, как для страниц PDF) здесь мало — имена файлов
+    слайдов НЕ обязаны идти в порядке лекции (lec-04: s18-small-units идёт в деке
+    раньше, чем s17b-gemini), так что порядок тут не сигнал, а помеха."""
+    toks = [_title_tokens(e["assertion"] or e["id"]) for e in entries]
+    pairs = []
+    for i in range(len(entries)):
+        for j in range(len(texts)):
+            sc = _score(toks[i], texts[j])
+            if direct_idx[i] == j:
+                sc += DIRECT_PRIOR
+            if sc >= floor:
+                pairs.append((sc, i, j))
+    pairs.sort(key=lambda t: (-t[0], t[1], t[2]))
+    out = [None] * len(entries)
+    busy_i, busy_j = set(), set()
+    for sc, i, j in pairs:
+        if i in busy_i or j in busy_j:
+            continue
+        out[i] = j; busy_i.add(i); busy_j.add(j)
+    # ссылка, которую никто не перебил и не забрал, остаётся за своей записью
+    for i, j in enumerate(direct_idx):
+        if out[i] is None and j is not None and j not in busy_j:
+            out[i] = j; busy_j.add(j)
+    return out
+
+def resolve_deck_files(deck_dir: Path, lang: str, entries: list[dict],
+                       quiet: bool = False) -> list[Path | None]:
+    """Запись дека → реальный slides/*.md. Прямые ссылки, пока дек и файлы согласны."""
+    direct, agree = [], True
+    for e in entries:
+        f = deck_dir / e["file"] if e["file"] else None
+        if not (f and f.exists()):
+            agree = False
+            direct.append(None)
+            continue
+        fa = _frontmatter_assertion(f.read_text(encoding="utf-8"))
+        # согласие проверяем по assertion слайда; там, где его нет, доверяем ссылке
+        if fa and _score(_title_tokens(e["assertion"]), _norm_txt(fa)) < 0.6:
+            agree = False
+        direct.append(f)
+    if agree:
+        return direct
+
+    files = _slide_files(deck_dir, lang)
+    if not files:
+        return direct
+    texts = []
+    for p in files:
+        t = p.read_text(encoding="utf-8")
+        texts.append(_norm_txt(f"{_frontmatter_assertion(t)} {slide_title(t)} {slide_visible(t)}"))
+    pos = {p: k for k, p in enumerate(files)}
+    idx = _match_files(entries, texts, [pos.get(d) for d in direct])
+    aligned = [files[k] if k is not None else None for k in idx]
+    repointed = sum(1 for a, d in zip(aligned, direct) if a != d)
+    lost = sum(1 for a in aligned if a is None)
+    if not quiet and (repointed or lost):
+        print(f"    · {deck_dir.name}/{lang}: `file:` в деке отстали от slides/ — "
+              f"переадресовано по содержимому: {repointed} из {len(entries)}"
+              + (f", без файла осталось {lost}" if lost else ""))
+    return aligned
+
 def parse_deck_slides(deck_dir: Path, lang: str,
                       exclude_re: re.Pattern | None = None) -> list[dict]:
     """Слайды из дека: caption = assertion (иначе заголовок слайда), body = Speaker notes.
@@ -322,9 +420,9 @@ def parse_deck_slides(deck_dir: Path, lang: str,
     if exclude_re is None:
         exclude_re = EXCLUDE_SECTION_RE
     slides = []
-    for e in load_deck_entries(deck_dir, lang):
-        f = deck_dir / e["file"]
-        text = f.read_text(encoding="utf-8") if e["file"] and f.exists() else ""
+    entries = load_deck_entries(deck_dir, lang)
+    for e, f in zip(entries, resolve_deck_files(deck_dir, lang, entries)):
+        text = f.read_text(encoding="utf-8") if f is not None else ""
         title = slide_title(text)
         cap = e["assertion"] or title or e["id"]
         if exclude_re.search(cap) or (title and exclude_re.search(title)):
@@ -526,10 +624,78 @@ def render_mapped(doc, page_map: list, out_dir: Path, dpi: int = DPI) -> None:
 # подписи интерфейса генератора по языкам
 L10N = {
     "ru": {"lecture": "Лекция", "seminar": "Семинар", "slides": lambda n: plural_slides(n),
-           "slide": "Слайд", "min": "мин"},
+           "slide": "Слайд", "min": "мин", "sources": "Источники"},
     "en": {"lecture": "Lecture", "seminar": "Seminar", "slides": lambda n: "slides",
-           "slide": "Slide", "min": "min"},
+           "slide": "Slide", "min": "min", "sources": "Sources"},
 }
+
+
+# ───────────────── источники со слайда: подпись внизу страницы PDF ─────────────────
+# Референсы лекции живут НА слайде — нижней строкой «[1] Автор — работа · [2] …», и в PDF
+# у каждой из них есть настоящая ссылка-аннотация. На сайте слайд — картинка, поэтому и
+# сами подписи, и URL за ними пропадали: в комментарии оставались висячие маркеры [1],
+# [2] без легенды. Вытаскиваем строку из нижней полосы страницы и ставим её текстом под
+# слайдом, подставляя URL из аннотаций — на сайте ссылки становятся кликабельными,
+# чего у картинки не было никогда.
+
+_REF_BAND = 0.16                       # нижняя часть страницы, где печатается подпись
+_REF_HEAD = re.compile(r'^\[(\d+)\]')
+
+def _band_lines(page, band: float = _REF_BAND) -> list[tuple[float, str, list]]:
+    """Строки текста из нижней полосы страницы: (y, текст, слова)."""
+    cut = page.rect.y1 - page.rect.height * band
+    lines: dict = {}
+    for w in page.get_text("words"):
+        if w[1] >= cut:
+            lines.setdefault((w[5], w[6]), []).append(w)
+    out = []
+    for ws in lines.values():
+        ws.sort(key=lambda t: t[0])
+        out.append((min(t[1] for t in ws), " ".join(t[4] for t in ws).strip(), ws))
+    return sorted(out, key=lambda t: t[0])
+
+def page_references(page) -> list[dict]:
+    """[{n, title, uri}] из подписи-референсов внизу страницы. Пусто — если её там нет."""
+    uris = []
+    for l in page.get_links():
+        if l.get("uri"):
+            rect = pymupdf.Rect(l["from"])
+            if rect.y0 >= page.rect.y1 - page.rect.height * _REF_BAND:
+                uris.append((_norm_txt(page.get_textbox(rect).replace("\n", " ")), l["uri"]))
+    refs = []
+    for _, text, _ws in _band_lines(page):
+        if not _REF_HEAD.match(text):
+            continue
+        for chunk in re.split(r'\s*·\s*|\s{3,}', text):
+            m = re.match(r'\[(\d+)\]\s*(.+)$', chunk.strip())
+            if not m:
+                continue
+            title = re.sub(r'\s+', ' ', m.group(2)).strip(' ·')
+            key = _norm_txt(title)
+            uri = next((u for t, u in uris if t and (t in key or key in t)), None)
+            refs.append({"n": int(m.group(1)), "title": title, "uri": uri})
+    seen, out = set(), []
+    for r in sorted(refs, key=lambda r: r["n"]):
+        if r["n"] not in seen:
+            seen.add(r["n"]); out.append(r)
+    return out
+
+def collect_references(doc) -> dict:
+    """pdf_page_idx → список референсов. Считать ДО редактирования страниц."""
+    return {i: refs for i in range(doc.page_count) if (refs := page_references(doc[i]))}
+
+# Подпись внизу слайда дублируется в тексте комментария у тех лекций, где её вписали в
+# slides/*.md руками (lec-03). Свой хвост «Источники: …» тогда снимаем — версия из PDF
+# та же самая, но со ссылками.
+_SRC_TAIL = re.compile(r'(?ms)^\s*(?:Источники|Sources)\s*:?\s*$.*\Z')
+
+def strip_sources_tail(body: str) -> str:
+    return _SRC_TAIL.sub('', body).rstrip()
+
+def format_references(refs: list[dict], label: str) -> str:
+    parts = [f"[{r['n']}] [{r['title']}]({r['uri']})" if r["uri"] else f"[{r['n']}] {r['title']}"
+             for r in refs]
+    return f"**{label}:** " + " · ".join(parts)
 
 def lecture_files(lec_dir: Path, lec: str, lang: str):
     """RU→EN маппинг файлов (publication-config naming). Footer-less pub-дек RU — если есть."""
@@ -588,6 +754,7 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
     # CONTENT-MAPPING: сопоставляем каждую секцию speech её странице PDF по СОДЕРЖИМОМУ
     # (порядок страниц PDF ≠ порядку секций из-за вставленных/переставленных слайдов).
     doc = pymupdf.open(pdf)
+    refs_by_page = collect_references(doc)      # подписи-референсы со слайдов — ДО редактирования
     footers = strip_footer_pagenums(doc)        # RU-полный дек «N/NN» → footer-less (no-op на чистых)
     if footers:
         print(f"    · {lec}/{lang}: срезано футеров-пагинации: {footers}")
@@ -632,8 +799,13 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         img = f"../assets/{lang}/{lec}/page-{orig_i + 1:02d}.webp"
         out.append(f"[![{loc['slide']} {disp}. {alt}]({img}){{loading=lazy .slide-img}}]({img}){{.slide-link}}")
         out.append("")
-        if sl["body"]:
-            out.append(sl["body"])
+        refs = refs_by_page.get(page_map[orig_i], [])
+        body = strip_sources_tail(sl["body"]) if refs else sl["body"]
+        if body:
+            out.append(body)
+            out.append("")
+        if refs:                                # подпись со слайда — под слайдом и со ссылками
+            out.append(format_references(refs, loc["sources"]))
             out.append("")
 
     lectures_dir = DOCS / "lectures"
