@@ -327,3 +327,146 @@ VERDICT (раунд 2): **4 claims must be fixed** — F9 (неверное ут
 ни одной битой ссылки в самом абзаце — но и ни одной ссылки там сейчас вообще нет: абзац был
 единственным местом статьи, где несущие утверждения стояли без источников. После правки —
 шесть резолвимых ссылок и два числа со знаменателями.
+
+---
+
+# Раунд 3: долги
+
+Два долга, оставшихся с раунда 2 и зафиксированных в
+`tasks/20260923_sdlc-ai-pitfalls/materials/seeding-recipes.md` → GAPS. Оба закрыты **по
+первоисточнику**: PDF скачаны и прочитаны в этом прогоне, числа сверены посимвольно. Где текстовый
+слой PDF ронял цифры (Porter — LaTeX 1994 года без ToUnicode для цифр), страницы отрендерены в
+изображение и прочитаны глазами; это отмечено в колонке «свидетельство».
+
+## Долг 1 — Porter, Votta, Basili (инспекции требований)
+
+**Что удалось открыть.** Первоисточник за пейволлом IEEE — да, но авторская версия открыта:
+DRUM (UMD) → bitstream `CS-TR-3327.1.pdf`, item
+[drum.lib.umd.edu/items/96204769-…](https://drum.lib.umd.edu/items/96204769-6905-4196-b903-709ad81148ee),
+report numbers **CS-TR-3327.1 / UMIACS-TR-94-93**. Название и авторский состав совпадают с TSE
+21(6):563–575, 1995 дословно: «Comparing Detection Methods For Software Requirements Inspections:
+A Replicated Experiment», Adam A. Porter, Lawrence G. Votta, Jr., Victor R. Basili. 16 страниц,
+прочитаны все нужные (1, 3, 5, 9, 12).
+**Это техотчёт UMD, а не вёрстка IEEE** — см. флаг ниже.
+
+| # | Утверждение как в тексте (`ru.md`) | Источник (резолвленный) | Дословная цитата / свидетельство | Вердикт | Правка |
+|---|---|---|---|---|---|
+| R3-1 | «48 участников» (стр. 342, 727) | CS-TR-3327.1, с. 1, Abstract | «Forty eight graduate students in computer science participated in the experiment.» | **Verified this run** | — (можно уточнить: аспиранты-первокурсники/второкурсники CS, не практики) |
+| R3-2 | «16 команд по трое» (стр. 342) | там же, с. 1, Abstract | «They were assembled into sixteen, three-person teams.» | **Verified this run** | — |
+| R3-3 | «два документа с 42 и 26 дефектами» (стр. 342) | там же, с. 5, §B.1 | «The authors discovered **42** faults in the WLMS SRS; and **26** in the CRUISE SRS.» (цифры прочитаны с отрендеренной страницы — текстовый слой их роняет) | **Verified this run** | — |
+| R3-4 | «Команды находят 24–57% известных дефектов» (стр. 343, 727) | там же, с. 9, **Table III** «Team Fault Detection Rate Data» | Шесть ячеек средних: WLMS — Ad Hoc **.43**, Checklist **.41**, Scenario **.57**; Cruise — Ad Hoc **.31**, Checklist **.24**, Scenario **.45**. Min = .24, max = .57 | **Inferred from sources** | Числа верные, но фразы «24–57%» в работе нет: это min/max **средних по шести ячейкам** метод × документ. Разброс по **отдельным** командам шире: **.19 … .74**. Формулировку — уточнить (ниже) |
+| R3-5 | «собрание команды даёт нулевой чистый прирост» / «не добавляет к этому ничего» (стр. 343, 727) | там же, с. 1 Abstract; с. 11 §E; с. 12 §E.3 и Conclusions п. 4 | Abstract: «(4) Collection meetings produced no net improvement in the fault detection rate – meeting gains were offset by meeting losses.» §E: «Our results indicate that collection meetings produce no net improvement.» Conclusions п. 4: «On the average, collection meetings contributed nothing to fault detection effectiveness.» | **Verified this run** | — (точечная оценка даже слегка отрицательна, см. R3-6 — наша формулировка консервативна, это ок) |
+| R3-6 | (в тексте нет, но подпирает R3-5) величина прироста | там же, с. 12, §E.3 + Fig. 7 | «The average net meeting improvement is **−.9 ± 2.2** for WLMS inspections and **−1.2 ± 1.7** for CRUISE inspections.» Fig. 7: «The average meeting gain rate is **4.7 ± 1.3%** for the WLMS. (**3.1 ± 1.1%** for the CRUISE.)» | **Verified this run** | Опционально усилить абзац одним числом |
+| R3-7 | Цитата «No faults were intentionally seeded… All faults are naturally occurring» (стр. 692) | там же, **с. 3, сноска 3** | Дословно: «The team and individual fault detection rates are the number of faults detected by a team or individual divided by the total number of faults known to be in the specification. The closer that value is to 1, the more effective the detection method. **No faults were intentionally seeded into the specifications. All faults are naturally occurring.**» | **Verified this run** | Цитата точна, многоточие элидирует «into the specifications». Оставить как есть |
+| R3-8 | «24–57% — доля от дефектов, которые в документах **уже знали**» (стр. 349) | там же, с. 3 сноска 3 | «divided by the total number of faults **known to be in the specification**» | **Verified this run** | Знаменатель назван источником дословно. Это самое сильное место абзаца — не трогать |
+| R3-9 | (второе место про засев) | там же, с. 5, §B.1 | «All faults present in these SRS appear in the original documents or were generated during the adaptation process; no faults were intentionally seeded into the document.» | **Verified this run** | Второе независимое подтверждение отказа от засева |
+
+**Вердикт по долгу 1: CLEAR — 8 из 9 Verified this run, одно (R3-4) Inferred и требует правки
+формулировки, не снятия.** `[UNVERIFIED]` из GAPS снимается полностью: таксономия дефектов тоже
+открыта (omission/commission по 4 категории, с. 5, Appendix A), число засеянных дефектов = 0 и это
+сказано дважды.
+
+### Готовая правка для R3-4
+
+Сейчас (стр. 342–343):
+
+> 48 участников, 16 команд по трое, два документа с 42 и 26 дефектами. Команды находят
+> 24–57% известных дефектов, а собрание команды даёт **нулевой чистый прирост** против
+> того же чтения поодиночке
+
+Предлагается:
+
+> 48 участников, 16 команд по трое, два документа с 42 и 26 дефектами. В среднем команда находит
+> от 24 до 57% известных дефектов — в зависимости от метода чтения и документа; отдельные команды
+> укладываются в 19–74%. А собрание команды даёт **нулевой чистый прирост** против того же чтения
+> поодиночке
+
+И то же в «Что почитать» (стр. 727):
+
+> 48 участников, 16 команд: в среднем находят от 24 до 57% известных дефектов, а общее собрание
+> команды не добавляет к этому ничего.
+
+Опционально — одно число в абзац на стр. 343–345, чтобы «нулевой» не выглядел округлением:
+
+> собрание команды даёт **нулевой чистый прирост**: −0,9 ± 2,2 процентного пункта на одном
+> документе и −1,2 ± 1,7 на другом — находки на встрече ровно съедаются потерями.
+
+### Флаг по ссылке
+
+Текст подписывает ссылку «Porter, Votta и Basili, **TSE 1995**», а ведёт она на **техотчёт UMD**
+(CS-TR-3327.1 / UMIACS-TR-94-93). Содержательно это та же работа, но формально — препринт, и
+числа проверены **по нему**, не по вёрстке IEEE. Честная подпись: оставить «TSE 1995» в названии
+работы, а к ссылке добавить «(авторская версия, техотчёт UMD CS-TR-3327.1)» — либо в тексте, либо
+в «Что почитать». Это не блокер, но подпись ссылки сейчас обещает больше, чем отдаёт.
+
+---
+
+## Долг 2 — arXiv:2602.11988 (файлы инструкций агенту)
+
+**Важно: это утверждение стоит не в `ru.md` этой статьи, а в соседней —
+`pieces/20260923_agent-config-ladder/ru.md`, стр. 31.** В `20260924_ai-delivery-gap/ru.md`
+ни ID 2602.11988, ни Gloaguen, ни «+20% стоимости» не встречаются (grep по всему файлу — пусто);
+там цитируются другие работы о файлах инструкций (arXiv:2605.10039, 2608.23550, 2511.12884,
+2512.18925). Проверка сделана, вердикт ниже, но **править нужно другой файл** — передаю оркестратору.
+
+**Что удалось открыть.** [arXiv:2602.11988](https://arxiv.org/abs/2602.11988) + полный PDF
+(`arXiv:2602.11988v2 [cs.SE] 23 Jun 2026`, 24 страницы, помечен «Preprint»). Название:
+**«Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?»**. Авторы:
+Thibaud Gloaguen, Niels Mündler, Mark Müller (LogicStar.ai), Veselin Raychev (LogicStar.ai),
+Martin Vechev — ETH Zurich. Прочитаны: abstract, §1, §4.1 (setup), §4.2 (main results), §4.3.
+
+| # | Утверждение как в тексте (`agent-config-ladder/ru.md`, стр. 31) | Источник | Дословная цитата | Вердикт | Правка |
+|---|---|---|---|---|---|
+| R3-10 | Авторы и ID: «Gloaguen et al., arXiv:2602.11988» | PDF, с. 1 | «Thibaud Gloaguen … Niels Mündler … Mark Müller … Veselin Raychev … Martin Vechev»; `arXiv:2602.11988v2 [cs.SE] 23 Jun 2026` | **Verified this run** | — |
+| R3-11 | «RCT — рандомизированное контролируемое испытание… две случайные группы» | PDF, §4.1 Settings | Рандомизации участников нет: это **within-instance сравнение трёх условий** (NONE / LLM / DEV) на одних и тех же задачах, значимость — Cochran–Mantel–Haenszel и стратифицированные пермутационные тесты (Tables 3, 6) | **Wrong** | «RCT» и «две случайные группы» — не то, что сделали авторы. Убрать медицинскую рамку (см. правку) |
+| R3-12 | «дали одной группе агентов автосгенерированный обзор репозитория **в системном промпте**» | PDF, §4.1 Coding Agents | «For all agents, the context file is fed into their context, either by **writing it to AGENTS.md** for CODEX and QWEN CODE, or to **CLAUDE.md** for CLAUDE CODE.» | **Wrong** | Файл кладут **в репозиторий** под штатным именем, не вставляют в системный промпт. И это **файл инструкций целиком**, а не «обзор репозитория» — обзор лишь одна его секция |
+| R3-13 | «другой не дали ничего» | PDF, §4.1 Settings | «NONE No context file is available, i.e., we remove developer-provided files for CTXBENCH.» | **Verified this run** | — |
+| R3-14 | «Заметной разницы в успехе это не дало» | PDF, Abstract + §4.2 | Abstract: «providing context files **does not generally improve task success rates**». §4.2: «the average resolution rate is reduced by **0.5%** and **2%** on average on SWE-BENCH and CTXBENCH, respectively. With p-values of **87%** and **37%** … this indicates that they have **no significant effect on performance**.» | **Verified this run** | — (можно усилить точными числами) |
+| R3-15 | «стоимость выросла больше чем на 20%» | PDF, Abstract + §4.2 + Table 2 | Abstract: «while **increasing inference cost by over 20% on average**». §4.2: «they increase the # steps in every setting, on average by 2.45 and 3.92, respectively, leading to a significant (p-value < 0.001%) cost increase of **20% and 23%** on average, respectively» | **Verified this run** | Верно — но только про **LLM-сгенерированные** файлы. У **developer-provided** рост «at most 19%» |
+| R3-16 | Что такое «стоимость» | PDF, §4.1 Metrics | «we report the **total cost of LLM inference** required to complete a task. For QWEN3-30B-CODER, we estimate the cost from the average OpenRouter API price.» Table 2 — «execution cost (in USD, lower is better) per … instance» | **Verified this run** | Это деньги за инференс на задачу (USD), а не время и не стоимость разработки. Назвать явно |
+| R3-17 | Выборка (в тексте не названа) | PDF, §4.1 Datasets; §3 | «the LITE split of SWE-BENCH, which consists of **300 tasks** … across **11 popular Python repositories**, none containing developer-provided context files, and our novel **CTXBENCH, consisting of 138 instances from 12 repositories**, all containing developer-provided context files». Агентов четыре: CLAUDE CODE/Sonnet-4.5, CODEX/GPT-5.2, CODEX/GPT-5.1 Mini, QWEN CODE/Qwen3-30B-Coder | **Verified this run** | **Знаменатель отсутствует в тексте** — добавить: 300 + 138 задач, 4 агента |
+| R3-18 | «обзор репозитория не помогает» (следствие, которым мы пользуемся) | PDF, Abstract + §4.3 | Abstract: «while instructions in the context files are **well followed** by coding agents, **repository overviews**, although popular and recommended by model providers, **are not helpful**». §4.3: «We conclude that context files are not effective at providing a repository overview.» Метрика — среднее число шагов до первого обращения к файлу, который правил оригинальный PR | **Verified this run** | Это как раз наш тезис — но он про **секцию обзора**, а не про файл целиком |
+| R3-19 | Трасса GAPS: «+7% у developer-written» | PDF, §1 | «developer-committed files **outperform LLM-generated ones** by a significant margin of 7% on average» — это DEV **против LLM**, не против «без файла». DEV против NONE: «improve agent performance by **2.4%** on average (**p = 21%**)» | **Wrong** (в трассе, не в статье) | В текст 7% не попало — хорошо. Если понадобится, брать с правильной базой |
+
+**Вердикт по долгу 2: 2 claims must be fixed** — R3-11 («RCT», «две случайные группы») и R3-12
+(«обзор репозитория в системном промпте»). Ядро утверждения — «успех не вырос, стоимость выросла
+больше чем на 20%» — **подтверждено дословно**. Плюс один флаг знаменателя (R3-17).
+
+### Готовая правка для `pieces/20260923_agent-config-ladder/ru.md`, стр. 31
+
+Сейчас:
+
+> Контролируемое исследование меряет эту надежду напрямую. RCT — рандомизированное контролируемое
+> испытание, формат из медицины: две случайные группы, разница ровно в одном условии.
+> [Gloaguen et al.](https://arxiv.org/abs/2602.11988) дали одной группе агентов автосгенерированный
+> обзор репозитория в системном промпте, другой не дали ничего. Заметной разницы в успехе это не
+> дало, зато стоимость выросла больше чем на 20%.
+
+Предлагается (сохраняет вывод, чинит и механизм, и знаменатель):
+
+> Контролируемое сравнение меряет эту надежду напрямую. [Gloaguen и соавторы,
+> ETH Zurich](https://arxiv.org/abs/2602.11988) прогнали четырёх агентов по 438 задачам
+> (300 из SWE-bench Lite, 138 из собственного CTXBench) в трёх условиях: файл инструкций
+> автосгенерирован штатной командой самого агента, файл написан разработчиками репозитория, файла
+> нет вовсе. Автосгенерированный файл успех не поднял — минус 0,5% и минус 2% в среднем,
+> обе разницы статистически неразличимы, — зато стоимость инференса на задачу выросла на 20% и
+> 23%. Агенты инструкции из файла честно выполняют; не работает именно «обзор репозитория» —
+> секция, которую рекомендуют сами вендоры: до нужного файла агент с обзором добирается не быстрее.
+
+Если нужен короткий вариант в одно-два предложения:
+
+> [Gloaguen и соавторы, ETH Zurich](https://arxiv.org/abs/2602.11988) прогнали четырёх агентов по
+> 438 задачам с автосгенерированным файлом инструкций и без него: успех не изменился (−0,5% и −2%,
+> статистически неразличимо), стоимость инференса выросла на 20–23%. Инструкции агент выполняет —
+> не работает именно секция «обзор репозитория».
+
+**Чего писать нельзя:** «RCT», «две случайные группы», «в системном промпте», «+20%» без указания,
+что это про **автосгенерированный** файл (у написанного разработчиками — «at most 19%», и успех
+там всё же выше на 2,4%, p = 21%), и «стоимость» без слова «инференса».
+
+---
+
+VERDICT (раунд 3): **долг 1 — CLEAR** (одна правка формулировки, R3-4, плюс флаг подписи ссылки);
+**долг 2 — 2 claims must be fixed**, и править нужно `pieces/20260923_agent-config-ladder/ru.md`,
+а не эту статью. Оба `[UNVERIFIED]` из GAPS `seeding-recipes.md` сняты: первоисточники открыты и
+прочитаны в этом прогоне.
