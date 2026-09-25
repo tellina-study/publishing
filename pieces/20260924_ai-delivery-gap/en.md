@@ -1,7 +1,7 @@
 ---
 title: AI speeds up every part of software development — and can slow the whole down
 slug: ai-delivery-gap
-status: draft
+status: publish
 categories:
 - AI
 - Software Engineering
