@@ -51,6 +51,12 @@ escape into the HTML. markdown-it-py renders it as a proper `<pre><code>` with t
 escaped. `html=False`, so any stray `<tag>` in prose is escaped; typography (curly quotes,
 dashes) is left to WordPress's `wptexturize` on display.
 
+**Soft line breaks are rendered as a SPACE, not `\n`** (fixed 2026-09-25). WordPress's own
+`wpautop()` turns every newline inside a paragraph into a `<br>`, so source wrapped at ~95
+characters shipped broken on screen — mid-phrase, mid-link. `wp_publish.py` overrides the
+markdown-it `softbreak` rule to emit a space; code blocks are unaffected (they use their own
+fence/code_block tokens). Lesson L13.
+
 ## Gotchas
 
 - A draft is created on the live site but isn't public — safe to preview, then delete if junk.
