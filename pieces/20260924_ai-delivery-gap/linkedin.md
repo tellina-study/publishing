@@ -19,13 +19,15 @@ Every station on the line got faster. The same amount comes off the end of it.
 
 From inside a team none of this shows. In there things are going well: documentation better, code better, review faster — that's DORA's 2024 survey, teams rating themselves. Look at what those ratings are made of. Nobody measures code quality; you read a linter. Nobody measures whether a change got reviewed; you read how fast the review closed. Behind every one of those numbers sits a check reporting on itself.
 
-A green build. Is it green because the code is fine, or because the tests quietly stopped catching things? From outside those look the same. Google went back over 1,502 of its own high-priority bugs — every change that introduced one was already covered by the existing tests.
+🟢 A green build. Is it green because the code is fine, or because the tests quietly stopped catching things? From outside those look the same. Google went back over 1,502 of its own high-priority bugs — every change that introduced one was already covered by the existing tests.
 
-I wrote the long version up: where the gap goes, and what to watch instead. Link's in the comments.
+I wrote the long version up: where the gap goes, and what to watch instead.
+
+🔗 https://tellian.io/2026/09/25/ai-delivery-gap/
 
 Take one number your team stares at every week and ask who outside the team ever wanted it. A finished task has someone. A line, a commit, a PR don't.
 
-Then go break something on purpose. Write the change your gate is supposed to reject, and push it. A fire code tests a smoke detector with smoke. Not with a self-check — with smoke. Nobody asks that of your pipeline, so you have to ask it yourself.
+🔨 Then go break something on purpose. Write the change your gate is supposed to reject, and push it. A fire code tests a smoke detector with smoke. Not with a self-check — with smoke. Nobody asks that of your pipeline, so you have to ask it yourself.
 
 When did your pipeline last refuse to ship something? Not "it's green" — actually refuse.
 
@@ -41,13 +43,15 @@ When did your pipeline last refuse to ship something? Not "it's green" — actua
 
 Изнутри команды этого не видно — там всё хорошо: документация лучше, код лучше, ревью быстрее. Это опрос DORA за 2024 год, команды оценивают себя сами. А теперь посмотрите, из чего сделаны такие оценки. Качество кода никто не измеряет — вы смотрите на линтер. Было ли ревью, тоже никто не измеряет — вы смотрите, за сколько оно закрылось. За каждой цифрой стоит проверка, которая отчитывается сама о себе.
 
-Зелёная сборка. Она зелёная потому, что с кодом всё в порядке, — или потому, что тесты тихо разучились что-то ловить? Снаружи это одно и то же. Google перебрал 1502 своих высокоприоритетных бага: каждое изменение, которое такой баг приносило, уже было покрыто тестами.
+🟢 Зелёная сборка. Она зелёная потому, что с кодом всё в порядке, — или потому, что тесты тихо разучились что-то ловить? Снаружи это одно и то же. Google перебрал 1502 своих высокоприоритетных бага: каждое изменение, которое такой баг приносило, уже было покрыто тестами.
 
-Я написал об этом статью: куда девается разрыв и на что смотреть вместо. Ссылка первым комментарием.
+Я написал об этом статью: куда девается разрыв и на что смотреть вместо.
+
+🔗 https://tellian.io/2026/09/25/ai-delivery-gap/
 
 Возьмите одну цифру, на которую команда смотрит каждую неделю, и спросите, кому за пределами команды она была нужна. У закрытой задачи такой человек есть. У строки, коммита и PR — нет.
 
-А потом сломайте что-нибудь нарочно. Напишите то изменение, которое ваш гейт обязан отклонить, и отправьте его. Пожарная норма проверяет дымовой датчик дымом. Не самопроверкой — дымом. С вашего пайплайна такого никто не требует, так что спросить придётся самому.
+🔨 А потом сломайте что-нибудь нарочно. Напишите то изменение, которое ваш гейт обязан отклонить, и отправьте его. Пожарная норма проверяет дымовой датчик дымом. Не самопроверкой — дымом. С вашего пайплайна такого никто не требует, так что спросить придётся самому.
 
 Когда ваш пайплайн в последний раз отказался что-то выпускать? Не «всё зелено», а именно отказался.
 
