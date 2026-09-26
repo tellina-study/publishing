@@ -48,6 +48,12 @@ SEPARATOR = '<hr class="wp-block-separator" />'
 # html=False escapes any stray `<tag>` in prose; typography is left to WP's wptexturize.
 MD = MarkdownIt("commonmark", {"html": False}).enable(["table", "strikethrough"])
 
+# Мягкий перенос строки внутри абзаца отдаём ПРОБЕЛОМ, а не "\n". Иначе WordPress своим
+# wpautop() превращает каждый такой перенос в <br>, и текст, свёрстанный в исходнике по 95
+# символов, ломается на экране ровно по этим местам — посреди фразы, посреди ссылки.
+# На блоки кода не влияет: у них свои токены (fence/code_block), softbreak в них не бывает.
+MD.renderer.rules["softbreak"] = lambda *_args, **_kwargs: " "
+
 
 def load_env() -> dict[str, str]:
     """Minimal .env parser — no external dependency."""
