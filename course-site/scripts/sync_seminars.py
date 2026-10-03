@@ -32,7 +32,7 @@ import yaml
 
 import sync_lectures as L
 
-SEMINARS = ["sem-01", "sem-02", "sem-03", "sem-04"]
+SEMINARS = ["sem-01", "sem-02", "sem-03", "sem-04", "sem-05"]
 LANGS = ["ru", "en"]
 SEM_MANIFEST = L.DOCS / ".seminars-manifest.json"
 
