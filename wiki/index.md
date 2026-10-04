@@ -15,6 +15,8 @@ Evergreen takes, one page per subject. Create a page when a topic recurs across 
 | [Publishing to tellian.io](topics/publishing-to-tellian.md) | ✅ current | The publish pipeline / site setup changes |
 | [Prompt packaging: language, format, placement](topics/prompt-packaging.md) | ✅ current | A new piece touches prompt language / format / placement |
 | [The Transformer lineage: attention → LLM era](topics/transformer-lineage.md) | ✅ current | A piece touches the attention/Transformer history or scaling story |
+| [The AI delivery gap: every part faster, the whole not](topics/ai-delivery-gap.md) | ✅ current | A piece touches AI's effect on delivery throughput / review / DORA-style measurement |
+| [Control liveness: feed the gate a defect on purpose](topics/defect-seeding.md) | ✅ current | A piece touches quality gates, mutation testing / seeding, or "is this check alive" |
 | _(add topic pages here as they emerge)_ | | |
 
 ## How to query the knowledge base
