@@ -30,10 +30,11 @@ mirror-editor + reader-fan параллельно) → IMPROVE → user gate →
 - [x] Изучен внешний контекст (scaffold-problem дискурс 2026, Terminal-Bench, agent-runtime-
       instruments, agent-harness-registry)
 - [x] Сняты открытые вопросы из brief.md (угол/сорсинг/рамка серии подтверждены Максом в чате)
-- [ ] outline.md — структура с 3 находками + явный столп «характеры агентов» + честный
+- [x] outline.md — структура с 3 находками + явный столп «характеры агентов» + честный
       методологический блок + тизер часть 2
-- [ ] draft piece.md (RU), затем EN
-- [ ] fact-check.md
+- [x] draft `ru.md` (прямо в bilingual-формате, минуя промежуточный piece.md — по прецеденту
+      прошлых двух пьесов), EN — после roast, не раньше
+- [ ] fact-check.md (запущено, в фоне)
 - [ ] roast.md (editor) + mirror-editor verdict + reader-fan verdict — параллельно
 - [ ] improve по итогам roast
 - [ ] Telegram + LinkedIn дериваты
