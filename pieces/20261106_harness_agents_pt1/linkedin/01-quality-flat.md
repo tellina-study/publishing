@@ -6,16 +6,16 @@ image: card1_quality_flat.png
 series: harness-agents-pt1 (post 1 of 5)
 ---
 
-**We gave a coding agent a full "harness" — rules, tools, memory — then took it away. Ran that on three different agents. Quality didn't move once.**
+**We gave an AI coding agent a full "harness" — a set of rules, tools and memory wrapped around it — then took it away. Ran that test on three different agents. Quality didn't move once.**
 
-dsh scored 2/2 with the harness and 2/2 without. Claude Code scored 1/2 both times. Hermes scored 0/2 both times.
+DeepSeek Harness scored full marks whether the harness was switched on or off. Claude Code scored the same partial result either way. Hermes scored zero either way.
 
-This was the one task, out of nine, where quality actually varied at all — just not because of the harness. It varied between agents, not between harness-on and harness-off.
+This was the one task, out of nine we ran, where quality varied between the agents at all — it just didn't vary because of the harness. It varied between the agents themselves.
 
-If you just chat with an assistant now and then, this isn't really about you. It matters if you're the one deciding whether to invest in rules, tools, and memory around a coding agent running in production.
+If you only use an AI assistant casually, this isn't really about you. It matters more if you're deciding whether rules, tools and memory are worth building around a coding agent in production.
 
-So if not quality — what do you think the harness is actually buying?
+So if not quality — what do you think a setup like this is actually buying you?
 
 Full study, open data, open tooling: [link to tellian.io]
 
-#AIAgents #ClaudeCode #DeveloperTools #Benchmarking #LLM
+#AIAgents #DeveloperTools #Benchmarking #LLM #SoftwareEngineering

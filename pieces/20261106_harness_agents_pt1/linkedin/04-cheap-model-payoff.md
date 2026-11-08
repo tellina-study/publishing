@@ -1,20 +1,22 @@
 ---
 channel: linkedin
 status: draft
-title: 'Just use a cheaper model'
-image: card4_cheap_model_payoff.png
+title: Bigger isn't always better
+image: card4_cheap_model.png
 series: harness-agents-pt1 (post 4 of 5)
 ---
 
-**"Just switch to a cheaper model" is the same advice for every agent. The payoff isn't.**
+**Two AI coding agents got the exact same advice — switch to the cheaper version of the same model. The savings weren't close to equal. And "cheaper" didn't automatically mean "worse," either.**
 
-We moved two coding agents from the expensive version of a model to the cheap one in the same lineup, same tasks. Claude Code's bill dropped 9×. Hermes's dropped 56×. More than a sixfold gap between them, from the identical switch.
+Across the full test — 54 runs, three agents, token cost plus a quality check — no single agent came out ahead on both price and quality at once. The cheapest agent by tokens also scored the lowest on quality, where quality could be measured at all. The agent with the best quality score wasn't the cheapest one.
 
-The rate card is the same for both. What differs is how each agent is built — how often it calls the model, and how much it rereads from cache instead of resending fresh. Cache is priced differently from a fresh token, so an agent that leans on cache gets a double discount when the model gets cheaper. One that doesn't, gets a single one.
+Then we looked at one specific move: shifting an agent from the pricier version of a model to the cheaper one in the same lineup, same tasks. Claude Code's bill fell roughly 9×. Hermes's fell roughly 56× — more than six times the gap, from the identical move. The difference comes down to how each agent is built: how often it calls the model, and how much it rereads from cache instead of resending context fresh — not the price list itself.
 
-If you're optimizing spend by model tier alone, the agent's own architecture might matter more than the price list.
+On the one task where we could compare a single agent's own result before and after that switch, Claude Code's score fell by half on the cheaper model. DeepSeek Harness, tested only on the cheaper model, still turned in a perfect score.
 
-Anyone measured this on their own stack — did the "obvious" savings actually show up?
+A pricier model isn't automatically the better choice. A cheaper one isn't automatically the worse one. Worth checking on your own tasks before assuming either way.
+
+Has a cheaper model ever cost you more than it saved — or surprised you by holding up just fine?
 
 Full study, open data, open tooling: [link to tellian.io]
 
