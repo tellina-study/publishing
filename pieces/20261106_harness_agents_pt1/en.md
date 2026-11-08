@@ -12,6 +12,8 @@ tags:
 - Developer Tools
 ---
 
+![The same harness, strapped onto three different agents — three different trajectories on the way out](assets/hero_begin.png)
+
 For the past year, the same line keeps coming up about coding agents: it's not the model that matters, it's what's built around it — the rules, tools, and memory bolted on top. The industry calls this the harness. I decided to test the claim with real work instead of benchmark scores — and found no quick, clean win for the harness.
 
 Here's the scale of how loud that claim is. SWE-bench is the standard test for coding agents: a set of real issues from open-source projects that the agent has to close with code changes, with the result checked automatically by the project's own existing tests — pass or fail, no room for argument. On this benchmark, the same Claude 3.5 Sonnet with different scaffolding solved anywhere from 168 to 317 tasks out of the same set — a spread of almost 30 percentage points. That's wider than the spread across the entire top-30 of that same leaderboard, agents running on completely different models (8.8 points). Another paper makes the same point more directly: model and task held fixed, only the scaffolding changed — the share of fully solved tasks rose from 25% to 43% (43 to 72 out of 169). Numbers like that are easy to repeat without checking.
@@ -109,6 +111,8 @@ One limit to keep in mind through the whole piece: every number below is the res
 Here the harness is held the same across all three — on for everyone or off for everyone — and we look at how the agents differ from each other on their own. This axis matters just as much for a practical decision as the harness effect in the next section: if the spread between agents is bigger than the effect of switching the harness on, then "which agent" matters more than "with harness or without."
 
 ### Repeat runs: does an agent agree with itself
+
+![A clean signal line against a jagged noise line](assets/hero_middle.png)
 
 The same task, on the same setup, was run twice without changing a single line in the harness, to see how far the repeats would drift apart:
 
@@ -279,6 +283,8 @@ Comparing agents doesn't stop at who has the better harness. It's worth asking s
 - Whether it can handle your task at all at the price you're willing to pay. A harness won't rescue a task the agent simply can't do on that model.
 
 ## What's next
+
+![Three colored lines converge and drift apart again, dissolving into the frame — the story continues past its edges](assets/hero_end.png)
 
 There was no quick win for the harness in this test. Nor a single answer to which agent is simply better. What's visible instead: the harness is a trade-off, and the sign of that trade-off changes from task to task and from agent to agent; and the agents themselves differ even without it, often by more than switching the harness on or off decides.
 
