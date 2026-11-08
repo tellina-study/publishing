@@ -28,19 +28,33 @@ ax.set_xlim(0, 10)
 ax.set_ylim(0, 10)
 ax.axis("off")
 
-ax.text(5, 9.4, "SAME SWITCH. SAME TASK.", fontsize=16, color=MUTED, ha="center", fontweight="bold")
-ax.text(5, 8.75, "Flipping the harness ON moved token spend:", fontsize=12, color=SEC_INK, ha="center")
+ax.text(5, 9.45, "SAME SWITCH. SAME TASK.", fontsize=16, color=MUTED, ha="center", fontweight="bold")
+ax.text(5, 8.85, "Flipping the harness ON moved token spend:", fontsize=12, color=SEC_INK, ha="center")
 
 art = mpimg.imread(art_path)
-ax.imshow(art, extent=[1.2, 8.8, 4.667, 7.933], zorder=2)
+# art is RGBA with a transparent (alpha-matted) background, not a cropped
+# flat-color box — this is what makes it sit on a uniform white card
+# instead of carrying its own slightly-off background as a visible rectangle.
+art_h, art_w = art.shape[0], art.shape[1]
+box_w = 6.6
+box_h = box_w * art_h / art_w
+cx, cy = 5.0, 6.3
+x0, x1 = cx - box_w / 2, cx + box_w / 2
+y0, y1 = cy - box_h / 2, cy + box_h / 2
+ax.imshow(art, extent=[x0, x1, y0, y1], zorder=2)
 
-ax.text(2.5, 3.6, "+333%", fontsize=28, color=RED, ha="center", fontweight="bold")
-ax.text(2.5, 3.0, "Claude Code", fontsize=12.5, color=INK, ha="center", fontweight="bold")
+# "Harness" sits directly above the switch, inside the illustration's own
+# empty space (the switch is centered with nothing drawn above it) rather
+# than as a separate caption outside the artwork.
+ax.text(cx, y0 + 0.75 * box_h, "Harness", fontsize=13.5, color=INK, ha="center", va="center", fontweight="bold", zorder=3)
 
-ax.text(7.4, 3.6, "−74%", fontsize=28, color=BLUE, ha="center", fontweight="bold")
-ax.text(7.4, 3.0, "Hermes", fontsize=12.5, color=INK, ha="center", fontweight="bold")
+ax.text(2.5, 3.3, "+333%", fontsize=28, color=RED, ha="center", fontweight="bold")
+ax.text(2.5, 2.7, "Claude Code", fontsize=12.5, color=INK, ha="center", fontweight="bold")
 
-ax.text(5, 1.9, "Both still scored 0 out of 4 — correct answers either way.", fontsize=11, color=SEC_INK, ha="center")
+ax.text(7.4, 3.3, "−74%", fontsize=28, color=BLUE, ha="center", fontweight="bold")
+ax.text(7.4, 2.7, "Hermes", fontsize=12.5, color=INK, ha="center", fontweight="bold")
+
+ax.text(5, 1.5, "Both still scored 0 out of 4 — correct answers either way.", fontsize=11, color=SEC_INK, ha="center")
 
 fig.savefig(f"{HERE}/{out_name}.png", facecolor=SURFACE, bbox_inches="tight", pad_inches=0.3)
 plt.close(fig)
