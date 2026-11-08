@@ -1,7 +1,7 @@
 ---
 title: 'The Harness, Taken Apart. Part 1: Three Agents, Nine Tasks — No Easy Win'
 slug: harness-agents-pt1
-status: draft
+status: publish
 categories:
 - AI Agents
 tags:
@@ -10,9 +10,8 @@ tags:
 - Benchmarking
 - LLM
 - Developer Tools
+wp_post_id: 362
 ---
-
-![The same harness, strapped onto three different agents — three different trajectories on the way out](assets/hero_begin.png)
 
 For the past year, the same line keeps coming up about coding agents: it's not the model that matters, it's what's built around it — the rules, tools, and memory bolted on top. The industry calls this the harness. I decided to test the claim with real work instead of benchmark scores — and found no quick, clean win for the harness.
 

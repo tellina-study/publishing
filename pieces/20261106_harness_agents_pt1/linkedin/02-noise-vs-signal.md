@@ -16,6 +16,6 @@ If you're an occasional user, this just explains why results feel inconsistent s
 
 How many runs do you actually average before trusting a coding-agent number?
 
-Full study, open data, open tooling: [link to tellian.io]
+Full study, open data, open tooling: https://tellian.io/2026/11/08/harness-agents-pt1/
 
 #AIAgents #Benchmarking #DeveloperTools #LLM #SoftwareEngineering

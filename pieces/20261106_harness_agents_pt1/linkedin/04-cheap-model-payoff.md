@@ -18,6 +18,6 @@ A pricier model isn't automatically the better choice. A cheaper one isn't autom
 
 Has a cheaper model ever cost you more than it saved — or surprised you by holding up just fine?
 
-Full study, open data, open tooling: [link to tellian.io]
+Full study, open data, open tooling: https://tellian.io/2026/11/08/harness-agents-pt1/
 
 #AIAgents #CostOptimization #DeveloperTools #LLM #Benchmarking

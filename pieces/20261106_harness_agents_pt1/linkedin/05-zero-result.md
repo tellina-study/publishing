@@ -16,6 +16,6 @@ Before trusting that "more structure" improved an outcome, it's worth checking w
 
 Ever paid more for a setup that, in the end, changed nothing?
 
-Full study, open data, open tooling: [link to tellian.io]
+Full study, open data, open tooling: https://tellian.io/2026/11/08/harness-agents-pt1/
 
 #AIAgents #DeveloperTools #Benchmarking #LLM #SoftwareEngineering

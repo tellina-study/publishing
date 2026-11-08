@@ -16,6 +16,6 @@ If you only use an AI assistant casually, this isn't really about you. It matter
 
 So if not quality — what do you think a setup like this is actually buying you?
 
-Full study, open data, open tooling: [link to tellian.io]
+Full study, open data, open tooling: https://tellian.io/2026/11/08/harness-agents-pt1/
 
 #AIAgents #DeveloperTools #Benchmarking #LLM #SoftwareEngineering

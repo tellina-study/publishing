@@ -16,6 +16,6 @@ The same switch doesn't do the same thing twice. Tune a setup for one agent, and
 
 Has switching tools or agents ever flipped a setup that "just worked" for you?
 
-Full study, open data, open tooling: [link to tellian.io]
+Full study, open data, open tooling: https://tellian.io/2026/11/08/harness-agents-pt1/
 
 #AIAgents #PromptEngineering #DeveloperTools #LLM #Benchmarking
