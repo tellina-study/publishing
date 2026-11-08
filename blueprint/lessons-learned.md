@@ -60,6 +60,15 @@ L08 — English social posts go through stylist-en, not stylist-ru — pick the 
   Bizup), not stylist-ru. Same principles (kill deadwood, verb over construction, clarity), right tool.
   Anchor: pieces/20260901_lessons-linkedin-announce
 
+L09 — When benchmarking an AI agent's own cost, never trust its self-reported number — recalculate from the provider's own billing.
+  Why: all three agent-cost self-reports in harness-agents-pt1 turned out wrong, each in a different
+  way (Claude Code: ≈25× gap between two of its own token counters on sub-agent tasks, plus a
+  separate ≈50× bug from a missing price-table row; Hermes: fresh/cached tokens conflated for up to
+  ≈10× price discrepancy). Only dsh's self-report matched independent billing closely. "Trust, but
+  verify against the provider invoice" isn't optional for this class of measurement — build the
+  cross-check in from the start, don't treat a printed cost line as ground truth.
+  Anchor: pieces/20261106_harness_agents_pt1 / workain/agent-runtime-instruments
+
 <!--
 L01 — <rule>.
   Why: <what happened>.

@@ -18,3 +18,9 @@ See `README.md` for the model. One row per link.
 | ai-day-transformers | cites | sources/INDEX.md#bahdanau-attention | Bahdanau/Cho/Bengio (2014) — attention invented for MT |
 | ai-day-transformers | cites | sources/INDEX.md#vaswani-transformer | Vaswani et al. (2017) — "Attention Is All You Need" |
 | ai-day-transformers | hasStatus | published | SHIP; live 2026-09-01 (issue #26). Blog https://tellian.io/2026/09/01/ai-day-transformers/ (RU+EN, WP post 309); Telegram posted (URL n/a); LinkedIn draft |
+| harness-agents-pt1 | covers | agent-harness-effect | Part 1 of a series; no final harness yes/no verdict — see topic page's "Open, for Part 2" |
+| harness-agents-pt1 | cites | sources/INDEX.md#coding-agents-converged | Same model, different scaffolding on SWE-bench — 29.8pp spread vs. 8.8pp across top-30 models |
+| harness-agents-pt1 | cites | sources/INDEX.md#same-model-different-harness | Model+task fixed, scaffolding only change — solved share 25%→43% |
+| harness-agents-pt1 | cites | sources/INDEX.md#agent-runtime-instruments | Open measurement tooling used for all 54 runs |
+| harness-agents-pt1 | cites | sources/INDEX.md#workain-research-results-harness-agents | Open dataset: all 54 measurements, task list, methodology |
+| harness-agents-pt1 | hasStatus | published | Blog live 2026-11-08 (WP post 362), https://tellian.io/2026/11/08/harness-agents-pt1/ (RU+EN); LinkedIn 5-card series drafted (not yet posted); Telegram not yet drafted. **Note:** issue #42, branch `piece-harness-agents-pt1`, PR #43 — PR not yet merged to `main` as of this entry; flagged for a follow-up ontology/RAG check once it merges |
