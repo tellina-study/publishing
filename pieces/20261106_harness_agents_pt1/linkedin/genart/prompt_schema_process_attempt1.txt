@@ -1,0 +1,39 @@
+A clean, premium editorial infographic — a process/flow diagram, not a
+decorative icon arrangement. Square 1:1 image, warm off-white background
+(#fcfcfb), generous negative space, soft shadows giving gentle depth
+(premium SaaS-illustration feel, not flat paper, not photorealistic).
+
+Layout: THREE identical small flowcharts arranged side by side, left to
+right. Each flowchart is built in ONE accent color only — the first in blue
+(#2a78d6), the second in orange (#eb6834), the third in teal-green
+(#1baf7a) — but all three flowcharts have the EXACT SAME internal structure,
+like three parallel tracks of the same process:
+
+Each individual flowchart, top to bottom:
+1. TOP — one small simple icon of a document/task card (a plain rounded
+   rectangle with a few short horizontal lines on it, like a minimal sheet
+   of paper icon).
+2. The task card's line splits into TWO separate downward paths:
+   - LEFT path: a short, direct, straight line going straight down to a
+     small filled circle (a plain result marker).
+   - RIGHT path: the line first passes through one small icon of a
+     checklist/rulebook (a tiny rounded square with 2-3 short checkmark
+     lines inside), THEN continues down to its own small filled circle
+     (another result marker), positioned at the same height as the left
+     one.
+3. BOTTOM — the two result circles (left and right) are connected to each
+   other by a small horizontal bracket shape that implies "these two are
+   being compared", like a thin curly brace or a simple double-headed
+   arrow between them.
+
+Repeat this exact structure three times, side by side, once in each accent
+color (blue, orange, teal-green), with clear visual separation between the
+three flowcharts (enough empty space that they read as three distinct
+parallel tracks, not one merged diagram).
+
+Style: minimal flat vector with a touch of soft dimensional shading (subtle
+drop shadows on the icons and lines), clean thin outlines, confident and
+uncluttered, like a methodology diagram from a polished research report.
+
+Strictly no text, no numbers, no letters, no labels, no logos, no human
+figures, no literal robots, no busy background texture.
