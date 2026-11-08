@@ -3,7 +3,7 @@ channel: linkedin
 status: draft
 title: Zero changes, higher price
 image: card5_zero_result.png
-series: harness-agents-pt1 (post 5 of 5)
+series: harness-agents-pt1 (post 6 of 6)
 ---
 
 **One AI coding agent changed zero files on a task — with a "harness" switched on, and with it switched off. Switching the harness on still made that same zero-result attempt cost roughly four times more.**

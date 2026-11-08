@@ -3,7 +3,7 @@ channel: linkedin
 status: draft
 title: Same switch, opposite effect
 image: card3_mirror_effect.png
-series: harness-agents-pt1 (post 3 of 5)
+series: harness-agents-pt1 (post 4 of 6)
 ---
 
 **Flip the exact same switch — turning a "harness" (rules, tools, memory) on — for two different AI coding agents, on the same task. One agent's cost went up 333%. The other's dropped 74%. Both still got it wrong.**

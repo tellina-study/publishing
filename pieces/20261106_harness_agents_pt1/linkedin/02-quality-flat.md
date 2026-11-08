@@ -3,7 +3,7 @@ channel: linkedin
 status: draft
 title: Quality didn't move once
 image: card1_quality_flat.png
-series: harness-agents-pt1 (post 1 of 5)
+series: harness-agents-pt1 (post 2 of 6)
 ---
 
 **We gave an AI coding agent a full "harness" — a set of rules, tools and memory wrapped around it — then took it away. Ran that test on three different agents. Quality didn't move once.**

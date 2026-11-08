@@ -3,7 +3,7 @@ channel: linkedin
 status: draft
 title: Bigger isn't always better
 image: card4_cheap_model.png
-series: harness-agents-pt1 (post 4 of 5)
+series: harness-agents-pt1 (post 5 of 6)
 ---
 
 **Two AI coding agents got the exact same advice — switch to the cheaper version of the same model. The savings weren't close to equal. And "cheaper" didn't automatically mean "worse," either.**

@@ -3,7 +3,7 @@ channel: linkedin
 status: draft
 title: Run it twice
 image: card2_noise_vs_signal.png
-series: harness-agents-pt1 (post 2 of 5)
+series: harness-agents-pt1 (post 3 of 6)
 ---
 
 **Run the same AI coding agent on the same task twice, changing nothing. One agent came back up to 9.3× apart from itself.**
