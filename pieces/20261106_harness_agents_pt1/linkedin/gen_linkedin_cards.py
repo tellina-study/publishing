@@ -18,7 +18,13 @@ SEC_INK = "#52514e"
 MUTED = "#898781"
 SURFACE = "#fcfcfb"
 GOOD = "#0ca30c"
-TRACK_OFF = "#d8d7ce"
+
+# Darker, text-safe variants of AQUA/ORANGE — the raw marker hues above read
+# fine as large hero numbers or fills, but fail WCAG contrast (~2.8:1 / 3.2:1
+# against SURFACE) at body-text sizes. Use these two whenever the color sits
+# on actual words rather than a big number or a filled shape.
+AQUA_TEXT = "#0e7a52"
+ORANGE_TEXT = "#a8431c"
 
 OUT = "/home/harness/harness-projects/256/.worktrees/folder-304/session-c792b49e-e286eed0/pieces/20261106_harness_agents_pt1/linkedin"
 
@@ -40,18 +46,30 @@ def save(fig, name):
 
 
 def toggle(ax, cx, y, on, color, width=1.1, height=0.46):
-    """A single on/off toggle switch, centered at (cx, y)."""
-    track_color = color if on else TRACK_OFF
+    """A single on/off toggle switch, centered at (cx, y).
+
+    Same color for OFF and ON — only the fill changes (outline = off, solid =
+    on), mirroring the article's own convention (color = agent, fill =
+    harness on, outline = harness off). A grey-vs-color track would make
+    every agent's OFF state look identical instead of carrying its identity.
+    """
     x0 = cx - width / 2
-    track = mpatches.FancyBboxPatch(
-        (x0, y - height / 2), width, height,
-        boxstyle=f"round,pad=0,rounding_size={height / 2}",
-        linewidth=0, facecolor=track_color, zorder=3,
-    )
+    boxstyle = f"round,pad=0,rounding_size={height / 2}"
+    if on:
+        track = mpatches.FancyBboxPatch(
+            (x0, y - height / 2), width, height, boxstyle=boxstyle,
+            linewidth=0, facecolor=color, zorder=3,
+        )
+    else:
+        track = mpatches.FancyBboxPatch(
+            (x0, y - height / 2), width, height, boxstyle=boxstyle,
+            linewidth=2.4, edgecolor=color, facecolor=SURFACE, zorder=3,
+        )
     ax.add_patch(track)
-    knob_r = height / 2 - 0.045
+    knob_r = height / 2 - 0.06
     knob_x = x0 + width - height / 2 if on else x0 + height / 2
-    knob = mpatches.Circle((knob_x, y), knob_r, facecolor="white", edgecolor="none", zorder=4)
+    knob_color = "white" if on else color
+    knob = mpatches.Circle((knob_x, y), knob_r, facecolor=knob_color, edgecolor="none", zorder=4)
     ax.add_patch(knob)
 
 
@@ -75,9 +93,9 @@ ax.text(3.4, 7.15, "without harness", fontsize=9, color=MUTED, ha="center")
 ax.text(6.6, 7.15, "with harness", fontsize=9, color=MUTED, ha="center")
 
 rows = [
-    ("DeepSeek Harness", AQUA, "full marks", "full marks"),
+    ("DeepSeek Harness", AQUA_TEXT, "full marks", "full marks"),
     ("Claude Code", BLUE, "partial", "partial"),
-    ("Hermes", ORANGE, "zero", "zero"),
+    ("Hermes", ORANGE_TEXT, "zero", "zero"),
 ]
 y0 = 6.6
 for i, (name, color, wo, w) in enumerate(rows):
@@ -149,7 +167,7 @@ ax.plot([5.1, 5.1], [5.3, 7.9], color="#d8d7ce", linewidth=1.5)
 ax.text(5, 4.3, "Quality on the one task we could compare\nbefore → after the switch:", fontsize=10.5, color=SEC_INK, ha="center")
 ax.text(3, 3.1, "full → half", fontsize=15, color=BLUE, ha="center", fontweight="bold")
 ax.text(3, 2.45, "Claude Code", fontsize=9.5, color=MUTED, ha="center")
-ax.text(7.3, 3.25, "full marks\n(cheap model only)", fontsize=12, color=AQUA, ha="center", fontweight="bold")
+ax.text(7.3, 3.25, "full marks\n(cheap model only)", fontsize=12, color=AQUA_TEXT, ha="center", fontweight="bold")
 ax.text(7.3, 2.45, "DeepSeek Harness", fontsize=9.5, color=MUTED, ha="center")
 
 ax.text(5, 0.6, "Bigger isn't automatically better. Cheaper isn't automatically worse.", fontsize=12, color=INK, ha="center", fontweight="bold")
