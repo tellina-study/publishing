@@ -1,0 +1,36 @@
+A polished, premium editorial infographic illustration — the kind of hero
+diagram a top-tier tech research blog uses to explain its methodology at a
+glance. Square 1:1 image, clean warm off-white background (#fcfcfb),
+generous negative space, confident centered composition, soft studio
+lighting, subtle shadows giving the whole scene gentle depth (not flat
+paper, not photorealistic — think "premium 3D-ish icon render", like a
+modern SaaS product illustration).
+
+Layout, left to right:
+
+1. LEFT — three small abstract "agent" module icons, stacked vertically,
+   each a simple rounded-square chip/node shape, each in ONE solid distinct
+   color: one in blue (#2a78d6), one in orange (#eb6834), one in teal-green
+   (#1baf7a). No faces, no robots, no humanoid features — pure abstract
+   hardware-module icons, like clean minimal chip or module icons.
+
+2. CENTER — the three colored lines from the three module icons converge
+   and pass through ONE single shared toggle switch, drawn as a glossy
+   rounded pill shape with a knob clearly pushed to the "on" side, polished
+   metal-and-plastic look with a soft highlight sheen. This is the single
+   shared switch all three colored lines pass through.
+
+3. RIGHT — after the switch, the three colored lines (still blue, orange,
+   teal-green, each keeping its own color) fan back out and each terminates
+   at a small round gauge/dial icon — three small gauges side by side,
+   each with a needle, echoing the instrument style of a premium analog
+   meter (fine tick marks, subtle inner shadow).
+
+Overall feel: a clean, confident, premium "how the experiment works"
+hero graphic — polished, a little bit dimensional, tasteful soft shadows
+and highlight sheen throughout, but still simple enough to read in two
+seconds.
+
+Strictly no text, no numbers, no letters, no labels, no logos, no human
+figures or faces, no literal robots, no busy background texture — keep the
+background clean and empty.

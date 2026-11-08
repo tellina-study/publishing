@@ -1,0 +1,34 @@
+Flat 2D vector icon illustration. NOT 3D, NOT photorealistic, NOT glossy.
+Square 1:1 image, plain warm off-white background (#fcfcfb), lots of empty
+space, centered composition.
+
+Layout: ONE horizontal row, three elements evenly spaced left to right,
+connected by a simple thin straight line:
+
+1. LEFT element — a circular speedometer/dial gauge icon. The needle points
+   to the FAR RIGHT of the dial, deep into a solid red-orange zone
+   (#e34948 / #eb6834), meaning "high / increased". A small upward arrow
+   icon sits just above this gauge.
+
+2. CENTER element — one single toggle switch, drawn as a simple flat
+   rounded-rectangle (pill) shape with a circular knob inside it. The knob
+   is clearly drawn pushed to one side in the "ON" position, filled with a
+   solid dark color, so it is unambiguous that the switch has just been
+   flipped on.
+
+3. RIGHT element — a second circular speedometer/dial gauge icon, IDENTICAL
+   size and style to the left one. Its needle points to the FAR LEFT of the
+   dial, deep into a solid blue zone (#2a78d6), meaning "low / decreased".
+   A small downward arrow icon sits just below this gauge.
+
+The two gauges must look like visual twins — same shape, same size, same
+style — except one needle points right into red/high and the other points
+left into blue/low. That mirrored contrast is the entire point of the image.
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, at most a soft flat drop shadow, like a modern fintech app icon or an
+editorial infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no percent signs, no UI chrome,
+no logos, no human figures, no photorealism, no glossy 3D render, no
+gradients beyond the simple flat color zones on the gauge dials.

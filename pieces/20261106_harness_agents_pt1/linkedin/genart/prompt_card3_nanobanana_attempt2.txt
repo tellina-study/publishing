@@ -1,0 +1,36 @@
+Flat vector editorial illustration with a bit of crafted visual richness —
+NOT overly minimal, NOT a bare UI mockup. Square 1:1 image, warm off-white
+background (#fcfcfb), generous negative space, centered composition.
+
+Layout: ONE horizontal row, three elements evenly spaced left to right,
+connected by a clean mechanical-looking rod/line (not a plain thin line —
+give it a touch of dimensionality, like a small metal linkage bar with a
+subtle highlight):
+
+1. LEFT — a circular gauge/dial, styled like a premium analog instrument
+   (think a nice speedometer or a vintage pressure gauge): fine tick marks
+   around the rim, a subtle inner shadow giving the dial face slight depth,
+   a crisp needle pointing to the FAR RIGHT into a solid red-orange zone
+   (#e34948 / #eb6834). A small upward arrow sits above it, with a soft
+   drop shadow for a bit of lift off the page.
+
+2. CENTER — one toggle switch, drawn as a glossy rounded pill with a subtle
+   top highlight sheen (like brushed metal or polished plastic, not flat
+   paper). The knob is UNMISTAKABLY pushed to the RIGHT inner edge of the
+   track — clear empty space to its left — filled solid dark charcoal with
+   a thin light rim, so the "switched ON" state is obvious at a glance.
+
+3. RIGHT — a second gauge, a visual twin of the left one in style and size
+   (same fine tick marks, same subtle inner shadow, same instrument-panel
+   feel), but its needle points to the FAR LEFT into a solid blue zone
+   (#2a78d6). A small downward arrow sits below it with the same soft
+   drop shadow treatment.
+
+The two gauges are mirror twins — identical craftsmanship and detail level,
+opposite needle direction. Add a little bit of tasteful polish throughout
+(soft shadows, slight highlight sheen, fine tick-mark detail) so the image
+feels like a designed editorial graphic, not a flat icon-font glyph.
+
+Strictly no text, no numbers, no letters, no percent signs, no UI chrome,
+no logos, no human figures, no literal photorealism, no busy background
+texture — the background stays a clean, empty off-white.
