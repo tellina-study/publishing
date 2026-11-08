@@ -33,6 +33,8 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import mimetypes
+import re
 import sys
 from pathlib import Path
 
@@ -42,6 +44,7 @@ from markdown_it import MarkdownIt
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SEPARATOR = '<hr class="wp-block-separator" />'
+IMG_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
 
 # CommonMark engine + GFM tables/strikethrough. CommonMark-compliant, so it renders
 # fenced code blocks nested inside blockquotes correctly (python-markdown does not).
@@ -83,6 +86,30 @@ def md_to_html(body: str) -> str:
     return MD.render(body)
 
 
+def upload_local_images(body: str, piece_dir: Path, wp: "WP") -> str:
+    """Replace `![alt](local/relative/path.png)` with the WP media library URL.
+
+    Markdown images are the only kind this piece format uses, and WordPress
+    has no access to the repo's filesystem — a relative path renders as a
+    dead <img src> on the live site, so every local image has to be uploaded
+    once and the markdown rewritten to point at its real source_url before
+    rendering to HTML.
+    """
+
+    def repl(m: re.Match) -> str:
+        alt, src = m.group(1), m.group(2)
+        if src.startswith("http://") or src.startswith("https://"):
+            return m.group(0)
+        local_path = piece_dir / src
+        if not local_path.exists():
+            sys.exit(f"ERROR: image not found: {local_path}")
+        url = wp.upload_media(local_path)
+        print(f"  uploaded {src} -> {url}")
+        return f"![{alt}]({url})"
+
+    return IMG_RE.sub(repl, body)
+
+
 def build_content(en_title: str, en_html: str, ru_title: str, ru_html: str) -> str:
     """Assemble the language-switcher HTML exactly like existing tellian.io posts."""
     return "\n".join([
@@ -120,6 +147,32 @@ class WP:
 
     def resolve_terms(self, taxonomy: str, names: list[str]) -> list[int]:
         return [self._term_id(taxonomy, n) for n in names]
+
+    def find_media_url(self, filename: str) -> str | None:
+        """Look up an already-uploaded media item by filename (idempotent re-runs)."""
+        stem = Path(filename).stem
+        r = self.session.get(f"{self.base}/media", params={"search": stem, "per_page": 100})
+        r.raise_for_status()
+        for item in r.json():
+            src = item.get("source_url", "")
+            if src.rsplit("/", 1)[-1] == filename:
+                return src
+        return None
+
+    def upload_media(self, path: Path) -> str:
+        """Upload a local image to the WP media library; return its source_url."""
+        existing = self.find_media_url(path.name)
+        if existing:
+            return existing
+        mime, _ = mimetypes.guess_type(path.name)
+        mime = mime or "application/octet-stream"
+        headers = {
+            "Content-Disposition": f'attachment; filename="{path.name}"',
+            "Content-Type": mime,
+        }
+        r = self.session.post(f"{self.base}/media", headers=headers, data=path.read_bytes())
+        r.raise_for_status()
+        return r.json()["source_url"]
 
     def upsert_post(self, payload: dict, post_id: int | None) -> dict:
         if post_id:
@@ -160,17 +213,20 @@ def main() -> None:
     slug = en_meta.get("slug") or piece.name
     status = args.status or en_meta.get("status", "draft")
 
-    content = build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body))
-
     if args.dry_run:
+        content = build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body))
         print(f"# title:  {en_title}\n# slug:   {slug}\n# status: {status}")
         print(f"# categories: {en_meta.get('categories', [])}\n# tags: {en_meta.get('tags', [])}")
-        print("# ---- content ----")
+        print("# ---- content (local image paths NOT yet uploaded/rewritten) ----")
         print(content)
         return
 
     env = load_env()
     wp = WP(env)
+
+    en_body = upload_local_images(en_body, piece, wp)
+    ru_body = upload_local_images(ru_body, piece, wp)
+    content = build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body))
 
     payload = {"title": en_title, "slug": slug, "status": status, "content": content}
     if en_meta.get("categories"):

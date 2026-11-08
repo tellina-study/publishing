@@ -111,8 +111,6 @@ Here the harness is held the same across all three — on for everyone or off fo
 
 ### Repeat runs: does an agent agree with itself
 
-![A clean signal line against a jagged noise line](assets/hero_middle.png)
-
 The same task, on the same setup, was run twice without changing a single line in the harness, to see how far the repeats would drift apart:
 
 - **Claude Code** — ≈1.2×, barely noticeable.
@@ -282,8 +280,6 @@ Comparing agents doesn't stop at who has the better harness. It's worth asking s
 - Whether it can handle your task at all at the price you're willing to pay. A harness won't rescue a task the agent simply can't do on that model.
 
 ## What's next
-
-![Three colored lines converge and drift apart again, dissolving into the frame — the story continues past its edges](assets/hero_end.png)
 
 There was no quick win for the harness in this test. Nor a single answer to which agent is simply better. What's visible instead: the harness is a trade-off, and the sign of that trade-off changes from task to task and from agent to agent; and the agents themselves differ even without it, often by more than switching the harness on or off decides.
 
