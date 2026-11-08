@@ -41,6 +41,7 @@ from pathlib import Path
 import requests
 import yaml
 from markdown_it import MarkdownIt
+from PIL import Image
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SEPARATOR = '<hr class="wp-block-separator" />'
@@ -86,15 +87,43 @@ def md_to_html(body: str) -> str:
     return MD.render(body)
 
 
-def upload_local_images(body: str, piece_dir: Path, wp: "WP") -> str:
+IMG_TAG_SRC_RE = re.compile(r'<img\b([^>]*)\bsrc="([^"]+)"([^>]*?)\s*/?>')
+
+
+def add_image_dimensions(html: str, dims: dict[str, tuple[int, int]]) -> str:
+    """Inject real width/height onto <img> tags whose src we just uploaded.
+
+    A bare <img src=...> with no width/height is exactly the case Jetpack's
+    Photon CDN resizes down to the theme's $content_width (840px on Twenty
+    Sixteen) regardless of how wide the column actually is — and with no
+    width/height, WordPress also has nothing to build a real srcset from.
+    Setting the attributes to the file's own pixel size fixes the second
+    problem; the 840px display cap itself is a separate, theme-level issue
+    (see wp_publish.py's own notes — Photon honors $content_width, not the
+    tag's own width/height, for inline content images).
+    """
+
+    def repl(m: re.Match) -> str:
+        before, src, after = m.group(1), m.group(2), m.group(3)
+        if src not in dims:
+            return m.group(0)
+        w, h = dims[src]
+        return f'<img{before}src="{src}"{after} width="{w}" height="{h}">'
+
+    return IMG_TAG_SRC_RE.sub(repl, html)
+
+
+def upload_local_images(body: str, piece_dir: Path, wp: "WP") -> tuple[str, dict[str, tuple[int, int]]]:
     """Replace `![alt](local/relative/path.png)` with the WP media library URL.
 
     Markdown images are the only kind this piece format uses, and WordPress
     has no access to the repo's filesystem — a relative path renders as a
     dead <img src> on the live site, so every local image has to be uploaded
     once and the markdown rewritten to point at its real source_url before
-    rendering to HTML.
+    rendering to HTML. Also returns {url: (width, height)} read from the
+    local file, for add_image_dimensions() to use afterward.
     """
+    dims: dict[str, tuple[int, int]] = {}
 
     def repl(m: re.Match) -> str:
         alt, src = m.group(1), m.group(2)
@@ -104,10 +133,13 @@ def upload_local_images(body: str, piece_dir: Path, wp: "WP") -> str:
         if not local_path.exists():
             sys.exit(f"ERROR: image not found: {local_path}")
         url = wp.upload_media(local_path)
-        print(f"  uploaded {src} -> {url}")
+        with Image.open(local_path) as im:
+            dims[url] = im.size
+        print(f"  uploaded {src} -> {url} ({dims[url][0]}x{dims[url][1]})")
         return f"![{alt}]({url})"
 
-    return IMG_RE.sub(repl, body)
+    new_body = IMG_RE.sub(repl, body)
+    return new_body, dims
 
 
 def build_content(en_title: str, en_html: str, ru_title: str, ru_html: str) -> str:
@@ -224,9 +256,11 @@ def main() -> None:
     env = load_env()
     wp = WP(env)
 
-    en_body = upload_local_images(en_body, piece, wp)
-    ru_body = upload_local_images(ru_body, piece, wp)
-    content = build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body))
+    en_body, en_dims = upload_local_images(en_body, piece, wp)
+    ru_body, ru_dims = upload_local_images(ru_body, piece, wp)
+    en_html = add_image_dimensions(md_to_html(en_body), en_dims)
+    ru_html = add_image_dimensions(md_to_html(ru_body), ru_dims)
+    content = build_content(en_title, en_html, ru_title, ru_html)
 
     payload = {"title": en_title, "slug": slug, "status": status, "content": content}
     if en_meta.get("categories"):
