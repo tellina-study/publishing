@@ -1,0 +1,27 @@
+Flat vector editorial illustration with crafted visual richness (premium
+instrument feel, soft shadows, subtle highlight sheen). Square 1:1 image,
+warm off-white background (#fcfcfb), generous negative space, centered
+composition.
+
+Layout: a horizontal row, three elements connected by a clean mechanical
+linkage line, all in solid orange (#eb6834) accent color:
+
+1. LEFT — a small simple empty folder icon (a plain flat folder shape with
+   nothing inside it, clearly empty) sitting next to a SHORT, small price
+   tag icon (a small flat price-tag shape, no text on it).
+
+2. CENTER — one toggle switch, glossy rounded pill with a subtle highlight
+   sheen, knob clearly pushed to the RIGHT inner edge (the "on" position).
+
+3. RIGHT — ANOTHER empty folder icon, drawn IDENTICAL to the left one
+   (same empty folder, nothing inside, same size) — but next to it, a
+   MUCH TALLER, bigger price tag icon than the one on the left, clearly
+   bigger and more prominent — the folder stayed exactly the same empty
+   folder, but the price tag grew a lot bigger.
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, soft flat drop shadow, modern fintech app icon / editorial
+infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no currency symbols, no logos,
+no human figures, no photorealism, no glossy 3D render.

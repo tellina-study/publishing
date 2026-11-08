@@ -1,0 +1,28 @@
+Flat vector editorial illustration with crafted visual richness (premium
+instrument-panel feel, soft shadows and highlight sheen, NOT flat paper, NOT
+photorealistic). Square 1:1 image, warm off-white background (#fcfcfb),
+generous negative space, centered composition.
+
+Layout: a horizontal row, three elements connected by a clean mechanical
+linkage line (subtle dimensional metal-bar look):
+
+1. LEFT — a circular gauge/dial, premium analog-instrument style (fine tick
+   marks, subtle inner shadow). The needle points to the FAR RIGHT, deep
+   into a solid teal-green zone (#1baf7a), meaning "high / good".
+
+2. CENTER — one toggle switch, glossy rounded pill with a subtle highlight
+   sheen, knob clearly pushed to the RIGHT inner edge (the "on" position).
+
+3. RIGHT — a second gauge, an EXACT visual twin of the left one — same
+   size, same style, same fine tick marks — and its needle points to the
+   EXACT SAME far-right position, deep into the SAME solid teal-green zone.
+   The two gauges must look IDENTICAL, same reading, same needle angle,
+   same color zone — the whole point of the image is that nothing changed
+   between the two gauges even though the switch in the middle is "on".
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, soft flat drop shadow, modern fintech app icon / editorial
+infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no percent signs, no UI chrome,
+no logos, no human figures, no photorealism, no glossy 3D render.
