@@ -1,141 +1,142 @@
-# Roast: harness-agents-pt1
+# Roast: harness-agents-pt1 (round 4 — post rewrite, Max's 9 points)
 
-> Supersedes the prior roast pass. That pass's two Critical findings (thesis buried past
-> paragraph 1; the causal "Hermes's savings = corner-cutting" sentence) are both fixed in this
-> draft — confirmed below under "What works." This pass evaluates the piece as expanded ~1.9x
-> since then (full methodology exposition, named-task taxonomy, granular quality breakdown, a
-> third pricing trap, the infra-noise anecdote, worked arithmetic).
+> Supersedes round 3. Round 3 flagged two Critical issues against the two-axis structural
+> rewrite: (1) the axis-balance claim ("важны в равной мере") contradicted by actual word/table
+> counts, (2) an orphaned, unframed quality-measurement section sitting outside both axes. This
+> round checks the current text — which responds to Max's 9 explicit points (TL;DR, overview
+> table+chart, 9-task table, trimmed methodology, harness-pickup clarity, H-task numbers, эталон
+> callouts, closing-chart linking, "ловушки" deletion) — against both those still-open round-3
+> issues and the new questions this restructuring raises on its own.
 
 ## Critical (must fix before ship)
 
-1. **dsh silently disappears from the piece's own flagship "agent-specific effect" finding.**
-   — `## Тот же тумблер, но в руках разных агентов` (the section built entirely around "второй
-   эффект... зависит... от того, кому харнес достался, — и иногда разворачивается в обратную
-   сторону"), lines 155–172. The section's own framing promises per-agent coverage ("на всей
-   картине у **каждого** агента читается свой узор," line 161) and then the comparison table two
-   lines later has exactly two rows: Claude Code and Hermes. dsh is never mentioned once in this
-   entire section — not on task J (where CC goes to 4.3x and Hermes drops to 0.25x), not in the
-   "узор" table, not in the closing synthesis ("значит, «как агент реагирует на харнес» — свойство
-   не харнеса, а пары агент плюс задача," line 172). Since dsh ran task J too (9×3×2=54 confirms
-   all three agents hit all nine tasks), this is a real reporting gap, not a missing data point —
-   and the piece elsewhere is careful to flag exactly this kind of gap for dsh explicitly ("dsh —
-   тестировался только на дешёвой, сравнить не с чем," line 127). Leaving dsh out here — without
-   even dsh's one-line verdict ("held near 1x, unlike the other two") — creates an unearned halo:
-   a reader comes away thinking dsh is the "stable" one of the three specifically *because* it was
-   never in the drama, when in fact we just don't know, because the piece didn't say.
-   — **Fix:** add one clause giving dsh's actual number/pattern on task J (or, if the result
-   genuinely isn't noteworthy, say so explicitly — "у dsh на этой же задаче разброс остался
-   близко к исходному" — so the omission reads as a reported null, not a silent gap).
+1. **New internal numeric contradiction: "10 оценённых прогонах" vs "шести прогонах" for the
+   same two tasks.** The new "Девять задач" table (line 65, T2; line 72, J) states both T2 and J
+   were scored "во всех 10 оценённых прогонах." But the body text covering the exact same two
+   tasks says the opposite number twice: "ни один агент, ни в одном из шести прогонов (три
+   агента × два режима)" for J (line 93, repeated at line 201: "в этот разрыв не вписывается...
+   шести прогонов... 0 из 4 у всех шестерых"), and "одинаковый средний балл во всех шести
+   прогонах" for T2 (line 94). 3 agents × 2 harness states = 6, which is what every other mention
+   in the piece uses — "10" has no basis anywhere else in the text and looks like a copy artifact
+   from the new table's drafting.
+   — **Fix:** change "10" to "шести" in both table cells (lines 65, 72), or if "10" means
+   something else (extra calibration runs not otherwise described), say so explicitly — as written
+   it just contradicts the piece's own later claims.
 
-2. **The piece's single most important claim — "quality never moved" — is stated as an absolute
-   header, but the body it introduces concedes 6 of 9 tasks were never scored for quality at all.**
-   — `## Качество не двинулось — ни у одного агента`, line 71. This is not a minor finding
-   among many; it is the core result the brief's own angle is built on ("Качество результата не
-   изменилось ни разу"). The very next sentence hedges hard ("рубрика вообще смогла измерить, — а
-   смогла она не везде одинаково"), and the bulleted breakdown that follows shows the "no movement"
-   claim rests on exactly 3 of 9 tasks (one where only agent-vs-agent varied, not harness-state;
-   one at a measurement floor — 0 everywhere; one at a ceiling — flat everywhere) — with the
-   "оставшиеся шесть задач" explicitly unmeasured. The claim is true for what was measured, but a
-   header this blunt, attached to the piece's central thesis, invites a reader (or a quote-puller,
-   or a skimmer who reads only headers) to believe quality was checked across the board and never
-   budged — a stronger claim than 3/9-task coverage supports. This is exactly the "unearned
-   certainty on a load-bearing number" the brief's own calibration bar warns against.
-   — **Fix:** fold the coverage caveat into the header itself, e.g. "Качество не двинулось — там,
-   где его вообще можно было измерить," rather than relying on the reader to reach the hedge one
-   sentence later.
+2. **The brief's own ship-bar item — "confound/50x/n=1 survives the edit" — is only 2/3 true.**
+   `brief.md`'s ship-bar explicitly requires: "Честная методологическая часть не потеряна при
+   редактуре (confound/50x/n=1)." Confound survives implicitly (line 84: cost recalculated from
+   the provider invoice, not self-report, "потому что самоотчёт... нельзя брать напрямую"); n=1
+   survives as one compressed sentence (line 241, as Max's point 8 asked). But **the ≈50×
+   missing-price-row self-report bug — explicitly named in the brief as a must-survive number —
+   is not in the piece anywhere** (checked by grep: no "50×"/"50x"/"в 50 раз" anywhere in `ru.md`).
+   It lived in the deleted "ловушки" section and in the old, fuller "Как это мерили" saga; neither
+   the new one-paragraph "Как мерили, вкратце" nor the self-report subsection in Ось 1 (which only
+   carries the Claude Code ≈25× counter mismatch and the Hermes ≈10× cache/fresh conflation)
+   picked it up. This is a direct ship-bar violation, not a style nit — the piece explicitly
+   promised to keep this number and didn't.
+   — **Fix:** add one sentence to "У кого самоотчёту можно верить" (or to "Как мерили, вкратце")
+   naming the 50× price-row bug, the same way the 25× and ≈10× numbers are already named there.
+
+3. **Forward-reference bug introduced by the new "Общая картина" placement.** The new overview
+   section (Max's point 1) sits *before* "## Девять задач" (Max's point 2) — but its own s1-scatter
+   prose already makes a specific, scored claim about a named task: "шесть точек задачи G...
+   несмотря на то что именно на этой задаче качество реально менялось (0, 1 или 2 из 2)" (line
+   56). Task G is not introduced, named, or described anywhere before this point — that happens
+   two sections later, in the "Девять задач" table (line 70). A first-time reader hits a specific
+   task letter and a specific score claim with zero context for what task G even is. Same problem,
+   smaller scale, with the "из 8" denominator in the "Общая картина" table's quality column (line
+   44) — it isn't explained until "Девять задач" (line 78), several hundred words later.
+   — **Fix:** either move "Девять задач" before "Общая картина" (data before aggregate, which is
+   also the more natural reading order), or add one clause in the s1-scatter prose flagging that G
+   gets introduced properly below.
+
+4. **Both of round 3's Critical findings are still live — Max's 9 points never touched them.**
+   - *Axis-balance claim vs. actual text*: line 33 still says, verbatim, "обе этой статье важны в
+     равной мере." Measured: Ось 1 (lines 99–165) = 1,123 words / 2 tables / 3 charts; Ось 2
+     (lines 166–232) = 1,494 words / 3 tables / 3 charts — Ось 2 is 33% longer with 50% more
+     tables for the same chart count. The gap narrowed since round 3 (was 59%/3×) but the literal
+     sentence claiming parity is unchanged and the underlying asymmetry is still real and still
+     measurable by anyone who counts.
+   - *Orphaned quality section*: "## Там, где качество можно было измерить, оно не двинулось"
+     (lines 88–97) still sits between "Как мерили, вкратце" and "## Ось 1," outside both axes,
+     still forward-pointing generically into Ось 2 ("таблица и график — ниже, в разделе про ось
+     2," line 92) rather than being folded into it. Its content (G/J/T2 scores) is then **retold a
+     third time**, with a full table, inside Ось 2's "Эффект третий" (lines 217–224) — meaning the
+     orphan section isn't even saving space by existing separately; it's adding a redundant fourth
+     stop for the same three numbers (TL;DR → "Девять задач" table → orphan section → "Эффект
+     третий" table).
+   — **Fix (either):** fold the orphan section into Ось 2 as an explicit "нулевой, общий для обеих
+   осей" result, cutting its now-redundant retelling in "Эффект третий"; or trim Ось 2's "Эффект
+   первый" (still the most over-instrumented subsection — 2 tables + a named-task callout + a
+   worked multiplication back to back) to bring the axes closer to the parity the text claims.
 
 ## Should fix
 
-- **The model-price-confound story is told in full twice, 140 lines apart, with the second telling
-  adding almost nothing new.** Methodology (lines 56–58) narrates the flag-defaults-to-the-
-  expensive-model bug in full, with mechanism and stakes ("Назвать модель по короткому имени
-  значило незаметно подменить весь эксперимент"). The traps section (lines 194) retells the same
-  anecdote almost beat-for-beat ("ровно та, что чуть выше чуть не подменила весь эксперимент через
-  короткое имя флага"). Compare this to the other two traps in the same bullet list (self-report
-  50x error, cache-token mislabeling), which are genuinely *foreshadowed* in methodology (one
-  vague clause each, line 60) and only *fully told* once, in the traps section — that's the right
-  pattern, and this bullet should match it: trim the first telling to a forward-pointer, or trim
-  the second to a one-line callback instead of a full re-narration.
+- **The same two scores (task G, task J) are stated in full four separate times** across the
+  piece: the "Коротко" TL;DR (line 12, in general terms), the "Девять задач" table (lines 70, 72,
+  with the actual numbers), the orphan quality section (lines 92–93), and the "Эффект третий" full
+  table (lines 217–224) plus "Эффект второй" (line 201 for J). Each repetition is individually
+  justified by its local argument, but stacked up this reads as the same fact dressed four
+  different ways rather than four facts — exactly the kind of redundancy that inflates length
+  without adding information. Cut at least one occurrence (the orphan section is the best
+  candidate, per Critical #4).
 
-- **Methodology runs 1,042 words (≈22% of the piece) before the first finding lands, and it carries
-  genuine infra-debugging texture (flag defaults, a shared non-personal config file, checksum
-  restore-and-verify) that reads more like a dataset README than a blog narrative** — lines 24–69.
-  This is defensible given the ship-bar's confound/50x/n=1 requirement, and the content isn't
-  wrong, but the *level* of operational detail (specifically the config-checksum paragraph, lines
-  57–58) is denser than the stated audience ("не обязан знать жаргон... решают, стоит ли
-  вкладываться") needs to trust the result. The piece already has a natural release valve for this:
-  the linked dataset (`workain/research-results`, already cited for "методологией, оговорками и
-  разбивкой по задачам," line 212) is exactly where this level of detail belongs. Consider cutting
-  the checksum mechanics to one clause ("снимок настроек перед прогоном, с проверкой после") and
-  pointing the rest at the dataset link — this also removes the redundancy flagged above for free.
+- **Length: 5,573 words against the brief's own channel shape.** `brief.md`'s frontmatter targets
+  `channels: [blog, telegram, linkedin]`, and `CLAUDE.md`'s channel table caps blog pieces at
+  800–2,500 words. This draft is more than double that ceiling. Given the redundancy just listed
+  and the forward-reference/orphan-section issues above, at least some of that length is
+  structural debt from four rounds of additive feedback rather than irreducible content — this is
+  worth a real trim pass, not just a note.
 
-- **Precise two-decimal averages (0,84 / 1,16 / 1,17 / 1,14) are presented unhedged in "Один рычаг,
-  а знак разный" (lines 135–153), and the "this is one measurement per cell, don't over-trust the
-  decimal" caveat doesn't arrive until the "Почему одной цифре..." section, ~60 lines later** (line
-  206: "каждая цифра выше измерена один раз... не говорит, насколько часто"). A reader hits the
-  precise-looking ratios and the worked multiplication (1,16×1,14≈1,32) well before being told how
-  much grain of salt they deserve. The piece's own hedging vocabulary ("примерно," "где-то") is
-  used inconsistently here — the genre-effect numbers are stated as flat decimals, not "≈0,84."
-  — **Fix:** either round these to the same "примерно"-hedged form used elsewhere, or move a
-  one-line version of the n=1 caveat up to where these numbers are first used.
+- **The closing synthesis chart (s2, candlestick) concedes it adds no new finding.** Its own prose
+  says so directly: "Это тот же вывод, что в разделе про жанровый эффект, только теперь видно
+  глазами" (line 239). That's a legitimate role for a recap visualization, but Max's point 9 asked
+  for a "generalizing" visualization — as delivered, it's a restatement-with-picture of "Эффект
+  первый," not a new generalization the reader couldn't already state from the text above.
 
-- **The infra-noise anecdote's payoff number doesn't clearly land.** Line 200: "чистый прогон...
-  занял 874 секунды и 35 обращений к модели — быстрее, чем тот же агент на заметно более дорогой
-  модели в другом раунде измерений (1124 секунды)." The paragraph's actual point (shared-machine
-  memory pressure corrupted some runs; discard and re-run; that's why seconds aren't the main
-  metric) is fully made in the surrounding sentences without this comparison. The 874s/1124s pair
-  doesn't itself prove the clean run was noise-free (the discard-and-rerun context does that) and
-  reads as a dropped-in factoid competing for attention with the real point. Cut it, or state
-  explicitly what it's meant to demonstrate.
+- **"Общая картина" oversells itself in its own framing, then immediately walks it back.** Line 42
+  calls the table "прямой ответ на вопрос «какой агент в среднем...»" — then line 52, two sentences
+  later, says this is "агрегат по всем девяти задачам сразу, а не по типичной задаче," and that 2
+  of 9 tasks dominate the token sums. The self-correction is honest and good calibration, but the
+  initial framing ("прямой ответ") is exactly the kind of claim a reader who stops at the table
+  (or screenshots it) will carry away unqualified. Soften "прямой ответ" up front rather than
+  earning it back a paragraph later.
 
-- **Carried over, unresolved:** the brief/outline flagged "9–16×" as the repeat-run variance
-  figure; this draft caps at "до 9,3×" (line 91) / "почти до девяти раз" (line 204). Still no
-  confirmation on record that 16× was a withdrawn/corrected number rather than a quietly dropped
-  one — not visible in the text itself, but worth a one-line confirmation from whoever ran the
-  numbers before shipping, same as the prior roast flagged.
+- **Both repo links appear three times, not the "TL;DR + end" the request asked for** — once in
+  "Коротко" (line 16), once in "Всё вместе" (line 241), once in "Источники" (line 273–274). Max's
+  point 7 asked for TL;DR-plus-end; the mid-article repeat in "Всё вместе" is the dispensable one.
 
 ## Minor / polish
 
-- The self-report-is-unreliable thread is split across two sections by agent — Claude Code's
-  three-mismatched-counters issue lives in "Чем агенты отличаются" (lines 96–100), Hermes's
-  cache/fresh-token conflation lives in the traps section (line 196) — reasonable since one is an
-  "agent character" trait and the other is a "measurement trap," but a reader assembling "which
-  agents can I trust to self-report?" has to do that assembly themselves across ~100 lines.
-- "Три счётчика токенов" (lines 96–100) and the cheap-model subsections are Claude-Code/Hermes-
-  heavy by necessity (dsh wasn't tested on the expensive model), which is explicitly flagged in-
-  text (line 127) — fine, just noting it's the reason dsh reads thinner in that part of the piece,
-  unlike finding #1 above where the thinness isn't flagged.
+- The "Девять задач" table's "Оценена?" column already states the actual scores for G/J/T2
+  (lines 70, 72) — two sections before the dedicated "Там, где качество..." section explains the
+  "почему only 3 of 9" context those scores need. Consider trimming that column to "да/нет" and
+  moving the numbers to where they're explained.
+- "эталон" callouts (Max's point 6) are consistently and correctly applied everywhere a quality
+  score appears, including the explicit "нет эталона" note for files-changed (line 225) — no issue
+  found here, flagging only to confirm this specific ask is fully delivered.
 
 ## What works (briefly)
 
-- **Thesis is now genuinely in paragraph 1.** Line 5 is a clean three-sentence paragraph ending in
-  "быстрой, однозначной победы харнеса не нашёл" — the external SWE-bench hype-numbers are pushed
-  to paragraph 2 as colour, not load. Ship-bar item 1 is met; the prior roast's #1 Critical is
-  resolved.
-- **The causal "Hermes's price-win = corner-cutting" sentence flagged by the prior roast is gone.**
-  Grepped for it and its pattern — not present. The Hermes 0/2-with-0-files finding (line 184) now
-  stays descriptive and explicitly declines to speculate on cause ("отдельный вопрос, на который
-  этот эксперимент не отвечает").
-- **Zero DO-NOT violations found on this pass**, specifically re-checked for the expanded material:
-  no leaked `agent-lab-manager`, no process leakage (`ROAST`, `alm#`, script names), no mention of
-  `agent-harness-registry` (correctly reserved for part 2, confirmed via grep), no explicit harness
-  verdict, no hype language, and the earlier fact-check's flagged industry-wide overclaim ("почти
-  любой харнес в индустрии...") has been narrowed to "у харнесов, которые мы смотрели" — now
-  correctly scoped to the n=3 sample.
-- **Process/quality-effect separation holds throughout**, including in the new material — the
-  Hermes 0/2-but-4x-costlier passage (line 184) and the task-J passage (line 170) both explicitly
-  state tokens moved and correctness didn't, in two separate clauses, never conflated into one.
-- **Now four tables** (agent-divergence summary, genre×ratio, agent "узор," equal-price capability)
-  — resolves the prior roast's "only one table" complaint.
-- **Claude Code gets real, specific warts of its own** (three mismatched token counters, 50x
-  self-report error, halved quality on the cheap model) — this keeps the "Hermes always looks
-  worst" risk the prior roast flagged from compounding in this draft; the added material is
-  reasonably balanced across agents, not piled onto one.
-- **The worked arithmetic (1,16×1,14≈1,32 vs. 0,84×1,17≈0,98, lines 151–153) earns its place** —
-  it's the one passage in the new material that turns a confusing null result into a legible
-  mechanism, exactly the kind of concrete payoff the brief's ship-bar asks for.
+- **Point 4 (does Hermes/dsh "pick up" the harness the same way)** is cleanly delivered in one
+  paragraph right after the agent list (lines 27), with the key distinction stated plainly: same
+  content, different physical format per agent. No ambiguity left for a careful reader.
+- **Point 5 fix (Claude Code vs dsh on task H)** — the 3.31× vs 1.34× numbers are now explicit and
+  load-bearing (line 211), with the ratio-of-ratios spelled out ("разница примерно в 2,5 раза").
+  This directly closes the gap the owner flagged between the chart and the prose.
+- **s1 overview scatter's prose delivers three genuinely chart-specific, falsifiable
+  observations** (dsh's wide X-spread, Hermes's lower-left cluster, task G's scattered-but-
+  undifferentiated-by-quality position) rather than just restating the overview table — this one
+  clears the "real insight, not just repetition" bar even though its placement causes the
+  forward-reference problem in Critical #3.
+- **DO-NOT list: clean.** No harness verdict, no hype language, no leaked private-repo names,
+  script names, or issue numbers, no evaluative "bad product" framing of Hermes/dsh (differences
+  stay tied to measured numbers throughout), and no sentence conflates a process effect
+  (tokens/steps/$) with a quality effect — "Эффект третий" and "Эффект второй" both explicitly
+  separate "усилие" from "результат" as two different things in two different clauses.
 
 ## Verdict: REVISE
 
-substance_fraction: 8/9
-one-line: Give dsh its actual (or explicitly null) result in the task-J "mirror effect" section, and fold the quality-header's 3-of-9-tasks caveat into the header itself — both are fixable without touching the piece's structure or length.
+substance_fraction: 9/11
+one-line: Fix the T2/J "10 оценённых прогонах" vs "шести прогонах" contradiction and restore the missing 50× self-report number the brief explicitly required to survive editing — both are concrete, fixable facts, not style opinions, and both are currently wrong or missing in a piece that stakes its whole identity on measured precision.
