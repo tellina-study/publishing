@@ -53,7 +53,7 @@ fig, ax = new_fig()
 ax.text(5, 9.55, "SAME AGENT. HARNESS ON vs OFF.", fontsize=13.5, color=MUTED, ha="center", fontweight="bold")
 ax.text(5, 8.75, "One task, 3 agents — the only one\nwhere quality varied at all:", fontsize=12, color=SEC_INK, ha="center")
 
-art, (x0, x1, y0, y1) = art_box(f"{G}/card1_transparent.png", box_w=7.0, cx=5.0, cy=6.0)
+art, (x0, x1, y0, y1) = art_box(f"{G}/card1_transparent_v3.png", box_w=7.0, cx=5.0, cy=6.0)
 ax.imshow(art, extent=[x0, x1, y0, y1], zorder=2)
 ax.text(5.0, y0 + 0.78 * (y1 - y0), "Harness", fontsize=13, color=INK, ha="center", va="center", fontweight="bold", zorder=3)
 
@@ -68,11 +68,11 @@ fig, ax = new_fig()
 ax.text(5, 9.4, "RUN IT TWICE.", fontsize=20, color=INK, ha="center", fontweight="bold")
 ax.text(5, 8.7, "Same task. Same settings. Nothing changed.", fontsize=12, color=SEC_INK, ha="center")
 
-art, (x0, x1, y0, y1) = art_box(f"{G}/card2_transparent.png", box_w=7.6, cx=5.0, cy=6.1)
+art, (x0, x1, y0, y1) = art_box(f"{G}/card2_transparent_v3.png", box_w=5.6, cx=4.7, cy=6.1)
 ax.imshow(art, extent=[x0, x1, y0, y1], zorder=2)
 
-ax.text(2.85, 3.5, "Hermes —\ntwo identical runs", fontsize=10.5, color=SEC_INK, ha="center")
-ax.text(7.7, 3.5, "Claude Code's loudest\nharness effect in the test", fontsize=10.5, color=SEC_INK, ha="center")
+ax.text(3.3, 2.55, "Hermes — one run,\ncaught mid-swing", fontsize=10.5, color=SEC_INK, ha="center")
+ax.text(8.3, 4.55, "Claude Code's loudest\nharness effect, for scale", fontsize=9.5, color=SEC_INK, ha="center")
 
 ax.text(5, 1.4, "The agent's own noise outsized\nthe harness effect we were testing.", fontsize=13, color=INK, ha="center", fontweight="bold")
 save(fig, "card2_FINAL")
@@ -84,7 +84,7 @@ fig, ax = new_fig()
 ax.text(5, 9.4, "SAME ADVICE: “USE THE CHEAPER MODEL.”", fontsize=12.5, color=MUTED, ha="center", fontweight="bold")
 ax.text(5, 8.7, "Two agents, same cheap/pricier pair, same tasks:", fontsize=11.5, color=SEC_INK, ha="center")
 
-art, (x0, x1, y0, y1) = art_box(f"{G}/card4_transparent.png", box_w=7.6, cx=5.0, cy=6.2)
+art, (x0, x1, y0, y1) = art_box(f"{G}/card4_transparent_v2.png", box_w=7.4, cx=5.0, cy=6.2)
 ax.imshow(art, extent=[x0, x1, y0, y1], zorder=2)
 
 ax.text(2.85, 3.9, "Claude Code  (÷9)", fontsize=12, color=BLUE, ha="center", fontweight="bold")
@@ -101,12 +101,12 @@ fig, ax = new_fig()
 ax.text(5, 9.4, "ZERO FILES CHANGED.", fontsize=20, color=INK, ha="center", fontweight="bold")
 ax.text(5, 8.7, "Same task, same model, for Hermes:", fontsize=12, color=SEC_INK, ha="center")
 
-art, (x0, x1, y0, y1) = art_box(f"{G}/card5_transparent.png", box_w=7.6, cx=5.0, cy=6.3)
+art, (x0, x1, y0, y1) = art_box(f"{G}/card5_transparent_v2.png", box_w=7.6, cx=5.0, cy=6.3)
 ax.imshow(art, extent=[x0, x1, y0, y1], zorder=2)
-ax.text(5.0, y0 + 0.82 * (y1 - y0), "Harness", fontsize=12.5, color=INK, ha="center", va="center", fontweight="bold", zorder=3)
+ax.text(5.0, y0 + 0.86 * (y1 - y0), "Harness", fontsize=12.5, color=INK, ha="center", va="center", fontweight="bold", zorder=3)
 
-ax.text(2.6, 4.1, "without harness", fontsize=10, color=MUTED, ha="center")
-ax.text(7.6, 4.1, "with harness", fontsize=10, color=MUTED, ha="center")
+ax.text(2.6, 4.1, "price", fontsize=10, color=MUTED, ha="center")
+ax.text(7.6, 4.1, "result", fontsize=10, color=MUTED, ha="center")
 
 ax.text(5, 2.7, "≈4× higher price for the identical\nzero-result outcome", fontsize=12, color=RED, ha="center", fontweight="bold")
 ax.text(5, 1.1, "Effort moved. The result didn't.", fontsize=13.5, color=INK, ha="center", fontweight="bold")

@@ -1,0 +1,38 @@
+Flat vector editorial illustration with crafted visual richness (premium
+instrument-panel feel, soft shadows, subtle highlight sheen). Square 1:1
+image, warm off-white background (#fcfcfb), generous negative space, all
+in solid orange (#eb6834) accent color.
+
+Layout: a horizontal row, three elements connected by a clean mechanical
+linkage line:
+
+1. LEFT — a circular gauge/dial icon, premium analog-instrument style
+   (fine tick marks, subtle inner shadow), labeled conceptually as a
+   "price" gauge. Its needle points to a LOW position near the bottom-left
+   of the dial (cheap).
+
+2. CENTER — one toggle switch, glossy rounded pill, knob clearly pushed to
+   the RIGHT inner edge (the "on" position), drawn with a small motion-arc
+   line showing it was just flipped dramatically.
+
+3. RIGHT — a second circular gauge/dial icon, same premium style,
+   conceptually a "result" gauge. Its needle points straight down to the
+   very bottom of the dial (empty/zero), and a small closed padlock icon
+   sits right on this needle's center pivot, clearly locking it in place.
+
+Now ALSO add, overlapping slightly with the LEFT price gauge, a ghosted
+second needle (same orange color, lower opacity) pointing to a HIGH
+position near the top-right of that same dial — showing the price gauge's
+needle swinging from low to high.
+
+The key visual insight: flipping the switch sends the price gauge's needle
+swinging dramatically upward (low to high, shown as two needle positions
+on one dial) — while the result gauge's needle stays padlocked at zero,
+completely unmoved. Price jumps, result is frozen.
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, soft flat drop shadow, modern fintech app icon / editorial
+infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no percent signs, no UI chrome,
+no logos, no human figures, no photorealism, no glossy 3D render.

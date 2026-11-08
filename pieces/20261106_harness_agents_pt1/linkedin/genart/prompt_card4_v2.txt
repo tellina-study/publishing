@@ -1,0 +1,33 @@
+Flat vector editorial illustration with crafted visual richness (premium
+instrument-panel feel, soft shadows, subtle highlight sheen). Square 1:1
+image, warm off-white background (#fcfcfb), generous negative space.
+
+Layout: a horizontal row, three elements connected by a clean mechanical
+linkage line:
+
+1. LEFT — a circular price-gauge/dial icon in solid blue (#2a78d6),
+   premium analog-instrument style (fine tick marks, subtle inner shadow).
+   Its needle points to the UPPER-RIGHT, about three-quarters of the way
+   into a solid zone, a MODERATE high reading.
+
+2. CENTER — one toggle switch, glossy rounded pill with a subtle highlight
+   sheen, knob clearly pushed to the RIGHT inner edge (the "on" position),
+   drawn with a small motion-arc line showing it was just flipped.
+
+3. RIGHT — a second circular price-gauge/dial icon, IDENTICAL size and
+   style to the left one but in solid orange (#eb6834). Its needle points
+   to the FAR LOWER-LEFT, almost all the way down near the bottom of the
+   dial, an EXTREME low reading, near empty.
+
+The key visual insight: flipping the SAME switch drops both needles
+downward, but by VERY different amounts — the blue gauge's needle only
+drops a little (stays in the upper-right), while the orange gauge's needle
+plunges almost all the way to the bottom. The gap between "moderate drop"
+and "extreme plunge" must be dramatic and unmistakable.
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, soft flat drop shadow, modern fintech app icon / editorial
+infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no percent signs, no UI chrome,
+no logos, no human figures, no photorealism, no glossy 3D render.
