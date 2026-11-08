@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
-"""Two summary visualizations for ru.md: an overview scatter (all 54 cells, normalized
-per task) for the opening, and a candlestick-style with/without recap for the closing.
-All numbers read from equalized_matrix.csv / normalized_scatter.json, both re-derived
-from the primary source this session (see tasks.md / full_results.md in
-workain/research-results for the same data, publicly).
+"""Overview scatter (all 54 cells, normalized per task) for the opening of ru.md.
+Numbers read from normalized_scatter.json, re-derived from the primary source this
+session (see tasks.md / full_results.md in workain/research-results for the same
+data, publicly). The closing visualization lives in gen_star_charts.py.
 """
-import csv
 import json
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from matplotlib.lines import Line2D
 
 BLUE = "#2a78d6"      # Claude Code
@@ -91,50 +88,6 @@ ax.set_xlim(0, 3.6)
 ax.set_ylim(0.3, 2.0)
 save(fig, "s1_overview_scatter")
 
-# =====================================================================
-# SUMMARY 2 — candlestick-style with/without recap, total tokens per task (for the close)
-# =====================================================================
-rows = list(csv.DictReader(open(f"{OUT}/equalized_matrix.csv")))
-tasks_order = ["T1", "T2", "T3", "F", "M", "S", "G", "H", "J"]
-agents_order = ["Claude Code", "Hermes", "dsh"]
-
-fig, ax = new_fig(10, 6.0)
-width = 0.22
-group_gap = 0.9
-x_base = {t: i * group_gap for i, t in enumerate(tasks_order)}
-
-for ai, agent in enumerate(agents_order):
-    offset = (ai - 1) * (width + 0.03)
-    for t in tasks_order:
-        wo = [r for r in rows if r["task"] == t and r["agent"] == agent and r["state"] == "without"][0]
-        w = [r for r in rows if r["task"] == t and r["agent"] == agent and r["state"] == "with"][0]
-        lo_tok, hi_tok = int(wo["tokens"]), int(w["tokens"])
-        up = hi_tok >= lo_tok
-        color = RED if up else BLUE
-        x = x_base[t] + offset
-        lo, hi = sorted([lo_tok, hi_tok])
-        ax.add_patch(plt.Rectangle((x - width / 2, lo), width, hi - lo, facecolor=color,
-                                    edgecolor="none", alpha=0.9, zorder=3))
-        # wick-style baseline marker for "without" (open) to read direction
-        ax.plot([x - width / 2 - 0.015, x - width / 2 - 0.015], [lo_tok, lo_tok], marker=">",
-                color=INK, markersize=0, zorder=4)
-
-for t in tasks_order:
-    ax.text(x_base[t], -0.11, t, ha="center", va="top", fontsize=10, color=INK,
-            fontweight="bold", transform=ax.get_xaxis_transform())
-
-ax.set_yscale("log")
-ax.set_ylabel("токенов за прогон (лог. шкала)", fontsize=10, color=SEC_INK)
-ax.set_xticks([])
-ax.set_xlim(-0.6, x_base[tasks_order[-1]] + 0.6)
-ax.grid(axis="y", color=GRID, linewidth=0.6, zorder=0)
-ax.set_axisbelow(True)
-ax.set_title("Каждая задача, каждый агент: харнес поднял счёт или опустил", fontsize=13, color=INK, loc="left", pad=48)
-
-dir_handles = [mpatches.Patch(color=RED, label="харнес поднял токены"), mpatches.Patch(color=BLUE, label="харнес снизил токены")]
-ax.legend(handles=dir_handles, loc="upper center", bbox_to_anchor=(0.5, 1.17), ncol=2, frameon=False, fontsize=9.3, labelcolor=SEC_INK)
-
-ax.text(0.5, 1.09, "в каждой тройке слева направо: Claude Code, Hermes, dsh", transform=ax.transAxes,
-        ha="center", va="bottom", fontsize=8.8, color=MUTED, style="italic")
-
-save(fig, "s2_candlestick_recap")
+# Closing visualization is now the per-agent type-radar (gen_star_charts.py), not a
+# candlestick recap — that chart self-admitted it was "the same finding, with a picture"
+# (mirror-editor round 4) and Max called it weak outright. See gen_star_charts.py.
