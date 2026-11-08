@@ -41,11 +41,11 @@ def arrow(ax, x1, y1, x2, y2, color=MUTED):
 # =====================================================================
 # DIAGRAM D1 — three agents, structurally
 # =====================================================================
-fig, ax = plt.subplots(figsize=(10.5, 6.6), dpi=200)
+fig, ax = plt.subplots(figsize=(10.5, 7.1), dpi=200)
 fig.patch.set_facecolor(SURFACE)
 ax.set_facecolor(SURFACE)
 ax.set_xlim(0, 10.5)
-ax.set_ylim(0, 6.6)
+ax.set_ylim(0, 7.1)
 ax.axis("off")
 
 cols = [("Claude Code", BLUE, 0.3), ("Hermes", ORANGE, 3.75), ("dsh", AQUA, 7.2)]
@@ -83,7 +83,7 @@ for name, color, x in cols:
 for lbl, y in zip(row_labels, row_y):
     ax.text(-0.15, y + row_h / 2, lbl, ha="right", va="center", fontsize=10, color=SEC_INK, fontweight="bold")
 
-ax.text(0.3, 6.35, "Три агента — три разных устройства харнеса", fontsize=15, color=INK, fontweight="bold")
+ax.text(0.3, 6.82, "Три агента — три разных устройства харнеса", fontsize=15, color=INK, fontweight="bold")
 fig.savefig(f"{OUT}/d1_agent_architecture.png", bbox_inches="tight", facecolor=SURFACE)
 plt.close(fig)
 print("wrote d1_agent_architecture")
