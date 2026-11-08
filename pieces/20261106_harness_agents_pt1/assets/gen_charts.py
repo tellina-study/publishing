@@ -65,7 +65,7 @@ fig, ax = new_fig(7.2, 3.8)
 agents = ["Claude Code", "dsh", "Hermes"]
 lo = [1.0, 1.75, 1.0]
 hi = [1.2, 3.5, 9.3]
-labels = ["≤1,2×", "1,75×–3,5×", "≤9,3×"]
+labels = ["≤1,2×", "1,75×–≥3,5×", "≤9,3×"]
 y = list(range(len(agents)))[::-1]
 
 for yi, a, l, h, lab in zip(y, agents, lo, hi, labels):
