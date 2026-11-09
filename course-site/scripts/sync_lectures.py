@@ -358,12 +358,12 @@ def _slide_files(deck_dir: Path, lang: str) -> list[Path]:
     d = slide_dir(deck_dir, lang)
     return sorted(d.glob("s*.md"), key=_slide_order_key) if d.is_dir() else []
 
-def _frontmatter_assertion(text: str) -> str:
+def _frontmatter_assertion(text: str, key: str = "assertion") -> str:
     m = re.match(r'^---\n(.*?)\n---', text, re.S)
     if not m:
         return ""
     try:
-        return str((yaml.safe_load(m.group(1)) or {}).get("assertion") or "")
+        return str((yaml.safe_load(m.group(1)) or {}).get(key) or "")
     except yaml.YAMLError:
         return ""
 
@@ -753,6 +753,31 @@ def lecture_files(lec_dir: Path, lec: str, lang: str):
     return speech, pdf       # RU: full дек; pub (footer-less) предпочтём в build_lecture
 
 
+def deck_cover_title(lec_dir: Path, lang: str, deck_subdir: str = "") -> tuple[str, str]:
+    """Для deck-only лекций (нет speech.md, #301/#310): номер+заголовок берём с обложки
+    (slide type == hero_cover) — полный «Лекция N. …»/«Lecture N. …» несёт либо само поле
+    `title` в деке (lec-08: автовыгруженный дек зеркалит фронтматтер целиком), либо —
+    если дек рукописный и `title` не выгружен (lec-09: только `assertion`/`learning_goal`) —
+    поле `title` фронтматтера самого файла обложки (`assertion` короче, без номера)."""
+    for p in deck_files(lec_dir, lang, deck_subdir):
+        try:
+            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError:
+            continue
+        for s in (data.get("slides") or []):
+            if not (isinstance(s, dict) and str(s.get("type")) == "hero_cover"):
+                continue
+            raw = str(s.get("title") or "")
+            if not raw and s.get("file"):
+                f = lec_dir / s["file"]
+                if f.exists():
+                    raw = _frontmatter_assertion(f.read_text(encoding="utf-8"), key="title")
+            if raw:
+                m = re.match(r'^(?:Лекци[яю]|Lecture)\s*(\d+)', raw, re.I)
+                return (m.group(1) if m else ""), raw
+    return "", ""
+
+
 def choose_ru_pdf(lec_dir: Path, lec: str, full: Path, n_sections: int) -> Path:
     """RU: предпочитаем footer-less pub-дек, НО только если он покрывает все секции
     speech (speech.md — индекс истины). Если страниц в pub меньше числа секций — он
@@ -781,9 +806,10 @@ def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
         # speech.md нет вовсе (lec-08 rework-v5, lec-09 civilian-refresh #310) — комментарий
         # целиком из slides/*.md («## Заметки»/«## Speaker notes»), как у семинаров.
         slides = parse_deck_slides(lec_dir, lang, deck_subdir=deck_subdir)
-        fm = {}
         if not slides:
             raise FileNotFoundError(f"{lec}/{lang}: нет {speech} и дек пуст")
+        num, raw_title = deck_cover_title(lec_dir, lang, deck_subdir)
+        fm = {"lecture": num, "title": raw_title} if raw_title else {}
         print(f"    · {lec}/{lang}: нет speech.md — комментарии из slides/*.md (Speaker notes/Заметки)")
     else:
         slides, fm = parse_speech_all(speech_files(lec_dir, lang),
