@@ -42,7 +42,21 @@ DEFAULT_LESSONS = Path(os.environ.get(
 PROOF_LECTURES = ["lec-01", "lec-08", "lec-10", "lec-13"]  # по одному на диалект
 ALL_LECTURES = [f"lec-{n:02d}" for n in range(1, 18) if n != 16]  # lec-01…17, нет lec-16
 # published (publication-config: status=published) — чистые + двуязычные; 05..17 = draft (пауза)
-PUBLISHED = ["lec-01", "lec-02", "lec-03", "lec-04", "lec-05", "lec-06", "lec-07"]
+PUBLISHED = ["lec-01", "lec-02", "lec-03", "lec-04", "lec-05", "lec-06", "lec-07", "lec-08"]
+
+# lec-08 (issue #301, переработка v5): контент переехал в подкаталог rework-v5/, дек —
+# в rework-v5/deck/ (слайды и rendered/ остались в корне содержимого), рендер с суффиксом
+# версии в имени файла, speech.md НЕТ вовсе — комментарий целиком в slides/*.md
+# («## Заметки»/«## Speaker notes»), как у семинаров. Старые top-level deck/speech/slides
+# в lec-08/ — v4, превзойдённая (см. rendered/КАКОЙ-ФАЙЛ-СМОТРЕТЬ.md), не читаем их.
+LECTURE_LAYOUT: dict[str, dict] = {
+    "lec-08": {"content_dir": "rework-v5", "deck_subdir": "deck", "render_stem": "lec-08-v5"},
+}
+
+def resolve_lecture_dir(lessons_dir: Path, lec: str) -> Path:
+    content_dir = LECTURE_LAYOUT.get(lec, {}).get("content_dir")
+    base = lessons_dir / lec
+    return base / content_dir if content_dir else base
 LANGS = ["ru", "en"]
 DPI = 120
 WEBP_QUALITY = 80  # WebP + lazy-load: ~−70% веса против PNG@132
@@ -147,14 +161,15 @@ def _ordered_parts(lec_dir: Path, stem: str, suf: str) -> list[Path]:
 def speech_files(lec_dir: Path, lang: str) -> list[Path]:
     return _ordered_parts(lec_dir, "speech", ".en.md" if lang == "en" else ".md")
 
-def deck_files(lec_dir: Path, lang: str) -> list[Path]:
-    return _ordered_parts(lec_dir, "deck", ".en.yaml" if lang == "en" else ".yaml")
+def deck_files(lec_dir: Path, lang: str, deck_subdir: str = "") -> list[Path]:
+    base = lec_dir / deck_subdir if deck_subdir else lec_dir
+    return _ordered_parts(base, "deck", ".en.yaml" if lang == "en" else ".yaml")
 
-def load_deck_titles(lec_dir: Path, lang: str) -> dict:
+def load_deck_titles(lec_dir: Path, lang: str, deck_subdir: str = "") -> dict:
     """id слайда → assertion (текст-название НА слайде) из deck.yaml(+part2/part3)/deck.en.yaml.
     Для диалектов, где заголовок speech без названия ([sNN · dur]) — источник подписи."""
     out = {}
-    for p in deck_files(lec_dir, lang):
+    for p in deck_files(lec_dir, lang, deck_subdir):
         try:
             data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
         except yaml.YAMLError:
@@ -270,7 +285,7 @@ def parse_speech_all(files: list[Path], deck_titles: dict | None = None) -> tupl
 # семинаров speech.md нет вовсе. В обоих случаях покомментарийный источник — «## Speaker
 # notes» внутри slides/*.md: они есть на каждом слайде дека и в v6.4 глубже речи (350-420 слов).
 
-_NOTES_H = r'(?:Speaker notes|Заметки докладчика)'
+_NOTES_H = r'(?:Speaker notes|Заметки докладчика|Заметки)'
 
 def md_section(text: str, name_re: str) -> str:
     """Тело секции «## <name>» до следующего H2."""
@@ -298,10 +313,10 @@ def slide_title(text: str) -> str:
         return m.group(1).strip()
     return ""
 
-def load_deck_entries(deck_dir: Path, lang: str) -> list[dict]:
+def load_deck_entries(deck_dir: Path, lang: str, deck_subdir: str = "") -> list[dict]:
     """Слайды дека по порядку: [{id, file, assertion}] из deck.yaml(+part2/part3)."""
     out = []
-    for p in deck_files(deck_dir, lang):
+    for p in deck_files(deck_dir, lang, deck_subdir):
         try:
             data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
         except yaml.YAMLError:
@@ -414,13 +429,16 @@ def resolve_deck_files(deck_dir: Path, lang: str, entries: list[dict],
     return aligned
 
 def parse_deck_slides(deck_dir: Path, lang: str,
-                      exclude_re: re.Pattern | None = None) -> list[dict]:
+                      exclude_re: re.Pattern | None = None,
+                      deck_subdir: str = "") -> list[dict]:
     """Слайды из дека: caption = assertion (иначе заголовок слайда), body = Speaker notes.
-    match_text — весь видимый текст слайда: он и матчится со страницей PDF (богаче caption)."""
+    match_text — весь видимый текст слайда: он и матчится со страницей PDF (богаче caption).
+    deck_subdir — если deck.yaml лежит не в deck_dir, а в его подкаталоге (lec-08 rework-v5:
+    deck.yaml в rework-v5/deck/, а slides/ и rendered/ — прямо в rework-v5/)."""
     if exclude_re is None:
         exclude_re = EXCLUDE_SECTION_RE
     slides = []
-    entries = load_deck_entries(deck_dir, lang)
+    entries = load_deck_entries(deck_dir, lang, deck_subdir)
     for e, f in zip(entries, resolve_deck_files(deck_dir, lang, entries)):
         text = f.read_text(encoding="utf-8") if f is not None else ""
         title = slide_title(text)
@@ -434,10 +452,10 @@ def parse_deck_slides(deck_dir: Path, lang: str,
         })
     return slides
 
-def deck_covers_speech(lec_dir: Path, lang: str) -> bool:
+def deck_covers_speech(lec_dir: Path, lang: str, deck_subdir: str = "") -> bool:
     """True, если каждый слайд дека имеет секцию в speech.md. Если нет — речь отстала
     от дека и брать её как индекс значит потерять новые слайды (lec-03 v6.4)."""
-    ids = {e["id"] for e in load_deck_entries(lec_dir, lang)}
+    ids = {e["id"] for e in load_deck_entries(lec_dir, lang, deck_subdir)}
     if not ids:
         return True
     text = "".join(p.read_text(encoding="utf-8") for p in speech_files(lec_dir, lang))
@@ -714,13 +732,15 @@ def format_references(refs: list[dict], label: str) -> str:
     return f"**{label}:** " + " · ".join(parts)
 
 def lecture_files(lec_dir: Path, lec: str, lang: str):
-    """RU→EN маппинг файлов (publication-config naming). Footer-less pub-дек RU — если есть."""
+    """RU→EN маппинг файлов (publication-config naming). Footer-less pub-дек RU — если есть.
+    render_stem (LECTURE_LAYOUT) — когда имя рендера отличается от `lec` (lec-08 → lec-08-v5)."""
+    stem = LECTURE_LAYOUT.get(lec, {}).get("render_stem", lec)
     if lang == "en":
         speech = lec_dir / "speech.en.md"
-        pdf = lec_dir / "rendered" / f"{lec}-en.pdf"
+        pdf = lec_dir / "rendered" / f"{stem}-en.pdf"
     else:
         speech = lec_dir / "speech.md"
-        pdf = lec_dir / "rendered" / f"{lec}.pdf"       # full RU-дек; pub предпочтём в build_lecture
+        pdf = lec_dir / "rendered" / f"{stem}.pdf"       # full RU-дек; pub предпочтём в build_lecture
     return speech, pdf
 
 
@@ -741,25 +761,34 @@ def choose_ru_pdf(lec_dir: Path, lec: str, full: Path, n_sections: int) -> Path:
 
 
 def build_lecture(lec: str, lessons_dir: Path, lang: str = "ru") -> None:
-    lec_dir = lessons_dir / lec
+    lec_dir = resolve_lecture_dir(lessons_dir, lec)
+    deck_subdir = LECTURE_LAYOUT.get(lec, {}).get("deck_subdir", "")
     speech, pdf = lecture_files(lec_dir, lec, lang)
     if not pdf.exists():
         raise FileNotFoundError(f"{lec}/{lang}: нет {pdf}")
-    if not speech.exists():
-        raise FileNotFoundError(f"{lec}/{lang}: нет {speech}")
     loc = L10N.get(lang, L10N["ru"])
 
-    slides, fm = parse_speech_all(speech_files(lec_dir, lang), load_deck_titles(lec_dir, lang))
-    # Речь — индекс истины, пока покрывает дек. Если дек ушёл вперёд (lec-03 v6.4: 67 слайдов
-    # против 55 секций речи), берём комментарии из «## Speaker notes» в slides/*.md: иначе
-    # новые слайды просто не попадут на страницу, а секции про удалённые останутся висеть.
-    if not deck_covers_speech(lec_dir, lang):
-        deck_slides = parse_deck_slides(lec_dir, lang)
-        if deck_slides:
-            print(f"    · {lec}/{lang}: speech отстала от дека "
-                  f"({len(slides)} секций против {len(load_deck_entries(lec_dir, lang))} слайдов) "
-                  f"— комментарии беру из slides/*.md (Speaker notes)")
-            slides = deck_slides
+    if not speech.exists():
+        # speech.md нет вовсе (lec-08 rework-v5, lec-09 civilian-refresh #310) — комментарий
+        # целиком из slides/*.md («## Заметки»/«## Speaker notes»), как у семинаров.
+        slides = parse_deck_slides(lec_dir, lang, deck_subdir=deck_subdir)
+        fm = {}
+        if not slides:
+            raise FileNotFoundError(f"{lec}/{lang}: нет {speech} и дек пуст")
+        print(f"    · {lec}/{lang}: нет speech.md — комментарии из slides/*.md (Speaker notes/Заметки)")
+    else:
+        slides, fm = parse_speech_all(speech_files(lec_dir, lang),
+                                      load_deck_titles(lec_dir, lang, deck_subdir))
+        # Речь — индекс истины, пока покрывает дек. Если дек ушёл вперёд (lec-03 v6.4: 67 слайдов
+        # против 55 секций речи), берём комментарии из «## Speaker notes» в slides/*.md: иначе
+        # новые слайды просто не попадут на страницу, а секции про удалённые останутся висеть.
+        if not deck_covers_speech(lec_dir, lang, deck_subdir):
+            deck_slides = parse_deck_slides(lec_dir, lang, deck_subdir=deck_subdir)
+            if deck_slides:
+                print(f"    · {lec}/{lang}: speech отстала от дека "
+                      f"({len(slides)} секций против {len(load_deck_entries(lec_dir, lang, deck_subdir))} слайдов) "
+                      f"— комментарии беру из slides/*.md (Speaker notes)")
+                slides = deck_slides
     assets = DOCS / "assets" / lang / lec
 
     # RU: pub-дек (footer-less) предпочитаем только если он покрывает все секции speech;
@@ -964,11 +993,11 @@ def main() -> None:
     skipped = []
     for lec in lectures:
         for lang in LANGS:
-            # язык собираем только если есть язык-специфичные исходники
-            speech, pdf = lecture_files(lessons_dir / lec, lec, lang)
-            if not speech.exists() or not pdf.exists():
-                if lang == "en":
-                    continue  # нет EN — тихо пропускаем (RU-first)
+            # EN собираем только если есть EN-рендер (не speech.en.md — его у lec-08/lec-09
+            # нет вовсе, см. LECTURE_LAYOUT и build_lecture; pdf — настоящий индекс наличия EN)
+            _, pdf = lecture_files(resolve_lecture_dir(lessons_dir, lec), lec, lang)
+            if lang == "en" and not pdf.exists():
+                continue  # нет EN — тихо пропускаем (RU-first)
             try:
                 manifests[lang].append(build_lecture(lec, lessons_dir, lang))
             except GuardMismatch as e:
