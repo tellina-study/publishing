@@ -42,15 +42,20 @@ DEFAULT_LESSONS = Path(os.environ.get(
 PROOF_LECTURES = ["lec-01", "lec-08", "lec-10", "lec-13"]  # по одному на диалект
 ALL_LECTURES = [f"lec-{n:02d}" for n in range(1, 18) if n != 16]  # lec-01…17, нет lec-16
 # published (publication-config: status=published) — чистые + двуязычные; 05..17 = draft (пауза)
-PUBLISHED = ["lec-01", "lec-02", "lec-03", "lec-04", "lec-05", "lec-06", "lec-07", "lec-08"]
+PUBLISHED = ["lec-01", "lec-02", "lec-03", "lec-04", "lec-05", "lec-06", "lec-07", "lec-08", "lec-09"]
 
 # lec-08 (issue #301, переработка v5): контент переехал в подкаталог rework-v5/, дек —
 # в rework-v5/deck/ (слайды и rendered/ остались в корне содержимого), рендер с суффиксом
 # версии в имени файла, speech.md НЕТ вовсе — комментарий целиком в slides/*.md
 # («## Заметки»/«## Speaker notes»), как у семинаров. Старые top-level deck/speech/slides
 # в lec-08/ — v4, превзойдённая (см. rendered/КАКОЙ-ФАЙЛ-СМОТРЕТЬ.md), не читаем их.
+# lec-09 (issue #310, civilian-refresh): RU-рендер исторически назван `lec-09-pilot.pdf`
+# (не `lec-09.pdf`), EN — обычный `lec-09-en.pdf`; render_name — явное имя (без расширения)
+# per-язык, когда шаблон «stem[-en].pdf» не подходит (render_stem — когда подходит, но с
+# другим stem, как у lec-08). speech.md у lec-09 тоже нет — #310 вывел речь из объёма.
 LECTURE_LAYOUT: dict[str, dict] = {
     "lec-08": {"content_dir": "rework-v5", "deck_subdir": "deck", "render_stem": "lec-08-v5"},
+    "lec-09": {"render_name": {"ru": "lec-09-pilot", "en": "lec-09-en"}},
 }
 
 def resolve_lecture_dir(lessons_dir: Path, lec: str) -> Path:
@@ -733,15 +738,19 @@ def format_references(refs: list[dict], label: str) -> str:
 
 def lecture_files(lec_dir: Path, lec: str, lang: str):
     """RU→EN маппинг файлов (publication-config naming). Footer-less pub-дек RU — если есть.
-    render_stem (LECTURE_LAYOUT) — когда имя рендера отличается от `lec` (lec-08 → lec-08-v5)."""
-    stem = LECTURE_LAYOUT.get(lec, {}).get("render_stem", lec)
-    if lang == "en":
-        speech = lec_dir / "speech.en.md"
-        pdf = lec_dir / "rendered" / f"{stem}-en.pdf"
+    render_stem (LECTURE_LAYOUT) — когда имя рендера отличается от `lec`, но шаблон
+    «stem[-en].pdf» всё ещё подходит (lec-08 → lec-08-v5[-en].pdf). render_name — явное
+    имя per-язык, когда и этот шаблон не подходит (lec-09: RU lec-09-pilot.pdf,
+    EN lec-09-en.pdf — разные схемы, не одна общая stem)."""
+    layout = LECTURE_LAYOUT.get(lec, {})
+    render_name = layout.get("render_name", {})
+    speech = lec_dir / ("speech.en.md" if lang == "en" else "speech.md")
+    if lang in render_name:
+        pdf = lec_dir / "rendered" / f"{render_name[lang]}.pdf"
     else:
-        speech = lec_dir / "speech.md"
-        pdf = lec_dir / "rendered" / f"{stem}.pdf"       # full RU-дек; pub предпочтём в build_lecture
-    return speech, pdf
+        stem = layout.get("render_stem", lec)
+        pdf = lec_dir / "rendered" / (f"{stem}-en.pdf" if lang == "en" else f"{stem}.pdf")
+    return speech, pdf       # RU: full дек; pub (footer-less) предпочтём в build_lecture
 
 
 def choose_ru_pdf(lec_dir: Path, lec: str, full: Path, n_sections: int) -> Path:
