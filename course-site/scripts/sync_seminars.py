@@ -32,7 +32,7 @@ import yaml
 
 import sync_lectures as L
 
-SEMINARS = ["sem-01", "sem-02", "sem-03", "sem-04"]
+SEMINARS = ["sem-01", "sem-02", "sem-03", "sem-04", "sem-05", "sem-06", "sem-07", "sem-08", "sem-09", "sem-10"]
 LANGS = ["ru", "en"]
 SEM_MANIFEST = L.DOCS / ".seminars-manifest.json"
 
@@ -196,7 +196,12 @@ def build_seminar(sem: str, sems_dir: Path, lang: str) -> dict | None:
     if lang != "ru" and not L.deck_files(sem_dir, lang):
         return None   # нет EN-исходников для этого семинара — тихо пропускаем (RU-first)
 
-    pdf = seminar_pdf(sem_dir, sem, lang)
+    try:
+        pdf = seminar_pdf(sem_dir, sem, lang)
+    except FileNotFoundError:
+        if lang != "ru":
+            return None   # deck.en.yaml есть, но рендера ещё нет (EN в работе) — тихо пропускаем
+        raise
 
     slides = L.parse_deck_slides(sem_dir, lang, exclude_re=SEM_EXCLUDE_RE)
     attach_spec_notes(sem_dir, sem, slides, lang)
