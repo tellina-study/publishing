@@ -42,7 +42,7 @@ DEFAULT_LESSONS = Path(os.environ.get(
 PROOF_LECTURES = ["lec-01", "lec-08", "lec-10", "lec-13"]  # по одному на диалект
 ALL_LECTURES = [f"lec-{n:02d}" for n in range(1, 18) if n != 16]  # lec-01…17, нет lec-16
 # published (publication-config: status=published) — чистые + двуязычные; 05..17 = draft (пауза)
-PUBLISHED = ["lec-01", "lec-02", "lec-03", "lec-04", "lec-05"]
+PUBLISHED = ["lec-01", "lec-02", "lec-03", "lec-04", "lec-05", "lec-06", "lec-07"]
 LANGS = ["ru", "en"]
 DPI = 120
 WEBP_QUALITY = 80  # WebP + lazy-load: ~−70% веса против PNG@132
