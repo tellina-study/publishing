@@ -290,7 +290,7 @@ def parse_speech_all(files: list[Path], deck_titles: dict | None = None) -> tupl
 # семинаров speech.md нет вовсе. В обоих случаях покомментарийный источник — «## Speaker
 # notes» внутри slides/*.md: они есть на каждом слайде дека и в v6.4 глубже речи (350-420 слов).
 
-_NOTES_H = r'(?:Speaker notes|Заметки докладчика|Заметки)'
+_NOTES_H = r'(?:Speaker notes|Заметки докладчика|Заметки лектора|Заметки)'
 
 def md_section(text: str, name_re: str) -> str:
     """Тело секции «## <name>» до следующего H2."""
