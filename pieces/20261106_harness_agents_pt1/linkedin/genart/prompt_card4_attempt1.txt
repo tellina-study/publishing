@@ -1,0 +1,30 @@
+Flat vector editorial illustration with crafted visual richness (premium
+instrument feel, soft shadows, subtle highlight sheen). Square 1:1 image,
+warm off-white background (#fcfcfb), generous negative space, centered
+composition.
+
+Layout: TWO side-by-side groups, separated by empty space, each group
+showing a tall stack of coins on the left shrinking down to a short stack
+of coins on the right, connected by a short rightward arrow between them
+(clearly "before -> after"):
+
+1. LEFT GROUP, in solid blue (#2a78d6): a TALL stack of 6-7 coins, an
+   arrow pointing right, then a MODERATELY SHORT stack of about 2 coins —
+   a noticeable but moderate drop in stack height.
+
+2. RIGHT GROUP, in solid orange (#eb6834), positioned to the right of the
+   left group with clear empty space between the two groups: a TALL stack
+   of 6-7 coins (same height as the left group's starting stack), an arrow
+   pointing right, then a VERY SHORT stack of just 1 single coin — a much
+   more dramatic drop in stack height than the left group, visually
+   emphasizing that this group's drop is far bigger.
+
+All coins are simple flat circular coin icons with a thin rim highlight,
+no engravings, no symbols on them.
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, soft flat drop shadow, modern fintech app icon / editorial
+infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no currency symbols, no logos,
+no human figures, no photorealism, no glossy 3D render.

@@ -1,0 +1,30 @@
+A premium, atmospheric semi-abstract illustration for a tech research
+essay, illustrating one specific insight: "repeat-run noise is a WIDER
+band than the effect being measured." Wide landscape image, warm off-white
+background (#fcfcfb), soft shadows, gentle depth, painterly-meets-vector
+style, not a flat icon, not photorealistic.
+
+Two horizontal translucent bands/corridors run left to right across the
+frame, stacked with a little gap between them:
+
+- TOP band, in solid orange (#eb6834): a WIDE, tall translucent corridor
+  (a thick glowing band with soft blurred top and bottom edges), and inside
+  it, a jagged, erratic zigzag line bounces wildly from the corridor's top
+  edge to its bottom edge and back, many times, never settling — the band
+  itself is clearly TALL/WIDE, giving the zigzag a lot of room to swing.
+
+- BOTTOM band, in solid blue (#2a78d6): a NARROW, short translucent
+  corridor (clearly less tall than the orange one above it), with a single
+  smooth gentle wave line inside it that barely touches the corridor's
+  edges — small, contained, orderly.
+
+The key visual insight: the orange corridor is visibly MUCH TALLER than
+the blue one, and the orange line's wild swings barely fit inside its own
+tall band, while the blue line calmly sits within its narrow one — noise
+dwarfing signal, made literal as corridor width.
+
+Mood: analytical, premium editorial feel, generous negative space around
+the two bands.
+
+Strictly no text, no numbers, no letters, no axes, no grid lines, no logos,
+no human figures.

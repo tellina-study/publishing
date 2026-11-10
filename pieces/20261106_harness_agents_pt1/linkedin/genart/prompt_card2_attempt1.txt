@@ -1,0 +1,27 @@
+Flat vector editorial illustration with crafted visual richness (premium
+instrument-panel feel, soft shadows, subtle highlight sheen). Square 1:1
+image, warm off-white background (#fcfcfb), generous negative space,
+centered composition.
+
+Layout: ONE large circular gauge/dial, premium analog-instrument style
+(fine tick marks around the rim, subtle inner shadow), in solid orange
+(#eb6834) accent color. Instead of one crisp needle, draw TWO overlapping
+ghosted/semi-transparent needles pointing in very different directions —
+one near the top of the dial, one near the bottom-left — both the same
+orange color but at partial opacity, so they look like a single needle
+caught mid-swing, wildly uncertain, NOT pointing to one clear reading.
+Above the gauge, add a small "repeat" icon: two curved arrows forming a
+circular refresh/loop symbol, in the same orange color.
+
+To the right of this large uncertain gauge, add ONE smaller, simpler
+circular gauge in solid blue (#2a78d6), with a single crisp confident
+needle pointing to a clear, narrow position — representing a small,
+controlled, well-defined reading, in deliberate visual contrast to the
+big ghosted orange gauge's wide uncertainty.
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, soft flat drop shadow, modern fintech app icon / editorial
+infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no percent signs, no UI chrome,
+no logos, no human figures, no photorealism, no glossy 3D render.

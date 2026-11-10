@@ -1,0 +1,29 @@
+Flat vector editorial illustration with crafted visual richness (premium
+instrument-panel feel, soft shadows, subtle highlight sheen). Square 1:1
+image, warm off-white background (#fcfcfb), generous negative space.
+
+Layout: on the LEFT side of the image, ONE VERY LARGE circular gauge,
+filling most of the available height, in solid orange (#eb6834), premium
+analog-instrument style (fine tick marks, subtle inner shadow) — and its
+needle is caught mid-swing, wildly off-balance, pointing into an extreme
+position near the rim, with a soft motion-blur trail behind it suggesting
+fast, erratic, uncontrolled movement. Above this giant gauge, a small
+"repeat" icon (two curved arrows forming a loop), in the same orange
+color.
+
+On the RIGHT side of the image, ONE VERY SMALL circular gauge — at most
+one quarter the diameter of the large orange gauge — in solid blue
+(#2a78d6), same premium style but tiny, with a single crisp, calm needle
+pointing to one clear, steady position, no motion blur, no drama.
+
+The key visual insight: an EXTREME size difference between the two gauges
+— one dominates almost the entire frame, wild and blurred; the other is a
+small, calm, tidy dot by comparison. The size gap itself must be dramatic
+and unmistakable at a glance.
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, soft flat drop shadow, modern fintech app icon / editorial
+infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no percent signs, no UI chrome,
+no logos, no human figures, no photorealism, no glossy 3D render.

@@ -15,6 +15,7 @@ Evergreen takes, one page per subject. Create a page when a topic recurs across 
 | [Publishing to tellian.io](topics/publishing-to-tellian.md) | ✅ current | The publish pipeline / site setup changes |
 | [Prompt packaging: language, format, placement](topics/prompt-packaging.md) | ✅ current | A new piece touches prompt language / format / placement |
 | [The Transformer lineage: attention → LLM era](topics/transformer-lineage.md) | ✅ current | A piece touches the attention/Transformer history or scaling story |
+| [The coding-agent harness effect](topics/agent-harness-effect.md) | 🟡 partial — Part 1 only, Part 2 pending | A piece touches agent harnesses/scaffolding, cost vs. quality, or agent-to-agent comparison |
 | _(add topic pages here as they emerge)_ | | |
 
 ## How to query the knowledge base

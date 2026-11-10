@@ -64,5 +64,17 @@ How this repo operates. The `CLAUDE.md` harness is the law; this file is the det
 - Nothing goes out externally without an explicit user gate. Publishing is hard to reverse.
 - Canonical version is the longest-form channel; derive the shorter channel variants from it.
 
+## Secrets
+- Real values live in `.env` at repo root — **git-ignored, never committed.** `.env.example`
+  (tracked) lists the variable names a session should expect, with empty values.
+- `.env` is per-worktree (each worktree is its own checkout, so git-ignored files don't follow
+  branches). The **durable copy lives at the main checkout's root**
+  (`publishing-ba444454/.env`) — a new task worktree that needs a secret already on file should
+  copy it from there instead of asking the owner to re-paste something that already exists.
+  Currently holds: `WP_API_BASE`/`WP_USER`/`WP_APP_PASSWORD` (WordPress publish) and
+  `OPENROUTER_API_KEY` (generative-illustration experiments).
+- Never echo a secret's value into a committed file, a wiki/notes page, or back into chat once
+  it's saved — confirm it's stored, don't re-paste it.
+
 ## Anti-patterns
 See the table at the end of `CLAUDE.md`.

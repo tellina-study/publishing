@@ -60,6 +60,34 @@ L08 — English social posts go through stylist-en, not stylist-ru — pick the 
   Bizup), not stylist-ru. Same principles (kill deadwood, verb over construction, clarity), right tool.
   Anchor: pieces/20260901_lessons-linkedin-announce
 
+L09 — When benchmarking an AI agent's own cost, never trust its self-reported number — recalculate from the provider's own billing.
+  Why: all three agent-cost self-reports in harness-agents-pt1 turned out wrong, each in a different
+  way (Claude Code: ≈25× gap between two of its own token counters on sub-agent tasks, plus a
+  separate ≈50× bug from a missing price-table row; Hermes: fresh/cached tokens conflated for up to
+  ≈10× price discrepancy). Only dsh's self-report matched independent billing closely. "Trust, but
+  verify against the provider invoice" isn't optional for this class of measurement — build the
+  cross-check in from the start, don't treat a printed cost line as ground truth.
+  Anchor: pieces/20261106_harness_agents_pt1 / workain/agent-runtime-instruments
+
+L10 — A markdown `![alt](assets/foo.png)` only works in GitHub/local preview — `scripts/wp_publish.py` must upload it to the WP media library before the post goes live, or the image is a dead link on tellian.io.
+  Why: shipped harness-agents-pt1 with all its images invisible on the live post — the publisher
+  converted markdown straight to HTML, leaving a relative `src` that means nothing outside the git
+  repo. Fixed by uploading every local image referenced in en.md/ru.md and rewriting to the real
+  `source_url` before rendering. Also: setting the `<img>` tag's real width/height matters for
+  display size (Jetpack Photon ignores it anyway past the theme's 840px cap, but WP's own
+  responsive-image srcset generation needs it) — see wiki/topics/publishing-to-tellian.md.
+  Anchor: pieces/20261106_harness_agents_pt1 / scripts/wp_publish.py
+
+L11 — To reposition an element across unrelated DOM subtrees on a live WP site (not just resize/reflow within one), move the real node with a tiny JS widget — don't fake it with `position:absolute` + a guessed pixel offset.
+  Why: two rounds of guessing a `top`/`padding-top` value for the post byline (to sit "above" the
+  sidebar's own widgets, a different DOM subtree) both broke on real content — one overlapped the
+  title, the next wrapped the tag list onto 6 lines and overflowed past the guessed height. A
+  Custom HTML widget with one `DOMContentLoaded` listener that does a real
+  `sidebar.insertBefore(...)` made the element inherit the sidebar's own spacing for free — no
+  number to guess, no next edge case to hit. Reach for this as soon as a CSS attempt needs a guessed
+  magic number to clear content whose height isn't fixed.
+  Anchor: pieces/20261106_harness_agents_pt1 / wiki/topics/publishing-to-tellian.md
+
 <!--
 L01 — <rule>.
   Why: <what happened>.

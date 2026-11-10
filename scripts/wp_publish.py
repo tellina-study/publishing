@@ -33,15 +33,19 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import mimetypes
+import re
 import sys
 from pathlib import Path
 
 import requests
 import yaml
 from markdown_it import MarkdownIt
+from PIL import Image
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SEPARATOR = '<hr class="wp-block-separator" />'
+IMG_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
 
 # CommonMark engine + GFM tables/strikethrough. CommonMark-compliant, so it renders
 # fenced code blocks nested inside blockquotes correctly (python-markdown does not).
@@ -83,6 +87,61 @@ def md_to_html(body: str) -> str:
     return MD.render(body)
 
 
+IMG_TAG_SRC_RE = re.compile(r'<img\b([^>]*)\bsrc="([^"]+)"([^>]*?)\s*/?>')
+
+
+def add_image_dimensions(html: str, dims: dict[str, tuple[int, int]]) -> str:
+    """Inject real width/height onto <img> tags whose src we just uploaded.
+
+    A bare <img src=...> with no width/height is exactly the case Jetpack's
+    Photon CDN resizes down to the theme's $content_width (840px on Twenty
+    Sixteen) regardless of how wide the column actually is — and with no
+    width/height, WordPress also has nothing to build a real srcset from.
+    Setting the attributes to the file's own pixel size fixes the second
+    problem; the 840px display cap itself is a separate, theme-level issue
+    (see wp_publish.py's own notes — Photon honors $content_width, not the
+    tag's own width/height, for inline content images).
+    """
+
+    def repl(m: re.Match) -> str:
+        before, src, after = m.group(1), m.group(2), m.group(3)
+        if src not in dims:
+            return m.group(0)
+        w, h = dims[src]
+        return f'<img{before}src="{src}"{after} width="{w}" height="{h}">'
+
+    return IMG_TAG_SRC_RE.sub(repl, html)
+
+
+def upload_local_images(body: str, piece_dir: Path, wp: "WP") -> tuple[str, dict[str, tuple[int, int]]]:
+    """Replace `![alt](local/relative/path.png)` with the WP media library URL.
+
+    Markdown images are the only kind this piece format uses, and WordPress
+    has no access to the repo's filesystem — a relative path renders as a
+    dead <img src> on the live site, so every local image has to be uploaded
+    once and the markdown rewritten to point at its real source_url before
+    rendering to HTML. Also returns {url: (width, height)} read from the
+    local file, for add_image_dimensions() to use afterward.
+    """
+    dims: dict[str, tuple[int, int]] = {}
+
+    def repl(m: re.Match) -> str:
+        alt, src = m.group(1), m.group(2)
+        if src.startswith("http://") or src.startswith("https://"):
+            return m.group(0)
+        local_path = piece_dir / src
+        if not local_path.exists():
+            sys.exit(f"ERROR: image not found: {local_path}")
+        url = wp.upload_media(local_path)
+        with Image.open(local_path) as im:
+            dims[url] = im.size
+        print(f"  uploaded {src} -> {url} ({dims[url][0]}x{dims[url][1]})")
+        return f"![{alt}]({url})"
+
+    new_body = IMG_RE.sub(repl, body)
+    return new_body, dims
+
+
 def build_content(en_title: str, en_html: str, ru_title: str, ru_html: str) -> str:
     """Assemble the language-switcher HTML exactly like existing tellian.io posts."""
     return "\n".join([
@@ -120,6 +179,32 @@ class WP:
 
     def resolve_terms(self, taxonomy: str, names: list[str]) -> list[int]:
         return [self._term_id(taxonomy, n) for n in names]
+
+    def find_media_url(self, filename: str) -> str | None:
+        """Look up an already-uploaded media item by filename (idempotent re-runs)."""
+        stem = Path(filename).stem
+        r = self.session.get(f"{self.base}/media", params={"search": stem, "per_page": 100})
+        r.raise_for_status()
+        for item in r.json():
+            src = item.get("source_url", "")
+            if src.rsplit("/", 1)[-1] == filename:
+                return src
+        return None
+
+    def upload_media(self, path: Path) -> str:
+        """Upload a local image to the WP media library; return its source_url."""
+        existing = self.find_media_url(path.name)
+        if existing:
+            return existing
+        mime, _ = mimetypes.guess_type(path.name)
+        mime = mime or "application/octet-stream"
+        headers = {
+            "Content-Disposition": f'attachment; filename="{path.name}"',
+            "Content-Type": mime,
+        }
+        r = self.session.post(f"{self.base}/media", headers=headers, data=path.read_bytes())
+        r.raise_for_status()
+        return r.json()["source_url"]
 
     def upsert_post(self, payload: dict, post_id: int | None) -> dict:
         if post_id:
@@ -160,17 +245,22 @@ def main() -> None:
     slug = en_meta.get("slug") or piece.name
     status = args.status or en_meta.get("status", "draft")
 
-    content = build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body))
-
     if args.dry_run:
+        content = build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body))
         print(f"# title:  {en_title}\n# slug:   {slug}\n# status: {status}")
         print(f"# categories: {en_meta.get('categories', [])}\n# tags: {en_meta.get('tags', [])}")
-        print("# ---- content ----")
+        print("# ---- content (local image paths NOT yet uploaded/rewritten) ----")
         print(content)
         return
 
     env = load_env()
     wp = WP(env)
+
+    en_body, en_dims = upload_local_images(en_body, piece, wp)
+    ru_body, ru_dims = upload_local_images(ru_body, piece, wp)
+    en_html = add_image_dimensions(md_to_html(en_body), en_dims)
+    ru_html = add_image_dimensions(md_to_html(ru_body), ru_dims)
+    content = build_content(en_title, en_html, ru_title, ru_html)
 
     payload = {"title": en_title, "slug": slug, "status": status, "content": content}
     if en_meta.get("categories"):

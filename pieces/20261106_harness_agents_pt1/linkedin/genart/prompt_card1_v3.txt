@@ -1,0 +1,31 @@
+Flat vector editorial illustration with crafted visual richness (premium
+instrument-panel feel, soft shadows, subtle highlight sheen). Square 1:1
+image, warm off-white background (#fcfcfb), generous negative space,
+centered composition.
+
+Layout: a horizontal row, three elements connected by a clean mechanical
+linkage line:
+
+1. CENTER — one toggle switch, glossy rounded pill, drawn with visible
+   MOTION: small curved motion-arc lines and a soft motion blur around the
+   knob, clearly caught in the act of being flipped dramatically from one
+   side to the other — energetic, obviously moving.
+
+2. LEFT and RIGHT — two IDENTICAL circular gauges, premium analog-
+   instrument style (fine tick marks, subtle inner shadow), both in solid
+   teal-green (#1baf7a), both with their needle pointing to the EXACT SAME
+   far-right position deep in a solid green zone. On EACH needle's center
+   pivot, draw a small closed padlock icon, clearly locking the needle in
+   place — a visual anchor/lock symbol sitting right on the needle's pivot
+   point on both gauges.
+
+The key visual insight: the switch in the middle is drawn with obvious,
+energetic motion — but both padlocked needles stay frozen in the exact
+same spot regardless. Motion in the middle, lock-still on both sides.
+
+Style: minimal flat vector icon set, thin clean outlines, solid flat color
+fills, soft flat drop shadow, modern fintech app icon / editorial
+infographic for a tech blog.
+
+Strictly no text, no numbers, no letters, no percent signs, no UI chrome,
+no logos, no human figures, no photorealism, no glossy 3D render.

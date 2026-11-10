@@ -1,0 +1,434 @@
+[
+ [
+  "T1",
+  "Claude Code",
+  "without",
+  0.667,
+  1.298,
+  "unscored (Tier C)"
+ ],
+ [
+  "T1",
+  "Claude Code",
+  "with",
+  0.51,
+  1.244,
+  "unscored (Tier C)"
+ ],
+ [
+  "T1",
+  "Hermes",
+  "without",
+  0.706,
+  0.711,
+  "unscored (Tier C)"
+ ],
+ [
+  "T1",
+  "Hermes",
+  "with",
+  0.431,
+  0.684,
+  "unscored (Tier C)"
+ ],
+ [
+  "T1",
+  "dsh",
+  "without",
+  2.275,
+  1.136,
+  "unscored (Tier C)"
+ ],
+ [
+  "T1",
+  "dsh",
+  "with",
+  1.412,
+  0.927,
+  "unscored (Tier C)"
+ ],
+ [
+  "T2",
+  "Claude Code",
+  "without",
+  1.217,
+  1.366,
+  "1/2"
+ ],
+ [
+  "T2",
+  "Claude Code",
+  "with",
+  0.826,
+  1.554,
+  "1/2"
+ ],
+ [
+  "T2",
+  "Hermes",
+  "without",
+  0.826,
+  0.901,
+  "1/2"
+ ],
+ [
+  "T2",
+  "Hermes",
+  "with",
+  0.957,
+  0.774,
+  "1/2"
+ ],
+ [
+  "T2",
+  "dsh",
+  "without",
+  1.261,
+  0.657,
+  "1/2"
+ ],
+ [
+  "T2",
+  "dsh",
+  "with",
+  0.913,
+  0.748,
+  "1/2"
+ ],
+ [
+  "T3",
+  "Claude Code",
+  "without",
+  0.882,
+  1.324,
+  "unscored (Tier C)"
+ ],
+ [
+  "T3",
+  "Claude Code",
+  "with",
+  0.882,
+  1.709,
+  "unscored (Tier C)"
+ ],
+ [
+  "T3",
+  "Hermes",
+  "without",
+  1.059,
+  0.674,
+  "unscored (Tier C)"
+ ],
+ [
+  "T3",
+  "Hermes",
+  "with",
+  0.706,
+  0.874,
+  "unscored (Tier C)"
+ ],
+ [
+  "T3",
+  "dsh",
+  "without",
+  1.147,
+  0.51,
+  "unscored (Tier C)"
+ ],
+ [
+  "T3",
+  "dsh",
+  "with",
+  1.324,
+  0.909,
+  "unscored (Tier C)"
+ ],
+ [
+  "F",
+  "Claude Code",
+  "without",
+  0.98,
+  1.038,
+  "unscored (Tier C)"
+ ],
+ [
+  "F",
+  "Claude Code",
+  "with",
+  0.98,
+  1.28,
+  "unscored (Tier C)"
+ ],
+ [
+  "F",
+  "Hermes",
+  "without",
+  0.582,
+  0.539,
+  "unscored (Tier C)"
+ ],
+ [
+  "F",
+  "Hermes",
+  "with",
+  0.735,
+  0.972,
+  "unscored (Tier C)"
+ ],
+ [
+  "F",
+  "dsh",
+  "without",
+  1.194,
+  1.072,
+  "unscored (Tier C)"
+ ],
+ [
+  "F",
+  "dsh",
+  "with",
+  1.531,
+  1.099,
+  "unscored (Tier C)"
+ ],
+ [
+  "M",
+  "Claude Code",
+  "without",
+  1.053,
+  1.149,
+  "unscored (Tier C)"
+ ],
+ [
+  "M",
+  "Claude Code",
+  "with",
+  0.632,
+  1.358,
+  "unscored (Tier C)"
+ ],
+ [
+  "M",
+  "Hermes",
+  "without",
+  0.474,
+  0.598,
+  "unscored (Tier C)"
+ ],
+ [
+  "M",
+  "Hermes",
+  "with",
+  0.579,
+  0.995,
+  "unscored (Tier C)"
+ ],
+ [
+  "M",
+  "dsh",
+  "without",
+  2.263,
+  1.07,
+  "unscored (Tier C)"
+ ],
+ [
+  "M",
+  "dsh",
+  "with",
+  1.0,
+  0.83,
+  "unscored (Tier C)"
+ ],
+ [
+  "S",
+  "Claude Code",
+  "without",
+  1.078,
+  1.064,
+  "unscored (Tier C)"
+ ],
+ [
+  "S",
+  "Claude Code",
+  "with",
+  0.961,
+  1.21,
+  "unscored (Tier C)"
+ ],
+ [
+  "S",
+  "Hermes",
+  "without",
+  1.019,
+  1.11,
+  "unscored (Tier C)"
+ ],
+ [
+  "S",
+  "Hermes",
+  "with",
+  0.495,
+  1.0,
+  "unscored (Tier C)"
+ ],
+ [
+  "S",
+  "dsh",
+  "without",
+  1.252,
+  0.747,
+  "unscored (Tier C)"
+ ],
+ [
+  "S",
+  "dsh",
+  "with",
+  1.194,
+  0.868,
+  "unscored (Tier C)"
+ ],
+ [
+  "G",
+  "Claude Code",
+  "without",
+  1.26,
+  1.056,
+  "1/2"
+ ],
+ [
+  "G",
+  "Claude Code",
+  "with",
+  1.034,
+  1.212,
+  "1/2"
+ ],
+ [
+  "G",
+  "Hermes",
+  "without",
+  0.47,
+  0.628,
+  "0/2"
+ ],
+ [
+  "G",
+  "Hermes",
+  "with",
+  1.053,
+  1.208,
+  "0/2"
+ ],
+ [
+  "G",
+  "dsh",
+  "without",
+  1.016,
+  0.951,
+  "2/2"
+ ],
+ [
+  "G",
+  "dsh",
+  "with",
+  1.166,
+  0.945,
+  "2/2"
+ ],
+ [
+  "H",
+  "Claude Code",
+  "without",
+  0.791,
+  0.923,
+  "unscored (Tier C)"
+ ],
+ [
+  "H",
+  "Claude Code",
+  "with",
+  1.552,
+  1.559,
+  "unscored (Tier C)"
+ ],
+ [
+  "H",
+  "Hermes",
+  "without",
+  0.522,
+  0.707,
+  "unscored (Tier C)"
+ ],
+ [
+  "H",
+  "Hermes",
+  "with",
+  0.791,
+  0.839,
+  "unscored (Tier C)"
+ ],
+ [
+  "H",
+  "dsh",
+  "without",
+  1.06,
+  0.935,
+  "unscored (Tier C)"
+ ],
+ [
+  "H",
+  "dsh",
+  "with",
+  1.284,
+  1.037,
+  "unscored (Tier C)"
+ ],
+ [
+  "J",
+  "Claude Code",
+  "without",
+  0.434,
+  0.979,
+  "0/4"
+ ],
+ [
+  "J",
+  "Claude Code",
+  "with",
+  1.012,
+  1.816,
+  "0/4"
+ ],
+ [
+  "J",
+  "Hermes",
+  "without",
+  1.229,
+  0.795,
+  "0/4"
+ ],
+ [
+  "J",
+  "Hermes",
+  "with",
+  0.361,
+  0.707,
+  "0/4"
+ ],
+ [
+  "J",
+  "dsh",
+  "without",
+  1.663,
+  0.565,
+  "0/4"
+ ],
+ [
+  "J",
+  "dsh",
+  "with",
+  1.301,
+  1.137,
+  "0/4"
+ ]
+]
