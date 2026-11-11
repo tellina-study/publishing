@@ -92,6 +92,39 @@ PAIRS = [
      lambda r: r["track"] == "mechanical_M5"),
 ]
 
+# ------------------------------------------- 4b. decoupling from a local artifact
+# The finding that matters most: accuracy collapses with the text left completely
+# untouched. The student copies honestly; the decisive parameters live on their own
+# lab stand, and option A reproduces the canonical numbers from the PUBLIC course
+# page — exactly where a web-enabled model goes looking.
+DECOUPLING = [
+    ("Пять симметричных заданий\n(решающее — вне курса)", "untouched",
+     lambda r: r["track"] == "symmetric_5q_stand842" and r["category"] == "control_with_stand",
+     lambda r: r["track"] == "symmetric_5q_stand842" and r["category"] == "external_stand_decoy"),
+    ("Три задания, вектор V2", "untouched",
+     lambda r: r["track"] == "vector_V2" and r["condition"] == "with_bench_artifact",
+     lambda r: r["track"] == "vector_V2" and r["condition"] == "public_course_only"),
+    ("Три задания, вектор V3\n(дистрактор несимметричный)", "untouched",
+     lambda r: r["track"] == "vector_V3" and r["condition"] == "with_png_file",
+     lambda r: r["track"] == "vector_V3" and r["condition"] == "text_copy_no_image"),
+    ("Те же пять заданий,\nвставленных в чат", "swapped",
+     lambda r: r["track"] in ("mechanical_M1", "mechanical_M3"),
+     lambda r: r["track"] == "mechanical_M5"),
+]
+
+# Raw answer letters for vector_V2 — the mechanism visible without any aggregation.
+# `A` on items 1 and 2 is the planted distractor: the canonical course-site numbers.
+ANSWER_GRID = {
+    "items": ["Задание 1", "Задание 2", "Задание 3"],
+    "key": ["B", "C", "B"],
+    "planted": "A",
+    "rows": [
+        {"label": "Параметры варианта приложены", "sub": "контроль", "answers": ["B", "C", "B"]},
+        {"label": "Есть только опубликованный курс", "sub": "прогон 1", "answers": ["A", "A", "A"]},
+        {"label": "Есть только опубликованный курс", "sub": "прогон 2", "answers": ["A", "A", "B"]},
+    ],
+}
+
 # ---------------------------------------------------------------- 5. cross-model, Q1 cascade
 # Hand-entered from cross_model_evidence.md / full_results.md §3 (verbatim model outputs).
 # n = 1 observation per model. NOT a benchmark.
@@ -131,6 +164,31 @@ out = {
     "control_pairs": [{"control_label": cl, "treatment_label": tl,
                        "control": agg(cp), "treatment": agg(tp)}
                       for cl, tl, cp, tp in PAIRS],
+    "run_lanes": [
+        {"lane": "Формулировка на чистом тексте",
+         "runs": [float(r["valid_accuracy_pct"]) for r in ROWS if r["category"] == "semantic_clean"]},
+        {"lane": "Невидимые символы и мультискрипт",
+         "runs": [float(r["valid_accuracy_pct"]) for r in ROWS
+                  if r["category"] in ("mechanical_file", "mechanical_inline")
+                  and r["track"] != "mechanical_M5" and r["condition"] != "P03"]},
+        {"lane": "Приём в формулировке: дистрактор из курса",
+         "runs": [float(r["valid_accuracy_pct"]) for r in ROWS
+                  if r["category"] in ("external_stand_decoy", "control_with_stand")]},
+        {"lane": "Подмена того, что доходит до ИИ",
+         "runs": [float(r["valid_accuracy_pct"]) for r in ROWS
+                  if r["category"] == "dom_clipboard_swap" or r["track"] == "mechanical_M5"
+                  or r["condition"] == "P03"]},
+    ],
+    "run_distribution": [
+        {"band": "100%", "runs": sum(1 for r in ROWS if float(r["valid_accuracy_pct"]) == 100)},
+        {"band": "80–99%", "runs": sum(1 for r in ROWS if 80 <= float(r["valid_accuracy_pct"]) < 100)},
+        {"band": "50–79%", "runs": sum(1 for r in ROWS if 50 <= float(r["valid_accuracy_pct"]) < 80)},
+        {"band": "20–49%", "runs": sum(1 for r in ROWS if 20 <= float(r["valid_accuracy_pct"]) < 50)},
+        {"band": "0–19%", "runs": sum(1 for r in ROWS if float(r["valid_accuracy_pct"]) < 20)},
+    ],
+    "decoupling": [{"label": lbl, "kind": kind, "control": agg(cp), "treatment": agg(tp)}
+                   for lbl, kind, cp, tp in DECOUPLING],
+    "answer_grid": ANSWER_GRID,
     "q1_cross_model": Q1,
 }
 
@@ -153,6 +211,20 @@ for d in out["clean_by_round"]:
 print("\nFAMILIES (R1 A01-A10):")
 for d in out["families"]:
     print(f"  {d['id']} {str(d['accuracy']):>5s}%  {d['correct']}/{d['items']}  {d['runs']} runs  {d['label'][:40]}")
+print("\nRUN LANES (should total 138):")
+_t = 0
+for d in out["run_lanes"]:
+    _t += len(d["runs"])
+    print(f'  {len(d["runs"]):3d}  {d["lane"]}')
+print(f"  --- total {_t}")
+print("\nRUN DISTRIBUTION:")
+for d in out["run_distribution"]:
+    print(f'  {d["band"]:8s} {d["runs"]:3d}')
+print("\nDECOUPLING (control -> treatment):")
+for d in out["decoupling"]:
+    c, t = d["control"], d["treatment"]
+    print(f'  [{d["kind"]:9s}] {c["accuracy"]:5.1f}% ({c["correct"]}/{c["items"]}, {c["runs"]} runs)'
+          f' -> {t["accuracy"]:5.1f}% ({t["correct"]}/{t["items"]}, {t["runs"]} runs)  {d["label"]}')
 print("\nCONTROL PAIRS:")
 for p in out["control_pairs"]:
     print(f"  {p['control']['accuracy']}% ({p['control']['correct']}/{p['control']['items']}) -> "

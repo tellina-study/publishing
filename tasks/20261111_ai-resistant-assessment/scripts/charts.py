@@ -86,11 +86,16 @@ def header(fig, h_in, title, subtitle_lines, legend=None):
         rend = fig.canvas.get_renderer()
         fig_px = fig.get_figwidth() * DPI
         for color, label in legend:
+            probe = fig.text(0, -1, label, fontsize=9.5)
+            w = probe.get_window_extent(renderer=rend).width / fig_px
+            probe.remove()
+            if x > L and x + 0.0195 + w > 0.975:   # wrap rather than run off the edge
+                x, y = L, y - band(20)
             fig.patches.append(Rectangle((x, y - band(5.5)), 0.0125, band(11),
                                          transform=fig.transFigure, facecolor=color,
                                          lw=0, clip_on=False))
-            t = fig.text(x + 0.0195, y, label, fontsize=9.5, color=INK_2, va="center")
-            x += 0.0195 + t.get_window_extent(renderer=rend).width / fig_px + 0.036
+            fig.text(x + 0.0195, y, label, fontsize=9.5, color=INK_2, va="center")
+            x += 0.0195 + w + 0.036
         y -= band(18)
     return y - band(16)
 
@@ -128,23 +133,26 @@ def fig_ladder():
         "bidi": "Переворот цифр невидимым Bidi",
         "tags": "Невидимые Unicode-теги",
         "multiscript": "Мультискриптовый коктейль",
-        "stand_decoy": "Развязка с лабораторным стендом",
+        "stand_decoy": "Условие — про свой вариант,\nдистрактор — из курса",
         "css_zero": "Нулевой шрифт на чистом CSS",
         "param_swap": "Подмена параметров в буфере",
     }
-    CHANNEL = {"stand_decoy", "css_zero", "param_swap"}
+    AQUA = "#1baf7a"   # categorical slot 3
+    KIND = {"stand_decoy": AQUA, "css_zero": ORANGE, "param_swap": ORANGE}
     rows = D["ladder"]
     base = [r for r in rows if r["key"] == "clean"]
     rest = sorted([r for r in rows if r["key"] != "clean"], key=lambda r: -r["accuracy"])
     rows = base + rest
 
-    W, H = 10.4, 6.9
+    W, H = 10.4, 7.1
     fig = plt.figure(figsize=(W, H), dpi=DPI)
     top = header(fig, H, "Что реально снижает точность ИИ на тесте",
                  ["Claude Sonnet 5.5, закрытые задания курса. Доля ответов, точно совпавших с ключом,",
-                  "и насколько подход опустил её относительно чистого текста."],
+                  "и насколько подход опустил её относительно чистого текста. Обрушили её только два",
+                  "подхода — и один из них не меняет в тексте ни единого символа."],
                  legend=[(BLUE, "меняем формулировку или кодировку"),
-                         (ORANGE, "меняем то, что ИИ вообще получает")])
+                         ("#1baf7a", "приём в формулировке — текст не тронут"),
+                         (ORANGE, "подменяем текст при копировании")])
     bottom = 0.105
     ax = fig.add_axes([0.335, bottom, 0.47, top - bottom])
     n = len(rows)
@@ -159,15 +167,18 @@ def fig_ladder():
 
     for i, r in enumerate(rows):
         acc = r["accuracy"]
-        rbar(ax, 0, acc, i, bh, ORANGE if r["key"] in CHANNEL else BLUE, box)
+        rbar(ax, 0, acc, i, bh, KIND.get(r["key"], BLUE), box)
         txt = f"{acc:.0f}%" if float(acc).is_integer() else f"{acc}%"
         ax.text(104, i, txt, va="center", ha="left", fontsize=11.5,
                 fontweight="bold", color=INK, clip_on=False)
         drop = round(100 - acc, 1)
         dl = "без изменений" if drop == 0 else (f"−{drop:.0f} п.п." if float(drop).is_integer() else f"−{drop} п.п.")
         ax.text(119, i, dl, va="center", ha="left", fontsize=9, color=MUTED, clip_on=False)
-        ax.text(-3.5, i - 0.14, SHORT[r["key"]], va="center", ha="right", fontsize=10.5, color=INK)
-        ax.text(-3.5, i + 0.21, f'{r["correct"]}/{r["items"]} пунктов · {r["runs"]} прогонов',
+        two = "\n" in SHORT[r["key"]]
+        ax.text(-3.5, i - (0.19 if two else 0.14), SHORT[r["key"]], va="center", ha="right",
+                fontsize=10.5, color=INK, linespacing=1.3)
+        ax.text(-3.5, i + (0.27 if two else 0.21),
+                f'{r["correct"]}/{r["items"]} пунктов · {r["runs"]} прогонов',
                 va="center", ha="right", fontsize=8.2, color=MUTED)
 
     ax.set_yticks([])
@@ -180,7 +191,7 @@ def fig_ladder():
     plt.close(fig)
 
 
-# ========================================================= 2. escalation plateau
+# ========================================================= 3. escalation plateau
 def fig_escalation():
     rows = [r for r in D["clean_by_round"] if r["items"]]
     TICK = {"v1": "v1", "v2": "v2", "v3": "v3", "v4": "v4", "R1": "Р1", "R2": "Р2", "R3": "Р3",
@@ -228,7 +239,7 @@ def fig_escalation():
     ax.text(-0.72, -13.5, "пунктов:", ha="right", va="top", fontsize=8,
             color=MUTED, clip_on=False)
     credit(fig)
-    fig.savefig(OUT / "02-eskalaciya-raundov.png", dpi=DPI)
+    fig.savefig(OUT / "03-eskalaciya-raundov.png", dpi=DPI)
     plt.close(fig)
 
 
@@ -271,47 +282,57 @@ def fig_families():
     ax.text(x_sq + 0.205 + sq_w + 0.011, 0.045, "не совпал — ни одного",
             fontsize=9, color=INK_2, va="center")
     credit(fig)
-    fig.savefig(OUT / "03-desyat-semejstv.png", dpi=DPI)
+    fig.savefig(OUT / "02-desyat-semejstv.png", dpi=DPI)
     plt.close(fig)
 
 
-# ======================================================= 4. control vs treatment
-def fig_pairs():
-    pairs = D["control_pairs"]
-    TITLES = ["Пять заданий со ссылкой\nна лабораторный стенд",
-              "Три задания со ссылкой\nна лабораторный стенд",
-              "Пять заданий, вставленных\nв чат текстом"]
-    W, H = 10.4, 5.4
+# ============================== 4. where the accuracy actually goes (text untouched)
+def fig_decoupling():
+    rows = D["decoupling"]
+    AQUA = "#1baf7a"
+    W, H = 10.4, 6.0
     fig = plt.figure(figsize=(W, H), dpi=DPI)
-    top = header(fig, H, "Одни и те же задания: с нужным артефактом и без него",
-                 ["В каждой паре задания, ключ и модель совпадают. Меняется ровно одно — доходит ли",
-                  "до ИИ то, что видит студент. Контроль держит 100%: значит упал канал, а не знание."],
+    top = header(fig, H, "Точность обрушивается, когда в тексте не тронут ни один символ",
+                 ["Одни и те же задания, один и тот же ключ, одна и та же модель. Меняется ровно одно:",
+                  "есть ли у ИИ то, что видит студент. Контроль держит 100% — значит это не про знание."],
                  legend=[(BLUE_LT, "у ИИ есть всё, что у студента"),
-                         (BLUE_DK, "у ИИ — неполная или подменённая версия")])
-    bottom = 0.155
-    ax = fig.add_axes([0.255, bottom, 0.70, top - bottom])
-    n = len(pairs)
-    ax.set_xlim(-4, 104); ax.set_ylim(-0.62, n - 0.38); ax.invert_yaxis()
+                         (AQUA, "у ИИ только опубликованный курс"),
+                         (ORANGE, "текст подменён при копировании")])
+    bottom = 0.135
+    ax = fig.add_axes([0.285, bottom, 0.655, top - bottom])
+    n = len(rows)
+    ax.set_xlim(-4, 104); ax.set_ylim(-0.75, n - 0.25); ax.invert_yaxis()
 
     for xv in (0, 25, 50, 75, 100):
         ax.axvline(xv, color=GRID, lw=0.8, zorder=0)
 
-    for i, p in enumerate(pairs):
-        c, t = p["control"]["accuracy"], p["treatment"]["accuracy"]
+    untouched = [i for i, r in enumerate(rows) if r["kind"] == "untouched"]
+    div = max(untouched) + 0.5
+    ax.axhline(div, color=GRID, lw=0.8, zorder=0)
+    ax.text(44, div - 0.07, "текст не тронут", ha="center", va="bottom",
+            fontsize=9, color=MUTED)
+    ax.text(44, div + 0.09, "текст подменён при копировании", ha="center", va="top",
+            fontsize=9, color=MUTED)
+
+    for i, r in enumerate(rows):
+        c, t = r["control"]["accuracy"], r["treatment"]["accuracy"]
+        tone = AQUA if r["kind"] == "untouched" else ORANGE
         ax.annotate("", xy=(t, i), xytext=(c, i),
                     arrowprops=dict(arrowstyle="-|>,head_width=0.2,head_length=0.45",
-                                    color=BLUE_DK, lw=2, shrinkA=7, shrinkB=3), zorder=2)
+                                    color=tone, lw=2, shrinkA=7, shrinkB=3), zorder=2)
         ax.scatter([c], [i], s=145, color=BLUE_LT, zorder=3, edgecolors=SURFACE, linewidths=2)
-        ax.scatter([t], [i], s=145, color=BLUE_DK, zorder=4, edgecolors=SURFACE, linewidths=2)
-        ax.text(-7, i, TITLES[i], ha="right", va="center", fontsize=10, color=INK, linespacing=1.4)
-        ax.text(c, i - 0.235, f'{c:.0f}%', ha="center", va="bottom", fontsize=11.5,
-                fontweight="bold", color=INK)
-        ax.text(c, i + 0.20, f'{p["control"]["correct"]}/{p["control"]["items"]}',
-                ha="center", va="center", fontsize=8.6, color=MUTED)
-        ax.text(t, i - 0.235, f'{t:.0f}%', ha="center", va="bottom", fontsize=11.5,
-                fontweight="bold", color=INK)
-        ax.text(t, i + 0.20, f'{p["treatment"]["correct"]}/{p["treatment"]["items"]}',
-                ha="center", va="center", fontsize=8.6, color=MUTED)
+        ax.scatter([t], [i], s=145, color=tone, zorder=4, edgecolors=SURFACE, linewidths=2)
+        lines = r["label"].count("\n") + 1
+        ax.text(-8, i - (0.16 if lines > 1 else 0.10), r["label"], ha="right", va="center",
+                fontsize=10, color=INK, linespacing=1.35)
+        ax.text(-8, i + (0.24 if lines > 1 else 0.18),
+                f'{r["treatment"]["runs"]} прогона без них · {r["control"]["runs"]} с ними',
+                ha="right", va="center", fontsize=8.2, color=MUTED)
+        for val, cell in ((c, r["control"]), (t, r["treatment"])):
+            ax.text(val, i - 0.24, f'{val:.0f}%', ha="center", va="bottom",
+                    fontsize=11.5, fontweight="bold", color=INK)
+            ax.text(val, i + 0.20, f'{cell["correct"]}/{cell["items"]}',
+                    ha="center", va="center", fontsize=8.6, color=MUTED)
 
     ax.set_yticks([])
     ax.set_xticks([0, 25, 50, 75, 100])
@@ -319,7 +340,51 @@ def fig_pairs():
     frame(ax, left=False)
     ax.set_xlabel("точность ИИ на тех же самых заданиях", fontsize=9.5, color=INK_2, labelpad=8)
     credit(fig)
-    fig.savefig(OUT / "04-kontrol-i-podmena.png", dpi=DPI)
+    fig.savefig(OUT / "04-tochnost-bez-podmeny.png", dpi=DPI)
+    plt.close(fig)
+
+
+# ================================= 5. the mechanism, in the model's own answers
+def fig_answer_grid():
+    g = D["answer_grid"]
+    AQUA = "#1baf7a"
+    W, H = 10.4, 5.0
+    fig = plt.figure(figsize=(W, H), dpi=DPI)
+    top = header(fig, H, "Модель не ошибается наугад — она идёт туда, куда её завели",
+                 ["Три задания вектора V2, буквы ответов как есть. В варианте A лежат канонические числа",
+                  "с публичной страницы курса — ровно то, что найдёт ИИ, когда решающих чисел у него нет."],
+                 legend=[(BLUE, "совпал с ключом"),
+                         (AQUA, "подброшенный вариант A — числа с публичного сайта курса"),
+                         (MUTED, "другой неверный")])
+    ax = fig.add_axes([0.0, 0.085, 1.0, top - 0.085])
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
+
+    x0, cw, ch = 0.405, 0.125, 0.155
+    y_top = 0.70
+    for j, item in enumerate(g["items"]):
+        ax.text(x0 + j * cw + (cw - 0.032) / 2, y_top + 0.205, item, ha="center", va="center",
+                fontsize=9.5, color=INK_2)
+        ax.text(x0 + j * cw + (cw - 0.032) / 2, y_top + 0.145, f'ключ: {g["key"][j]}',
+                ha="center", va="center", fontsize=8.3, color=MUTED)
+
+    for i, row in enumerate(g["rows"]):
+        y = y_top - i * (ch + 0.075)
+        ax.text(0.385, y + 0.022, row["label"], ha="right", va="center", fontsize=10.3, color=INK)
+        ax.text(0.385, y - 0.042, row["sub"], ha="right", va="center", fontsize=8.6, color=MUTED)
+        for j, a in enumerate(row["answers"]):
+            correct = a == g["key"][j]
+            color = BLUE if correct else (AQUA if a == g["planted"] else MUTED)
+            ax.add_patch(FancyBboxPatch((x0 + j * cw, y - ch / 2), cw - 0.032, ch,
+                                        boxstyle="round,pad=0,rounding_size=0.006",
+                                        mutation_aspect=0.42, facecolor=color, linewidth=0))
+            ax.text(x0 + j * cw + (cw - 0.032) / 2, y, a, ha="center", va="center",
+                    fontsize=15, fontweight="bold", color="#ffffff")
+
+    ax.text(0.405, 0.055, "Пять ответов из шести — вариант A. В ключ модель попала один раз:\n"
+                          "третье задание во втором прогоне.",
+            fontsize=9, color=MUTED, ha="left", va="center", linespacing=1.5)
+    credit(fig)
+    fig.savefig(OUT / "05-mehanizm-otvetov.png", dpi=DPI)
     plt.close(fig)
 
 
@@ -369,10 +434,11 @@ def fig_models():
     frame(ax, left=False)
     ax.set_xlabel("отклонение от верного ответа, вызовов LLM", fontsize=9.5, color=INK_2, labelpad=8)
     credit(fig)
-    fig.savefig(OUT / "05-tri-modeli.png", dpi=DPI)
+    fig.savefig(OUT / "06-tri-modeli.png", dpi=DPI)
     plt.close(fig)
 
 
-for f in (fig_ladder, fig_escalation, fig_families, fig_pairs, fig_models):
+for f in (fig_ladder, fig_families, fig_escalation,
+          fig_decoupling, fig_answer_grid, fig_models):
     f()
     print("ok", f.__name__)
