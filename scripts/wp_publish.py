@@ -20,6 +20,13 @@ Metadata comes from YAML frontmatter:
   ru.md:
     title:       Russian title  (in-block <h1>)
 
+Images: any `![alt](assets/<file>)` in either body is uploaded to the WP media
+library and the reference is rewritten to the returned URL. Uploads are idempotent
+via assets/.wp_media.json, which maps filename -> {id, url, sha256}: a file whose
+bytes are unchanged is never re-uploaded. WordPress has no REST route to replace a
+media item's binary, so an edited image uploads as a NEW item and the map is
+re-pointed — the old attachment stays in the library until you delete it there.
+
 Auth: WordPress Application Password via HTTP Basic, from .env at repo root:
     WP_API_BASE=https://tellian.io/wp-json/wp/v2
     WP_USER=...
@@ -33,6 +40,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
+import mimetypes
+import re
 import sys
 from pathlib import Path
 
@@ -42,6 +53,8 @@ from markdown_it import MarkdownIt
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SEPARATOR = '<hr class="wp-block-separator" />'
+ASSET_RE = re.compile(r"!\[([^\]]*)\]\((assets/[^)\s]+)\)")
+MEDIA_MAP = ".wp_media.json"
 
 # CommonMark engine + GFM tables/strikethrough. CommonMark-compliant, so it renders
 # fenced code blocks nested inside blockquotes correctly (python-markdown does not).
@@ -121,6 +134,21 @@ class WP:
     def resolve_terms(self, taxonomy: str, names: list[str]) -> list[int]:
         return [self._term_id(taxonomy, n) for n in names]
 
+    def upload_media(self, path: Path, alt: str = "") -> dict:
+        """Upload one file to the media library; return its WP media object."""
+        mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+        r = self.session.post(
+            f"{self.base}/media",
+            data=path.read_bytes(),
+            headers={"Content-Type": mime,
+                     "Content-Disposition": f'attachment; filename="{path.name}"'},
+        )
+        r.raise_for_status()
+        media = r.json()
+        if alt:
+            self.session.post(f"{self.base}/media/{media['id']}", json={"alt_text": alt})
+        return media
+
     def upsert_post(self, payload: dict, post_id: int | None) -> dict:
         if post_id:
             r = self.session.post(f"{self.base}/posts/{post_id}", json=payload)
@@ -128,6 +156,52 @@ class WP:
             r = self.session.post(f"{self.base}/posts", json=payload)
         r.raise_for_status()
         return r.json()
+
+
+def collect_assets(bodies: list[str]) -> dict[str, str]:
+    """Every assets/ image referenced by the bodies -> its first alt text."""
+    found: dict[str, str] = {}
+    for body in bodies:
+        for alt, rel in ASSET_RE.findall(body):
+            found.setdefault(rel, alt)
+    return found
+
+
+def sync_media(wp: "WP", piece: Path, assets: dict[str, str]) -> dict[str, str]:
+    """Upload any new or changed asset; return {relative path -> media URL}.
+
+    Idempotent via assets/.wp_media.json keyed on the file's sha256, so re-running
+    the publisher re-uploads nothing. A changed file becomes a new attachment —
+    the REST API cannot replace a media item's bytes in place.
+    """
+    map_path = piece / "assets" / MEDIA_MAP
+    known = json.loads(map_path.read_text(encoding="utf-8")) if map_path.exists() else {}
+    urls: dict[str, str] = {}
+
+    for rel, alt in sorted(assets.items()):
+        local = piece / rel
+        if not local.exists():
+            sys.exit(f"ERROR: {local} is referenced but missing")
+        digest = hashlib.sha256(local.read_bytes()).hexdigest()
+        entry = known.get(rel)
+        if entry and entry.get("sha256") == digest:
+            urls[rel] = entry["url"]
+            print(f"  media unchanged: {rel} -> {entry['url']}")
+            continue
+        media = wp.upload_media(local, alt)
+        known[rel] = {"id": media["id"], "url": media["source_url"], "sha256": digest}
+        urls[rel] = media["source_url"]
+        print(f"  media uploaded:  {rel} -> {media['source_url']}")
+
+    if known:
+        map_path.parent.mkdir(parents=True, exist_ok=True)
+        map_path.write_text(json.dumps(known, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return urls
+
+
+def rewrite_assets(body: str, urls: dict[str, str]) -> str:
+    """Point every assets/ image reference at its uploaded media URL."""
+    return ASSET_RE.sub(lambda m: f"![{m.group(1)}]({urls.get(m.group(2), m.group(2))})", body)
 
 
 def write_back_post_id(en_path: Path, meta: dict, post_id: int) -> None:
@@ -160,17 +234,25 @@ def main() -> None:
     slug = en_meta.get("slug") or piece.name
     status = args.status or en_meta.get("status", "draft")
 
-    content = build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body))
+    assets = collect_assets([en_body, ru_body])
 
     if args.dry_run:
         print(f"# title:  {en_title}\n# slug:   {slug}\n# status: {status}")
         print(f"# categories: {en_meta.get('categories', [])}\n# tags: {en_meta.get('tags', [])}")
+        print(f"# assets ({len(assets)}, not uploaded on a dry run): {sorted(assets)}")
         print("# ---- content ----")
-        print(content)
+        print(build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body)))
         return
 
     env = load_env()
     wp = WP(env)
+
+    if assets:
+        print(f"Syncing {len(assets)} asset(s):")
+        urls = sync_media(wp, piece, assets)
+        en_body, ru_body = rewrite_assets(en_body, urls), rewrite_assets(ru_body, urls)
+
+    content = build_content(en_title, md_to_html(en_body), ru_title, md_to_html(ru_body))
 
     payload = {"title": en_title, "slug": slug, "status": status, "content": content}
     if en_meta.get("categories"):
