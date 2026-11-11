@@ -239,7 +239,7 @@ def fig_escalation():
     ax.text(-0.72, -13.5, "пунктов:", ha="right", va="top", fontsize=8,
             color=MUTED, clip_on=False)
     credit(fig)
-    fig.savefig(OUT / "03-eskalaciya-raundov.png", dpi=DPI)
+    fig.savefig(OUT / "04-eskalaciya-raundov.png", dpi=DPI)
     plt.close(fig)
 
 
@@ -282,7 +282,7 @@ def fig_families():
     ax.text(x_sq + 0.205 + sq_w + 0.011, 0.045, "не совпал — ни одного",
             fontsize=9, color=INK_2, va="center")
     credit(fig)
-    fig.savefig(OUT / "02-desyat-semejstv.png", dpi=DPI)
+    fig.savefig(OUT / "03-desyat-semejstv.png", dpi=DPI)
     plt.close(fig)
 
 
@@ -340,7 +340,7 @@ def fig_decoupling():
     frame(ax, left=False)
     ax.set_xlabel("точность ИИ на тех же самых заданиях", fontsize=9.5, color=INK_2, labelpad=8)
     credit(fig)
-    fig.savefig(OUT / "04-tochnost-bez-podmeny.png", dpi=DPI)
+    fig.savefig(OUT / "05-tochnost-bez-podmeny.png", dpi=DPI)
     plt.close(fig)
 
 
@@ -384,22 +384,64 @@ def fig_answer_grid():
                           "третье задание во втором прогоне.",
             fontsize=9, color=MUTED, ha="left", va="center", linespacing=1.5)
     credit(fig)
-    fig.savefig(OUT / "05-mehanizm-otvetov.png", dpi=DPI)
+    fig.savefig(OUT / "06-mehanizm-otvetov.png", dpi=DPI)
     plt.close(fig)
 
 
-# ============================================================= 5. three models
+# ===================================== 2. the per-model descent, as measured
+def fig_models_descent():
+    pr = D["cross_model_probe"]
+    bars = pr["bars"]
+    AQUA = "#1baf7a"
+    W, H = 10.4, 5.6
+    fig = plt.figure(figsize=(W, H), dpi=DPI)
+    top = header(fig, H, "Одни и те же два задания — и разброс от 100% до четверти",
+                 ["Открытые инженерные кейсы со структурной интерференцией, по двухкритериальной",
+                  "рубрике: 2 балла за задание, 4 всего. По одному прогону на строку, шесть наблюдений.",
+                  "Для сравнения: на чистых самодостаточных заданиях тот же Sonnet берёт 352 пункта из 353."])
+    bottom = 0.135
+    ax = fig.add_axes([0.305, bottom, 0.58, top - bottom])
+    n = len(bars)
+    plot_h_in = (top - bottom) * H
+    box = ((0, 100), (-0.72, n - 0.28), (W * 0.58, plot_h_in))
+    ax.set_xlim(0, 100); ax.set_ylim(-0.72, n - 0.28); ax.invert_yaxis()
+    bh = bar_h(n, plot_h_in, n + 0.44)
+
+    for xv in (0, 25, 50, 75, 100):
+        ax.axvline(xv, color=GRID, lw=0.8, zorder=0)
+
+    for i, b in enumerate(bars):
+        pct = 100 * b["points"] / pr["max_points"]
+        tone = BLUE if i == 0 else (AQUA if i == 1 else ORANGE)
+        rbar(ax, 0, pct, i, bh, tone, box)
+        ax.text(104, i - 0.02, f"{pct:.0f}%", va="center", ha="left",
+                fontsize=13, fontweight="bold", color=INK, clip_on=False)
+        ax.text(104, i + 0.27, f'{b["points"]} из {pr["max_points"]} баллов', va="center",
+                ha="left", fontsize=8.5, color=MUTED, clip_on=False)
+        ax.text(-3.5, i - 0.15, b["label"], va="center", ha="right", fontsize=10.8, color=INK)
+        ax.text(-3.5, i + 0.17, b["sub"], va="center", ha="right", fontsize=8.6, color=MUTED)
+        ax.text(2.5, i + 0.47, b["detail"], va="center", ha="left", fontsize=8.4, color=MUTED)
+
+    ax.set_yticks([])
+    ax.set_xticks([0, 25, 50, 75, 100])
+    ax.set_xticklabels(["0", "25", "50", "75", "100%"], fontsize=9)
+    frame(ax, left=False)
+    ax.set_xlabel("доля набранных баллов рубрики", fontsize=9.5, color=INK_2, labelpad=8)
+    credit(fig)
+    fig.savefig(OUT / "02-po-modelyam.png", dpi=DPI)
+    plt.close(fig)
+
+
+# ============================================================= 7. three models
 def fig_models():
     q = D["q1_cross_model"]
     true, ms = q["true_answer"], q["models"]
-    WRAP = {"Claude Sonnet 5.5": "переусложнил из-за корпоративного\n«регламента №402»",
-            "GPT-6.1 Sol": "потерял вызовы генератора\nна первом этапе",
-            "Gemini 3 Flash": "ошибся в арифметике подмножеств:\n20 отклонённых стали 24"}
-    W, H = 10.4, 5.2
+
+    W, H = 10.4, 5.9
     fig = plt.figure(figsize=(W, H), dpi=DPI)
-    top = header(fig, H, "Одно задание на трёх моделях — три разных неверных ответа",
-                 ["Каскад с повторным вызовом судьи и корпоративным «регламентом №402».",
-                  "Один прогон на модель: это трассы отказа, а не рейтинг."])
+    top = header(fig, H, "Одно задание, четыре прогона — и три разных неверных ответа",
+                 ["Задание Q1: сколько вызовов LLM сделает каскад с повторным вызовом судьи.",
+                  "Верный ответ — 236. По одному прогону на строку."])
     bottom = 0.165
     ax = fig.add_axes([0.295, bottom, 0.625, top - bottom])
     n = len(ms)
@@ -412,21 +454,28 @@ def fig_models():
     for xv in (-100, -75, -50, -25, 25):
         ax.axvline(xv, color=GRID, lw=0.8, zorder=0)
     ax.axvline(0, color=BASELINE, lw=1.4, zorder=1)
-    ax.text(0, -0.56, f"верный ответ — {true} вызовов LLM", ha="center", va="bottom",
+    ax.text(0, -0.66, f"верный ответ — {true} вызовов LLM", ha="center", va="bottom",
             fontsize=9.5, color=INK_2)
 
     for i, m in enumerate(ms):
         d = m["answer"] - true
-        rbar(ax, 0, d, i, bh, BLUE if d > 0 else RED, box)
-        off = 5 if d > 0 else -5
-        ha = "left" if d > 0 else "right"
+        if d == 0:
+            ax.scatter([0], [i], s=170, color="#0ca30c", zorder=4,
+                       edgecolors=SURFACE, linewidths=2)
+        else:
+            rbar(ax, 0, d, i, bh, BLUE if d > 0 else RED, box)
+        off = 5 if d >= 0 else -5
+        ha = "left" if d >= 0 else "right"
         ax.text(d + off, i - 0.10, str(m["answer"]), ha=ha, va="center",
                 fontsize=12, fontweight="bold", color=INK)
-        ax.text(d + off, i + 0.16, f"{d:+d}".replace("-", "\u2212"),
+        ax.text(d + off, i + 0.16,
+                "верно" if d == 0 else f"{d:+d}".replace("-", "\u2212"),
                 ha=ha, va="center", fontsize=9, color=MUTED)
-        ax.text(-119, i - 0.14, m["model"], ha="right", va="center", fontsize=10.5, color=INK)
-        ax.text(-119, i + 0.20, WRAP[m["model"]], ha="right", va="center",
-                fontsize=8.3, color=MUTED, linespacing=1.4)
+        ax.text(-119, i - 0.17, m["model"], ha="right", va="center", fontsize=10.5, color=INK)
+        ax.text(-119, i + 0.13, m["variant"], ha="right", va="center",
+                fontsize=8.6, color=INK_2)
+        ax.text(-119, i + 0.40, m["failure"], ha="right", va="center",
+                fontsize=8.3, color=MUTED)
 
     ax.set_yticks([])
     ax.set_xticks([-100, -75, -50, -25, 0, 25])
@@ -434,11 +483,11 @@ def fig_models():
     frame(ax, left=False)
     ax.set_xlabel("отклонение от верного ответа, вызовов LLM", fontsize=9.5, color=INK_2, labelpad=8)
     credit(fig)
-    fig.savefig(OUT / "06-tri-modeli.png", dpi=DPI)
+    fig.savefig(OUT / "07-tri-modeli.png", dpi=DPI)
     plt.close(fig)
 
 
-for f in (fig_ladder, fig_families, fig_escalation,
+for f in (fig_ladder, fig_models_descent, fig_families, fig_escalation,
           fig_decoupling, fig_answer_grid, fig_models):
     f()
     print("ok", f.__name__)

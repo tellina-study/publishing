@@ -128,16 +128,42 @@ ANSWER_GRID = {
 # ---------------------------------------------------------------- 5. cross-model, Q1 cascade
 # Hand-entered from cross_model_evidence.md / full_results.md §3 (verbatim model outputs).
 # n = 1 observation per model. NOT a benchmark.
+# Targeted probe, straight from cross_model_evidence.md. Two open engineering items
+# from the structural-interference families, one run per model, scored on the
+# 2-criterion rubric (2 points each, 4 total). Six observations in all.
+#   Q1  — cascade + repeat judge calls. Key: 236 LLM calls.
+#   Q16 — verification of a calculation module, manual formula review forbidden.
+PROBE = {
+    "items": ["Q1 · каскад с повторным вызовом судьи", "Q16 · верификация расчётного модуля"],
+    "max_points": 4,
+    "baseline_note": "99.7% — тот же Sonnet на чистых самодостаточных заданиях (352/353 пункта, 84 прогона)",
+    "baseline": 99.7,
+    "bars": [
+        {"label": "Claude Sonnet 5.5", "sub": "исходная формулировка",
+         "points": 4, "detail": "Q1 — верные 236 · Q16 — полный зачёт"},
+        {"label": "Claude Sonnet 5.5", "sub": "в условие добавлен «регламент №402»",
+         "points": 2, "detail": "Q1 — 252 вместо 236 · Q16 — полный зачёт"},
+        {"label": "GPT-6.1 Sol", "sub": "исходная формулировка",
+         "points": 1, "detail": "Q1 — 136, потерян этап · Q16 — половина рубрики"},
+        {"label": "Gemini 3 Flash", "sub": "исходная формулировка",
+         "points": 1, "detail": "Q1 — 244, ошибка в подмножестве · Q16 — половина рубрики"},
+    ],
+}
+
+# Raw Q1 answers, with the provenance of each kept straight: Sol and Flash were run
+# on the ORIGINAL wording (where Sonnet answered correctly); the 252 is Sonnet on the
+# later wording that adds the cost-optimisation policy.
 Q1 = {
     "true_answer": 236,
-    "note": "Один прогон на модель. Полный бенчмарк (20 вопросов x 3 модели x 3 прогона) автор не доделал.",
     "models": [
-        {"model": "Claude Sonnet 5.5", "answer": 252,
-         "failure": "Переусложнил из-за «регламента №402»: оптимизировал вызовы судьи по политике компании"},
-        {"model": "GPT-6.1 Sol", "answer": 136,
-         "failure": "Потерял вызовы генератора первого этапа"},
-        {"model": "Gemini 3 Flash", "answer": 244,
-         "failure": "Арифметика по подмножеству: 20 отклонённых превратились в 24"},
+        {"model": "Claude Sonnet 5.5", "variant": "исходная формулировка", "answer": 236,
+         "failure": ""},
+        {"model": "Claude Sonnet 5.5", "variant": "добавлен «регламент №402»", "answer": 252,
+         "failure": "переоптимизировал вызовы судьи"},
+        {"model": "GPT-6.1 Sol", "variant": "исходная формулировка", "answer": 136,
+         "failure": "потерял этап генерации"},
+        {"model": "Gemini 3 Flash", "variant": "исходная формулировка", "answer": 244,
+         "failure": "20 отклонённых превратились в 24"},
     ],
 }
 
@@ -189,6 +215,7 @@ out = {
     "decoupling": [{"label": lbl, "kind": kind, "control": agg(cp), "treatment": agg(tp)}
                    for lbl, kind, cp, tp in DECOUPLING],
     "answer_grid": ANSWER_GRID,
+    "cross_model_probe": PROBE,
     "q1_cross_model": Q1,
 }
 
