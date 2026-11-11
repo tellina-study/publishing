@@ -1,0 +1,37 @@
+{
+  "assets/01-podhody-tochnost.png": {
+    "id": 403,
+    "url": "https://tellian.io/wp-content/uploads/2026/11/01-podhody-tochnost.png",
+    "sha256": "2475ed877cc74ff904f726a3b9e8b3a8f0343d21a71a08e9d5e9d8668b0e88a5"
+  },
+  "assets/02-po-modelyam.png": {
+    "id": 404,
+    "url": "https://tellian.io/wp-content/uploads/2026/11/02-po-modelyam.png",
+    "sha256": "03dada02caecde69ab6cf460f071b079101c91369cd4e4b900106fa5a706b681"
+  },
+  "assets/03-desyat-semejstv.png": {
+    "id": 405,
+    "url": "https://tellian.io/wp-content/uploads/2026/11/03-desyat-semejstv.png",
+    "sha256": "40c754757462b17a8ba3ac8bf4423364269b34c4793bee9e58a90460333cb96e"
+  },
+  "assets/04-eskalaciya-raundov.png": {
+    "id": 406,
+    "url": "https://tellian.io/wp-content/uploads/2026/11/04-eskalaciya-raundov.png",
+    "sha256": "f17852c2e781f524b84aa00f1b9b79ee14964c14ffb19e316ecd9ff5701c8d1d"
+  },
+  "assets/05-tochnost-bez-podmeny.png": {
+    "id": 407,
+    "url": "https://tellian.io/wp-content/uploads/2026/11/05-tochnost-bez-podmeny.png",
+    "sha256": "08f5e091b4eb420880f4dbb2e51c7ede69be50f83f4bc4cfe2e357c63d5eca5a"
+  },
+  "assets/06-mehanizm-otvetov.png": {
+    "id": 408,
+    "url": "https://tellian.io/wp-content/uploads/2026/11/06-mehanizm-otvetov.png",
+    "sha256": "3070ade0edcdd529b335204f141ea9bbae6d255cee3f8f9905ce5d3ef53d1726"
+  },
+  "assets/07-tri-modeli.png": {
+    "id": 409,
+    "url": "https://tellian.io/wp-content/uploads/2026/11/07-tri-modeli.png",
+    "sha256": "3cc304029b475bdc56ae6369070987289375d4bcea547565be0b9687fb0cfca3"
+  }
+}
