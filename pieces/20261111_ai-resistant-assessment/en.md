@@ -10,11 +10,12 @@ A test item looks like this: ten lines of setup, four options, one right answer.
 it off the screen, drags the mouse across it, hits Ctrl+C — and twenty seconds later holds an answer
 they never worked out.
 
-We built a closed-book test for our applied AI engineering course and handed it to Claude Sonnet 5.5
-one hundred and thirty-eight times — a fresh session each run, no memory of earlier attempts, free
-to use tools and read the public course pages. Four pilots and eleven rounds, each with its own
-theory about what should throw the model off. A handful of runs put two other models alongside it,
-GPT-6.1 Sol and Gemini 3 Flash.
+We built a closed-book test for our applied AI engineering course and handed it to a model one
+hundred and thirty-eight times — a fresh session each run, no memory of earlier attempts, free to
+use tools and read the public course pages. One hundred and thirty-four of those runs went to
+Claude Sonnet 5.5; the remaining four were an early pilot on GPT-6.1 Sol. Four pilots and eleven
+rounds, each with its own theory about what should throw the model off. A few targeted probes put
+Sol and Gemini 3 Flash alongside it.
 
 We wanted one thing: to know which items hold up, and which only look hard.
 
@@ -22,32 +23,33 @@ We wanted one thing: to know which items hold up, and which only look hard.
 
 ![What actually lowers AI accuracy on a test: eight approaches, from clean text to clipboard parameter swaps](assets/01-podhody-tochnost.png)
 
-*Share of answers matching the key exactly. Every row carries its own denominators — items and runs.*
+*Share of answers matching the key exactly.*
 
-- **Wording will not protect a closed item.** Thirteen attempts in a row, from counterfactuals to
-  a six-step state overwrite done in the model's head: **352 items out of 353**.
+- **Added difficulty will not protect a closed item.** Twelve attempts in a row, from counterfactuals
+  to a six-step state overwrite done in the model's head: **332 items out of 333** for Sonnet.
 - **Invisible characters protect nothing either.** Homoglyphs, zero-width spaces, reversed digits —
   the model names them out loud in its reasoning and unwinds them. **32 of 32**, **10 of 10**.
 - **Exactly one property of an item brings accuracy down: the setup describes a configuration that
   is not in the published course, and one option is loaded with the canonical course numbers that
   are.** **2 of 10** — and not a single character in the text was touched.
-- **Swapping the text as it is copied drops it to zero** — **0 of 10**. But that measures the
-  channel, not the model's knowledge, and the two must never share a number.
+- **Swapping the text as it is copied drops it to zero** — **0 of 10**. But that measures channel
+  defence, not the model's knowledge.
 - Wherever the AI has everything the student has, it holds **100%**. That is what makes the drop
   readable as a property of the channel rather than a sudden loss of competence.
-- **Models diverge on the very same items** — and diverge widely.
+- **On one and the same open item, models differ by half** — in the place where the rubric asks for
+  an action rather than a vocabulary.
 
-![Two open items across three models: 100% for Sonnet, 50% for Sonnet once a corporate policy is added, 25% each for Sol and Flash](assets/02-po-modelyam.png)
+![Open case on verifying a calculation module: 100% for Sonnet, 50% each for Sol and Flash](assets/02-po-modelyam.png)
 
-*Two open engineering cases, a two-criterion rubric, one run per row.*
+*One case, a two-criterion rubric, one run per model.*
 
-Sonnet takes both items outright. Adding one corporate line to the setup — "judge calls that can be
-avoided count as unjustified" — halves it. Sol and Flash take a quarter of the points on the same
-original wording Sonnet clears without a scratch.
+All three produce a competent list of verification methods — boundary values, property-based testing,
+mutation testing, an independent oracle. The first criterion is met by everyone. The second — naming
+what happens on a mismatch and who stops the release — by one.
 
 ## How we measured
 
-Three rules, without which none of these percentages would be worth anything.
+Three rules hold the whole series together.
 
 **The item packet and the key were frozen before the first run** — SHA-256, alongside the run
 payload. Scoring checks the bytes afterwards. Dull right up to the moment somebody wants to "adjust
@@ -63,13 +65,17 @@ reasons. An image-read refusal on a route without vision is not zero points — 
 that did not happen.
 
 > 💡 Repeated sessions on the same packet are independent contexts, not independent items. Six runs
-> over five questions give thirty observations, not thirty questions. Every figure below carries both.
+> over five questions give thirty observations, not thirty questions — and every figure below
+> carries both numbers.
 
 ## Ten textbook approaches, not one hit
 
-We started where any instructor would: ten independent item-design families. Counterfactual
-variations, minimal pairs, true-but-irrelevant premises, diagnostic experiment selection, competing
-trade-offs with an exact budget calculation.
+We started where any instructor would: ten independent item-design families. Minimal pairs — two
+nearly identical pipelines differing by a single check; find which difference matters. True but
+irrelevant premises — four statements, all correct, only one explaining the failure. Diagnostic
+experiment selection — which single ablation separates two hypotheses. Competing trade-offs —
+compute the monthly latency and cost budget across several configurations and pick the one that
+clears both thresholds.
 
 ![Ten design families, four items each: forty hits out of forty](assets/03-desyat-semejstv.png)
 
@@ -77,21 +83,22 @@ trade-offs with an exact budget calculation.
 
 Forty items out of forty. Not one family left a scratch.
 
-## Thirteen attempts, and the ceiling never moved
+## Twelve attempts, and the ceiling never moved
 
 Difficulty climbed round after round. We inverted our own seminars' conclusions so the correct answer
 contradicted what the course teaches. We stripped the decisive facts out of the setup and left only
 a pointer to where they live. We built a chain of six conditional state overwrites with an `XOR` in
-the middle — and banned code, so the arithmetic had to happen in the model's head.
+the middle — and in half those runs banned Python and bash, so the arithmetic had to happen in the
+model's head.
 
-![Accuracy on clean text across four pilots and nine rounds: the line stays at one hundred percent](assets/04-eskalaciya-raundov.png)
+![Sonnet's accuracy on clean text across three pilots and nine rounds: the line stays at one hundred percent](assets/04-eskalaciya-raundov.png)
 
-*Four pilots (`v1–v4`) and nine rounds (`R1–R9`) — every attempt where items were served as clean
-text. Rounds ten and eleven were no longer about text; they tested the channel.*
+*332 items out of 333. Three pilots (`v2–v4`) and nine rounds (`R1–R9`) — every Sonnet attempt where
+items were served as clean text; the very first pilot ran on a different model.*
 
-Course-rule inversion: 30 of 30. Six-step overwrite without a calculator: 20 of 20. Navigation
-instead of data in the setup: 12 of 12 — the model found the right seminar paragraphs and caught
-that defective key of ours on the way.
+Course-rule inversion: 30 of 30. The six-step overwrite: 20 of 20, of which 10 of 10 came from the
+runs with no code allowed. Navigation instead of data in the setup: 12 of 12 — the model found the
+right seminar paragraphs and caught that defective key of ours on the way.
 
 The telling part happened between rounds two and three. In round two the model made the same causal
 overclaim in free text three times out of three: it declared that one test outcome *proved* the root
@@ -101,28 +108,30 @@ easier than producing it. The closed format swallows that difference whole.
 
 ## Invisible characters: the model reads them out loud
 
-The classic move is to feed the tokenizer something the human eye never sees. Homoglyphs: a Cyrillic
-"а" for a Latin one. Zero-width spaces: 2,196 of them inside words. Invisible tags from the `U+E0000`
-block, variation selectors, digits flipped by Bidi control characters.
+The classic move is to feed the tokenizer something the human eye never sees. Homoglyphs: a Latin
+"a" standing in for a Cyrillic "а", indistinguishable on screen. Zero-width spaces: 2,196 of them
+inside words. Invisible tags from the `U+E0000` block, variation selectors, digits flipped by Bidi
+control characters.
 
-On the file-based variants: 32 of 32 and 10 of 10. The model reassembles the word from context
-without stumbling. On reversed digits it writes plainly in its reasoning that it sees an `RLO` and
-mentally turns `08` back into `80`. On invisible tags: 62 of 64 across sixteen runs — in exactly one
-run it followed the hidden instruction; in ten others it decoded it, quoted it, and refused.
+Homoglyphs and zero-width spaces in a file: 32 of 32 — the model reassembles the word from context
+without stumbling. Reversed digits pasted straight into the chat: 10 of 10, and it writes plainly in
+its reasoning that it sees an `RLO` and mentally turns `08` back into `80`. Invisible tags: 62 of 64
+across sixteen runs — in one run it followed the hidden instruction; in the rest it decoded it,
+quoted it, and refused.
 
 The only thing that moved the needle at all was a multi-script cocktail: Cherokee letters standing in
 for Cyrillic ones, Coptic, mathematical italics, an Arabic decimal separator, fullwidth digits. 90%
-instead of 100% — ten points. And that is exactly where the approach dies: text that costs the model
-ten points reads to the student like a ransom note.
+instead of 100% — ten percentage points. And that is exactly where the approach dies: text that costs
+the model ten points reads to the student like a ransom note.
 
 > 💡 A defence that damages the text for a human is not a defence, it is a tax on the honest.
 > Readability degrades faster than AI accuracy does, and the human loses that race first.
 
 ## Between "solved" and "didn't" there is almost nothing
 
-Sorted by how much each of the 138 runs scored, something odd shows up. One hundred and twenty-three
-runs landed on exactly one hundred percent. Three more on 80% — four items out of five. The remaining
-twelve sit at 33% and below. Nothing in between.
+Sort all 138 runs by how much each one scored. One hundred and twenty-three landed on exactly one
+hundred percent. Three more on 80% — four items out of five. The remaining twelve sit at 33% and
+below. Nothing in between.
 
 There are two reasons for that, and both are worth understanding before designing an item.
 
@@ -130,26 +139,32 @@ There are two reasons for that, and both are worth understanding before designin
 recognising the right one beats composing it. The margin is wide enough to absorb any amount of added
 complexity — hence the wall at a hundred.
 
-**The shape of the error.** When the numbers are missing, the model does not start guessing. Out of
-four options it confidently takes the one it can justify — and if you planted that option, the error
-stops being random and becomes reproducible. Random wandering would give 25–30%; a systematic
-misdirection gives 0–20%, run after run.
+**The shape of the error.** When the numbers are missing, the model does not start guessing. It
+confidently takes the option it can justify — and if you planted that option, the error stops being
+random and becomes reproducible. You can see this not in the percentage but in the answer letters
+themselves.
 
-> 💡 So "make the item a bit harder" is not a strategy. There is no middle result: either the model
-> solves it or you lead it away. Nothing in the data sits between those.
+A run carries two to five items, so the scale is coarse: 3 of 5 would have given exactly 60%, and
+landing mid-range was perfectly possible. It simply never happened.
 
-One caveat: a run carries two to five items, so the scale itself is coarse — 3 of 5 would have given
-60%, and landing mid-range was perfectly possible. It simply never happened.
+> 💡 "Make the item a bit harder" is not a strategy. Either the model solves it or you lead it away:
+> not one of the 138 runs came to rest between 35% and 80%.
 
-## 🎯 What worked lives inside the wording
+## 🎯 What worked is hidden in how the question is built
 
-The answer turned out to be in the architecture of the question rather than in encoding or
-difficulty: write the setup so that the model's most natural move leads into a prepared dead end.
+Difficulty did not help. Encoding did not help. Something else did: write the setup so that the
+model's most natural move leads into a prepared dead end.
+
+Recall round five — when the decisive facts were pulled out of the setup and replaced by a pointer
+into the course, the model walked calmly to the right seminar paragraphs: 12 of 12. As long as the
+numbers sit in published material, you cannot hide them from an agent. So you need numbers that are
+not there.
 
 The technique has two halves. **The setup describes not the course's canonical example but an
-individual variant** — different for each student, with parameters that appear nowhere in the
-published material. **And one of the options is loaded with exactly the canonical numbers the course
-does publish.** A model with web access goes where numbers exist at all — and finds the planted ones.
+individual variant** — generated for one student and appearing in no lecture. No equipment is
+required for this: an item generator and a per-student seed will do. **And one of the options is
+loaded with exactly the canonical numbers the course does publish.** A model with web access goes
+where numbers exist at all — and finds the planted ones.
 
 ![Four control-versus-live pairs: in three of them the text is untouched and accuracy still collapses](assets/05-tochnost-bez-podmeny.png)
 
@@ -168,8 +183,13 @@ decline: it walks confidently to the one place that has numbers for it.
 
 The third row in the chart above is the same technique failing. There the planted numbers did not fit
 every item, and the result was 4 of 6: the model reached the key everywhere there was nothing to lead
-it away with. The technique works not because it is clever but because the distractor is symmetric —
-equally plausible on every item.
+it away with. Across all three variants together it is 7 items out of 22 — 31.8%. The symmetric one
+holds at 20%, the asymmetric one gives almost nothing, and that is the whole difference.
+
+> 📌 The technique raises the price; it does not shut the door. A student who retypes their own
+> parameters along with the item gets the right answer — that is precisely the control group, 20 of
+> 20. It works against a twenty-second copy-paste, not against someone who sat down with the
+> problem. Which was rather the point: the second one has already read it.
 
 ## The channel: zero percent, and why that is a different number
 
@@ -178,45 +198,46 @@ that renders selected characters at zero width: **0 differing pixels out of 666,
 while something else lands in the clipboard. And a parameter swap on `Ctrl+C` and window blur: three
 or four short numbers quietly become values that lead to a neighbouring option.
 
-20% and 0%. The most striking figures in the series — and the most dangerous to read.
+20% and 0%. And this is exactly where a number is easiest to misread.
 
 > 📌 Zero percent here does not mean the AI failed. It means the AI answered **a different question**
 > — the one it was handed. On the original item, in the same channel, that same model gives 20 of 20.
 > This measures channel defence, and it cannot sit in the same column as a measurement of knowledge.
 
-## One line in the setup flips the answer
+## What a defective item looks like
 
-The cross-model part rests on the two open cases run against all three models — the ones in the
-TL;DR. The sharper of them counts LLM calls in a two-stage cascade where the judge is re-invoked only
-for the requests it rejected itself. The correct answer is 236.
+The second case run across all three models did not make it into this piece as a measurement — and
+is instructive for exactly that reason. It looks simple: a two-stage cascade where the judge is
+re-invoked only for the requests it rejected itself; count the LLM calls. The author expected 236.
 
-![Item Q1 across four runs: 236 correct for Sonnet, 252 for Sonnet with the policy, 136 for Sol, 244 for Flash](assets/07-tri-modeli.png)
+![Item Q1 across four runs: 236 for Sonnet, 252 for Sonnet with the policy, 136 for Sol, 244 for Flash](assets/07-tri-modeli.png)
 
-*Deviation from the correct answer, in LLM calls.*
+*Deviation from the expected answer, in LLM calls.*
 
-On the original wording Sonnet counts the cascade correctly. Sol loses an entire generation stage and
-arrives at 136. Flash mis-sizes a subset — twenty rejected requests become twenty-four — and lands
-on 244.
+Three models gave three different answers. Sonnet arrived at 236 — by assuming the 32 requests split
+evenly between the two rejection groups. Sol wrote the formula `120 + x` on the same assumption but
+dropped a hundred first-stage generator calls, landing on 136. Flash mis-sized a subset: twenty
+rejected requests became twenty-four, giving 244.
 
-Then one corporate line joins the setup: judge calls that can be avoided without losing quality count
-as unjustified. Nothing about the flows changes; only the frame the task is to be solved in. And
-Sonnet, which had just produced the exact answer, returns 252 — it starts optimising judge calls
-instead of counting them.
+Then one corporate line joined the setup: judge calls that can be avoided without losing quality
+count as unjustified. The flows did not change; the frame the task is to be solved in did. Sonnet
+returned 252 — it started optimising judge calls instead of counting them.
 
-On the second case — verifying a calculation module with manual formula review forbidden — Sonnet
-takes full marks while Sol and Flash take half the rubric each. Both produce a competent list of
-methods: boundary values, property-based testing, mutation testing, an independent oracle. Neither
-says what happens on a mismatch — who stops the release.
+It looks like an excellent trap. But the split of those 32 requests is **never specified**, so the
+item admits no single answer, and 236 is not a key — it is one assumption among several. Sol even
+stated its assumption out loud. Marking it wrong would be punishing precision.
 
-> 📌 This is why a rubric has to ask for an action. Listing methods is something models do brilliantly.
-> Naming who hits stop, noticeably less so.
+> 📌 Before explaining a divergence by the properties of models, check whether your item admits
+> exactly one answer. Three different answers from three models is more often a diagnosis of the
+> item. By our own rule such an item is dropped whole rather than scored — which is why only the
+> second case appears in the rubric above.
 
 ## What to do with all this
 
 **Build the setup around an individual variant, and put the course's canonical numbers in a
-distractor.** Not "make the wording harder": let the decisive parameters belong to one student — their
-variant, their configuration, their run log. An outside model then has nothing to look up except what
-you prepared for it.
+distractor.** Not "make the wording harder": let the decisive parameters belong to one student —
+their variant, their configuration, their run log, generated rather than published. An outside model
+then has nothing to look up except what you prepared for it.
 
 **Make the distractor symmetric.** The planted numbers must be equally plausible on every item. Our
 asymmetric version gave 4 of 6 instead of 2 of 10 — that is the whole difference.
@@ -236,20 +257,20 @@ tags genuinely broke systems. Against a 2026 frontier model they break only read
 ## The limits of this series
 
 Everything here was measured on closed items from a single engineering course, and says nothing about
-education at large. Clarity was audited by blind editors and an instructor, not by a randomised
-student cohort. The bulk of the runs sit on one model, with spot measurements on two others. Each
-channel defence rests on two runs — enough to see the effect, not enough to state its size to the
-percentage point.
+education at large. The cross-model part rests on one open case and a single run per model: enough to
+name a difference, not enough to size it. Clarity was audited by blind editors and an instructor, not
+by a randomised student cohort. Each channel defence rests on two runs — enough to see the effect,
+not enough to state its size to the percentage point.
 
-The headline result came out duller than we hoped and more useful than we expected. Clever text will
-not beat an outside model — not length, not traps, not invisible characters. What you can do is make
-the item diagnostic, by putting the decisive part where the model cannot reach, and separately close
-the channel. Two different jobs, and they must not be mixed even inside one table.
+The thing that ate the most time in this series was invisible characters, and it produced nothing
+except text the student could no longer read. What did work fits in one line of a setup: describe
+the configuration of one particular student rather than the canonical example of the course. The rest
+is about which wire the item travels on, and that is counted separately.
 
 ## Sources
 
-- Boucher, Shumailov, Anderson, Papernot. [Bad Characters: Imperceptible NLP Attacks](https://arxiv.org/abs/2106.09898) (IEEE S&P, 2021)
-- Rehberger. [Hiding and Finding Text with Unicode Tags](https://embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/) (Embrace The Red, 2024)
+- Boucher, Shumailov, Anderson, Papernot. [Bad Characters: Imperceptible NLP Attacks](https://arxiv.org/abs/2106.09898) (IEEE S&P 2022; preprint 2021)
+- Rehberger. [ASCII Smuggler Tool: Crafting Invisible Text and Decoding Hidden Codes](https://embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/) (Embrace The Red, 2024)
 - Wallace et al. [The Instruction Hierarchy](https://arxiv.org/abs/2404.13208) (2024)
 - Zhan et al. [InjecAgent](https://arxiv.org/abs/2403.02691) (ACL Findings, 2024)
 - Debenedetti et al. [AgentDojo](https://arxiv.org/abs/2406.13352) (2024)
