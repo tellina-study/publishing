@@ -133,7 +133,7 @@ def fig_ladder():
         "bidi": "Переворот цифр невидимым Bidi",
         "tags": "Невидимые Unicode-теги",
         "multiscript": "Мультискриптовый коктейль",
-        "stand_decoy": "Условие — про свой вариант,\nдистрактор — из курса",
+        "stand_decoy": "Условие — про свой вариант, дистрактор —\nиз курса (симметричный)",
         "css_zero": "Нулевой шрифт на чистом CSS",
         "param_swap": "Подмена параметров в буфере",
     }
@@ -199,13 +199,13 @@ def fig_escalation():
     STEPS = [("Р1", "десять классических методических семейств сразу"),
              ("Р5", "решающие факты убраны из условия — иди читай курс"),
              ("Р7", "выводы семинаров вывернуты наизнанку"),
-             ("Р8", "шесть шагов перезаписи состояния, без калькулятора")]
+             ("Р8", "шесть шагов перезаписи состояния, половина прогонов — без кода")]
     xs = list(range(len(rows)))
     ys = [r["accuracy"] for r in rows]
 
     W, H = 10.4, 5.6
     fig = plt.figure(figsize=(W, H), dpi=DPI)
-    top = header(fig, H, "Тринадцать заходов на формулировку — и потолок не сдвинулся",
+    top = header(fig, H, "Двенадцать заходов на формулировку — и потолок не сдвинулся",
                  ["Точность на чистом, самодостаточном тексте по раундам: сложность росла от контрфактов",
                   "до шестишаговой перезаписи состояния. 352 пункта из 353 совпали с ключом."])
     bottom = 0.175
@@ -388,22 +388,21 @@ def fig_answer_grid():
     plt.close(fig)
 
 
-# ===================================== 2. the per-model descent, as measured
+# ===================================== 2. the one well-posed item, three models
 def fig_models_descent():
     pr = D["cross_model_probe"]
     bars = pr["bars"]
-    AQUA = "#1baf7a"
-    W, H = 10.4, 5.6
+    W, H = 10.4, 5.2
     fig = plt.figure(figsize=(W, H), dpi=DPI)
-    top = header(fig, H, "Одни и те же два задания — и разброс от 100% до четверти",
-                 ["Открытые инженерные кейсы со структурной интерференцией, по двухкритериальной",
-                  "рубрике: 2 балла за задание, 4 всего. По одному прогону на строку, шесть наблюдений.",
-                  "Для сравнения: на чистых самодостаточных заданиях тот же Sonnet берёт 352 пункта из 353."])
+    top = header(fig, H, "Перечислить методы умеют все. Остановить релиз — один из трёх",
+                 ["Открытый кейс: модуль прошёл собственные тесты на 100%, опишите верификацию перед",
+                  "интеграцией; ручная проверка формул запрещена. Критерия два: описать независимую",
+                  "проверку и назвать действие при расхождении. По одному прогону на модель."])
     bottom = 0.135
-    ax = fig.add_axes([0.305, bottom, 0.58, top - bottom])
+    ax = fig.add_axes([0.235, bottom, 0.60, top - bottom])
     n = len(bars)
     plot_h_in = (top - bottom) * H
-    box = ((0, 100), (-0.72, n - 0.28), (W * 0.58, plot_h_in))
+    box = ((0, 100), (-0.72, n - 0.28), (W * 0.60, plot_h_in))
     ax.set_xlim(0, 100); ax.set_ylim(-0.72, n - 0.28); ax.invert_yaxis()
     bh = bar_h(n, plot_h_in, n + 0.44)
 
@@ -412,22 +411,21 @@ def fig_models_descent():
 
     for i, b in enumerate(bars):
         pct = 100 * b["points"] / pr["max_points"]
-        tone = BLUE if i == 0 else (AQUA if i == 1 else ORANGE)
-        rbar(ax, 0, pct, i, bh, tone, box)
-        ax.text(104, i - 0.02, f"{pct:.0f}%", va="center", ha="left",
+        rbar(ax, 0, pct, i, bh, BLUE if pct == 100 else ORANGE, box)
+        ax.text(104, i - 0.03, f"{pct:.0f}%", va="center", ha="left",
                 fontsize=13, fontweight="bold", color=INK, clip_on=False)
-        ax.text(104, i + 0.27, f'{b["points"]} из {pr["max_points"]} баллов', va="center",
+        ax.text(104, i + 0.26, f'{b["points"]} из {pr["max_points"]} критериев', va="center",
                 ha="left", fontsize=8.5, color=MUTED, clip_on=False)
-        ax.text(-3.5, i - 0.15, b["label"], va="center", ha="right", fontsize=10.8, color=INK)
-        ax.text(-3.5, i + 0.17, b["sub"], va="center", ha="right", fontsize=8.6, color=MUTED)
+        ax.text(-3.5, i - 0.03, b["label"], va="center", ha="right", fontsize=11, color=INK)
         ax.text(2.5, i + 0.47, b["detail"], va="center", ha="left", fontsize=8.4, color=MUTED)
 
     ax.set_yticks([])
     ax.set_xticks([0, 25, 50, 75, 100])
     ax.set_xticklabels(["0", "25", "50", "75", "100%"], fontsize=9)
     frame(ax, left=False)
-    ax.set_xlabel("доля набранных баллов рубрики", fontsize=9.5, color=INK_2, labelpad=8)
-    credit(fig)
+    ax.set_xlabel("критериев рубрики закрыто", fontsize=9.5, color=INK_2, labelpad=8)
+    fig.text(L, 0.018, "Наблюдения из cross_model_evidence.md · workain/research-results · tellian.io",
+             fontsize=8, color=MUTED, va="bottom")
     fig.savefig(OUT / "02-po-modelyam.png", dpi=DPI)
     plt.close(fig)
 
@@ -435,13 +433,14 @@ def fig_models_descent():
 # ============================================================= 7. three models
 def fig_models():
     q = D["q1_cross_model"]
-    true, ms = q["true_answer"], q["models"]
+    true, ms = q["intended_answer"], q["models"]
 
     W, H = 10.4, 5.9
     fig = plt.figure(figsize=(W, H), dpi=DPI)
-    top = header(fig, H, "Одно задание, четыре прогона — и три разных неверных ответа",
-                 ["Задание Q1: сколько вызовов LLM сделает каскад с повторным вызовом судьи.",
-                  "Верный ответ — 236. По одному прогону на строку."])
+    top = header(fig, H, "Недоспецифицированное задание даёт три разных ответа",
+                 ["Сколько вызовов LLM сделает двухэтапный каскад с повторным вызовом судьи.",
+                  "Автор ждал 236 — но распределение 32 запросов между группами отказа в условии",
+                  "не задано, так что это трассы отказа, а не оценка моделей. По прогону на строку."])
     bottom = 0.165
     ax = fig.add_axes([0.295, bottom, 0.625, top - bottom])
     n = len(ms)
@@ -454,7 +453,7 @@ def fig_models():
     for xv in (-100, -75, -50, -25, 25):
         ax.axvline(xv, color=GRID, lw=0.8, zorder=0)
     ax.axvline(0, color=BASELINE, lw=1.4, zorder=1)
-    ax.text(0, -0.66, f"верный ответ — {true} вызовов LLM", ha="center", va="bottom",
+    ax.text(0, -0.70, f"ответ, которого ждал автор, — {true} вызовов", ha="center", va="bottom",
             fontsize=9.5, color=INK_2)
 
     for i, m in enumerate(ms):
@@ -469,7 +468,7 @@ def fig_models():
         ax.text(d + off, i - 0.10, str(m["answer"]), ha=ha, va="center",
                 fontsize=12, fontweight="bold", color=INK)
         ax.text(d + off, i + 0.16,
-                "верно" if d == 0 else f"{d:+d}".replace("-", "\u2212"),
+                "как у автора" if d == 0 else f"{d:+d}".replace("-", "\u2212"),
                 ha=ha, va="center", fontsize=9, color=MUTED)
         ax.text(-119, i - 0.17, m["model"], ha="right", va="center", fontsize=10.5, color=INK)
         ax.text(-119, i + 0.13, m["variant"], ha="right", va="center",
@@ -481,8 +480,10 @@ def fig_models():
     ax.set_xticks([-100, -75, -50, -25, 0, 25])
     ax.set_xticklabels(["−100", "−75", "−50", "−25", "0", "+25"], fontsize=9)
     frame(ax, left=False)
-    ax.set_xlabel("отклонение от верного ответа, вызовов LLM", fontsize=9.5, color=INK_2, labelpad=8)
-    credit(fig)
+    ax.set_xlabel("отклонение от ожидавшегося ответа, вызовов LLM",
+                  fontsize=9.5, color=INK_2, labelpad=8)
+    fig.text(L, 0.018, "Наблюдения из cross_model_evidence.md · workain/research-results · tellian.io",
+             fontsize=8, color=MUTED, va="bottom")
     fig.savefig(OUT / "07-tri-modeli.png", dpi=DPI)
     plt.close(fig)
 

@@ -35,7 +35,7 @@ def cond(*names):
 # Ordered as the piece tells it: formulation-level first (useless), channel-level last (works).
 LADDER = [
     ("clean", "Любая формулировка на чистом тексте (11 раундов эскалации)",
-     lambda r: r["category"] == "semantic_clean"),
+     lambda r: r["category"] == "semantic_clean" and "sonnet" in r["model"]),
     ("unicode_file", "Гомоглифы и нулевой пробел в файле",
      lambda r: r["track"] == "unicode_file_obfuscation"),
     ("bidi", "Переворот цифр невидимым Bidi (RLO/LRI)",
@@ -134,19 +134,15 @@ ANSWER_GRID = {
 #   Q1  — cascade + repeat judge calls. Key: 236 LLM calls.
 #   Q16 — verification of a calculation module, manual formula review forbidden.
 PROBE = {
-    "items": ["Q1 · каскад с повторным вызовом судьи", "Q16 · верификация расчётного модуля"],
-    "max_points": 4,
-    "baseline_note": "99.7% — тот же Sonnet на чистых самодостаточных заданиях (352/353 пункта, 84 прогона)",
-    "baseline": 99.7,
+    "item": "Q16 · верификация расчётного модуля, ручная проверка формул запрещена",
+    "max_points": 2,
     "bars": [
-        {"label": "Claude Sonnet 5.5", "sub": "исходная формулировка",
-         "points": 4, "detail": "Q1 — верные 236 · Q16 — полный зачёт"},
-        {"label": "Claude Sonnet 5.5", "sub": "в условие добавлен «регламент №402»",
-         "points": 2, "detail": "Q1 — 252 вместо 236 · Q16 — полный зачёт"},
-        {"label": "GPT-6.1 Sol", "sub": "исходная формулировка",
-         "points": 1, "detail": "Q1 — 136, потерян этап · Q16 — половина рубрики"},
-        {"label": "Gemini 3 Flash", "sub": "исходная формулировка",
-         "points": 1, "detail": "Q1 — 244, ошибка в подмножестве · Q16 — половина рубрики"},
+        {"label": "Claude Sonnet 5.5", "points": 2,
+         "detail": "независимая спецификация, граничные, оракул, мутационные тесты — и блокировка релиза"},
+        {"label": "GPT-6.1 Sol", "points": 1,
+         "detail": "оракул, граничные, property-based, мутационные, автоматические гейты — без блокировки релиза"},
+        {"label": "Gemini 3 Flash", "points": 1,
+         "detail": "property-based, мутационные, golden-master, граничные — без блокировки релиза"},
     ],
 }
 
@@ -154,7 +150,8 @@ PROBE = {
 # on the ORIGINAL wording (where Sonnet answered correctly); the 252 is Sonnet on the
 # later wording that adds the cost-optimisation policy.
 Q1 = {
-    "true_answer": 236,
+    "intended_answer": 236,
+    "defect": "условие недоспецифицировано: распределение 32 запросов между двумя группами отказа не задано",
     "models": [
         {"model": "Claude Sonnet 5.5", "variant": "исходная формулировка", "answer": 236,
          "failure": ""},
@@ -182,7 +179,8 @@ out = {
     "rounds": [{"round": rd, "label": ROUND_LABEL[rd], **agg(lambda r, rd=rd: r["round"] == rd)}
                for rd in ROUND_ORDER],
     "clean_by_round": [{"round": rd, "label": ROUND_LABEL[rd],
-                        **agg(lambda r, rd=rd: r["round"] == rd and r["category"] == "semantic_clean")}
+                        **agg(lambda r, rd=rd: r["round"] == rd and r["category"] == "semantic_clean"
+                              and "sonnet" in r["model"])}
                        for rd in ROUND_ORDER],
     "families": [{"id": fid, "label": lbl,
                   **agg(lambda r, fid=fid: r["track"] == f"family_{fid}")}
