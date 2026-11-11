@@ -1,9 +1,17 @@
 ---
-title: "Why AI Scores 99.7% on Your Test — and What Actually Stops It"
+title: Why AI Scores 99.7% on Your Test — and What Actually Stops It
 slug: ai-resistant-assessment
 status: draft
-categories: [AI]
-tags: [assessment, evaluation, LLM, education, prompt injection, benchmarks]
+categories:
+- AI
+tags:
+- assessment
+- evaluation
+- LLM
+- education
+- prompt injection
+- benchmarks
+wp_post_id: 410
 ---
 
 A test item looks like this: ten lines of setup, four options, one right answer. The student reads
