@@ -1,16 +1,16 @@
 ---
 channel: linkedin
 status: draft
-title: The harness can cost you more without buying you anything
+title: Same score, harness on or off — that's the surprising part
 image: card1_quality_flat.png
 series: harness-agents-pt1 (post 2 of 6)
 ---
 
-**Honest measurements say the harness can cost you more without buying you anything.**
+**Same task, same agent, harness on vs. off — the quality score didn't move. Not once.**
 
-I gave an agent a full harness — rules, tools and memory wrapped around it — ran one task with it on, then ran the exact same task with it off. Did that for three agents: Claude Code, Hermes, DeepSeek Harness. The quality score didn't move once.
+I ran this on three agents: Claude Code, Hermes, DeepSeek Harness. Each one got the same task twice — once with the full harness (rules, tools, memory wrapped around it), once without.
 
-DeepSeek Harness scored full marks either way. Claude Code scored the same partial result either way. Hermes scored zero either way — it didn't touch a single file in either run. Out of the nine tasks I ran, this was the only one where the agents actually differed from each other on quality — and that difference had nothing to do with the harness being on or off.
+DeepSeek Harness scored full marks either way. Claude Code scored the same partial result either way. Hermes scored zero either way — it didn't touch a single file in either run. Out of the nine tasks I ran, this was the only one where the three agents actually differed from each other on quality — and that difference had nothing to do with the harness. It's just how good each agent already is on its own.
 
 Here's the part that matters if you're deciding whether to build one of these setups in production: for Hermes, switching the harness on didn't rescue the zero, it just made the attempt roughly four times more expensive. The same rules that cut Claude Code's steps on other tasks here made Hermes re-read the requirements and check against the checklist over and over, without ever getting to an edit. Effort went up; the outcome stayed exactly as zero as before.
 
